@@ -1,0 +1,88 @@
+{
+  "texts": [
+    "Show me all markets",
+    "What markets are available",
+    "List all stock exchanges",
+    "Display market information",
+    "Show markets and their locations",
+
+    "Show me all traders",
+    "List all traders in the system",
+    "Who are our traders",
+    "Display trader information",
+    "Show me trader details",
+
+    "What assets do we have",
+    "Show all assets",
+    "List available stocks and bonds",
+    "What securities are available",
+    "Display all our assets",
+
+    "Show me recent trades",
+    "What trades happened today",
+    "Display trading activity",
+    "List all transactions",
+    "Show trade history",
+
+    "Hello",
+    "Hi there",
+    "Good morning",
+    "Hey",
+    "Greetings",
+
+    "Goodbye",
+    "Bye",
+    "Exit",
+    "End conversation",
+    "See you later",
+
+    "Can you help me",
+    "I need assistance",
+    "Help",
+    "What can you do",
+    "Show me available commands"
+  ],
+  "labels": [
+    "database_query",
+    "database_query",
+    "database_query",
+    "database_query",
+    "database_query",
+
+    "database_query",
+    "database_query",
+    "database_query",
+    "database_query",
+    "database_query",
+
+    "database_query",
+    "database_query",
+    "database_query",
+    "database_query",
+    "database_query",
+
+    "database_query",
+    "database_query",
+    "database_query",
+    "database_query",
+    "database_query",
+
+    "greeting",
+    "greeting",
+    "greeting",
+    "greeting",
+    "greeting",
+
+    "goodbye",
+    "goodbye",
+    "goodbye",
+    "goodbye",
+    "goodbye",
+
+    "help",
+    "help",
+    "help",
+    "help",
+    "help"
+  ]
+}
