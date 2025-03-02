@@ -1,0 +1,672 @@
+2025-03-02 17:18:28,485 - __main__ - ERROR - Error initializing components: HomomorphicEncryptionManager.__init__() got an unexpected keyword argument 'context_params'
+2025-03-02 17:18:28,485 - __main__ - ERROR - Failed to initialize components. Exiting.
+2025-03-05 12:20:03,484 - __main__ - ERROR - Error initializing components: HomomorphicEncryptionManager.__init__() got an unexpected keyword argument 'context_params'
+2025-03-05 12:20:03,484 - __main__ - ERROR - Failed to initialize components. Exiting.
+2025-03-05 12:22:39,165 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-05 12:22:39,846 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-05 12:22:39,846 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-05 12:22:39,855 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-05 12:22:39,856 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-05 12:22:39,856 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-05 12:22:39,856 - __main__ - ERROR - Error initializing components: QueryProcessor.__init__() got an unexpected keyword argument 'sensitive_fields'
+2025-03-05 12:22:39,856 - __main__ - ERROR - Failed to initialize components. Exiting.
+2025-03-05 12:25:05,888 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-05 12:25:06,563 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-05 12:25:06,563 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-05 12:25:06,563 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-05 12:25:06,564 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-05 12:25:06,564 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-05 12:25:08,705 - query_processor - INFO - NLP model loaded successfully
+2025-03-05 12:25:08,705 - __main__ - ERROR - Error initializing components: FlaskAPI.__init__() got an unexpected keyword argument 'secret_key'
+2025-03-05 12:25:08,705 - __main__ - ERROR - Failed to initialize components. Exiting.
+2025-03-05 12:26:04,143 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-05 12:26:04,794 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-05 12:26:04,794 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-05 12:26:04,795 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-05 12:26:04,795 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-05 12:26:04,795 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-05 12:26:06,572 - query_processor - INFO - NLP model loaded successfully
+2025-03-05 12:26:06,584 - __main__ - INFO - All components initialized successfully
+2025-03-05 12:26:06,681 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-05 12:26:06,682 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-05 12:26:06,686 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.162:5000
+2025-03-05 12:26:06,686 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-05 12:26:15,330 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:26:15] "GET / HTTP/1.1" 200 -
+2025-03-05 12:26:15,461 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:26:15] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-03-05 12:26:52,592 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:26:52] "[31m[1mPOST /api/chat HTTP/1.1[0m" 400 -
+2025-03-05 12:27:08,621 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:27:08] "[31m[1mPOST /api/chat HTTP/1.1[0m" 415 -
+2025-03-05 12:27:39,766 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:27:39] "[31m[1mPOST /api/chat HTTP/1.1[0m" 400 -
+2025-03-05 12:27:56,148 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:27:56] "[31m[1mPOST /api/chat HTTP/1.1[0m" 400 -
+2025-03-05 12:28:06,644 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:28:06] "[31m[1mPOST /api/chat HTTP/1.1[0m" 400 -
+2025-03-05 12:28:38,404 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:28:38] "[31m[1mPOST /api/chat HTTP/1.1[0m" 401 -
+2025-03-05 12:28:54,810 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:28:54] "GET / HTTP/1.1" 200 -
+2025-03-05 12:28:57,839 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:28:57] "GET / HTTP/1.1" 200 -
+2025-03-05 12:32:31,803 - api.flask_api - ERROR - Exception on /api/login [POST]
+Traceback (most recent call last):
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "C:\Users\ioanc\PycharmProjects\ChatBot\api\flask_api.py", line 56, in login
+    if self._authenticate_user(data['username'], data['password']):
+  File "C:\Users\ioanc\PycharmProjects\ChatBot\api\flask_api.py", line 98, in _authenticate_user
+    return check_password_hash(stored_hash, password)
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\werkzeug\security.py", line 131, in check_password_hash
+    return hmac.compare_digest(_hash_internal(method, salt, password)[0], hashval)
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\werkzeug\security.py", line 70, in _hash_internal
+    raise ValueError(f"Invalid hash method '{method}'.")
+ValueError: Invalid hash method ''.
+2025-03-05 12:32:31,804 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:32:31] "[35m[1mPOST /api/login HTTP/1.1[0m" 500 -
+2025-03-05 12:32:44,994 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-05 12:32:45,645 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-05 12:32:45,646 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-05 12:32:45,646 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-05 12:32:45,646 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-05 12:32:45,646 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-05 12:32:47,417 - query_processor - INFO - NLP model loaded successfully
+2025-03-05 12:32:47,419 - __main__ - INFO - All components initialized successfully
+2025-03-05 12:32:47,432 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-05 12:32:47,432 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-05 12:32:47,436 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.162:5000
+2025-03-05 12:32:47,436 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-05 12:32:59,310 - api.flask_api - ERROR - Exception on /api/login [POST]
+Traceback (most recent call last):
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "C:\Users\ioanc\PycharmProjects\ChatBot\api\flask_api.py", line 56, in login
+    if self._authenticate_user(data['username'], data['password']):
+  File "C:\Users\ioanc\PycharmProjects\ChatBot\api\flask_api.py", line 98, in _authenticate_user
+    return check_password_hash(stored_hash, password)
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\werkzeug\security.py", line 131, in check_password_hash
+    return hmac.compare_digest(_hash_internal(method, salt, password)[0], hashval)
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\werkzeug\security.py", line 70, in _hash_internal
+    raise ValueError(f"Invalid hash method '{method}'.")
+ValueError: Invalid hash method ''.
+2025-03-05 12:32:59,311 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:32:59] "[35m[1mPOST /api/login HTTP/1.1[0m" 500 -
+2025-03-05 12:33:18,163 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:33:18] "[31m[1mPOST /api/chat HTTP/1.1[0m" 400 -
+2025-03-05 12:33:38,244 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-05 12:33:38,245 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:33:38] "POST /api/chat HTTP/1.1" 200 -
+2025-03-05 12:34:40,416 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-05 12:34:40,416 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:34:40] "POST /api/chat HTTP/1.1" 200 -
+2025-03-05 12:39:20,955 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-05 12:39:21,609 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-05 12:39:21,610 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-05 12:39:21,610 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-05 12:39:21,610 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-05 12:39:21,610 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-05 12:39:23,338 - query_processor - INFO - NLP model loaded successfully
+2025-03-05 12:39:23,341 - __main__ - INFO - All components initialized successfully
+2025-03-05 12:39:23,352 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-05 12:39:23,352 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-05 12:39:23,358 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.162:5000
+2025-03-05 12:39:23,359 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-05 12:39:28,201 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-05 12:39:28,201 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:39:28] "POST /api/chat HTTP/1.1" 200 -
+2025-03-05 12:42:15,887 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-05 12:42:16,541 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-05 12:42:16,541 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-05 12:42:16,542 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-05 12:42:16,542 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-05 12:42:16,542 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-05 12:42:18,289 - query_processor - INFO - NLP model loaded successfully
+2025-03-05 12:42:18,292 - __main__ - INFO - All components initialized successfully
+2025-03-05 12:42:18,303 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-05 12:42:18,303 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-05 12:42:18,310 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.162:5000
+2025-03-05 12:42:18,311 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-05 12:42:32,561 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-05 12:42:32,561 - model.chatbot_engine - INFO - Using direct query mode (intent classification unavailable)
+2025-03-05 12:42:32,561 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-05 12:42:32,583 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:42:32] "POST /api/chat HTTP/1.1" 200 -
+2025-03-05 12:42:58,529 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-05 12:42:58,529 - model.chatbot_engine - INFO - Using direct query mode (intent classification unavailable)
+2025-03-05 12:42:58,529 - query_processor - INFO - Generated SQL query: SELECT * FROM brokers LIMIT 100
+2025-03-05 12:42:58,651 - api.flask_api - ERROR - Exception on /api/chat [POST]
+Traceback (most recent call last):
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "C:\Users\ioanc\PycharmProjects\ChatBot\api\flask_api.py", line 47, in chat
+    return jsonify(result)
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\flask\json\__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)  # type: ignore[return-value]
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\flask\json\provider.py", line 214, in response
+    f"{self.dumps(obj, **dump_args)}\n", mimetype=self.mimetype
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\flask\json\provider.py", line 179, in dumps
+    return json.dumps(obj, **kwargs)
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\json\__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\json\encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\json\encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "C:\Users\ioanc\.conda\envs\chatbot_env\lib\site-packages\flask\json\provider.py", line 121, in _default
+    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
+TypeError: Object of type CKKSVector is not JSON serializable
+2025-03-05 12:42:58,691 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:42:58] "[35m[1mPOST /api/chat HTTP/1.1[0m" 500 -
+2025-03-05 12:50:48,920 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-05 12:50:49,567 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-05 12:50:49,567 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-05 12:50:49,568 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-05 12:50:49,568 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-05 12:50:49,568 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-05 12:50:51,315 - query_processor - INFO - NLP model loaded successfully
+2025-03-05 12:50:51,317 - __main__ - INFO - All components initialized successfully
+2025-03-05 12:50:51,329 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-05 12:50:51,329 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-05 12:50:51,333 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.162:5000
+2025-03-05 12:50:51,333 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-05 12:51:02,536 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-05 12:51:02,536 - model.chatbot_engine - INFO - Using direct query mode (intent classification unavailable)
+2025-03-05 12:51:02,536 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-05 12:51:02,537 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:51:02] "POST /api/chat HTTP/1.1" 200 -
+2025-03-05 12:51:09,859 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-05 12:51:09,860 - model.chatbot_engine - INFO - Using direct query mode (intent classification unavailable)
+2025-03-05 12:51:09,860 - query_processor - INFO - Generated SQL query: SELECT * FROM brokers LIMIT 100
+2025-03-05 12:51:09,860 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:51:09] "POST /api/chat HTTP/1.1" 200 -
+2025-03-05 12:51:24,287 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-05 12:51:24,289 - model.chatbot_engine - INFO - Using direct query mode (intent classification unavailable)
+2025-03-05 12:51:24,289 - query_processor - INFO - Generated SQL query: SELECT * FROM assets LIMIT 100
+2025-03-05 12:51:24,299 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:51:24] "POST /api/chat HTTP/1.1" 200 -
+2025-03-05 12:51:32,279 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-05 12:51:32,279 - model.chatbot_engine - INFO - Using direct query mode (intent classification unavailable)
+2025-03-05 12:51:32,279 - query_processor - INFO - Generated SQL query: SELECT * FROM trades ORDER BY trades.trade_date DESC LIMIT 100
+2025-03-05 12:51:32,299 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:51:32] "POST /api/chat HTTP/1.1" 200 -
+2025-03-05 12:51:47,228 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-05 12:51:47,229 - model.chatbot_engine - INFO - Using direct query mode (intent classification unavailable)
+2025-03-05 12:51:47,229 - query_processor - INFO - Generated SQL query: SELECT orders.*, order_status.status FROM orders, order_status WHERE orders.order_id = order_status.order_id AND order_status.status = 'Completed' LIMIT 100
+2025-03-05 12:51:47,253 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:51:47] "POST /api/chat HTTP/1.1" 200 -
+2025-03-05 12:51:58,682 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 12:51:58] "GET / HTTP/1.1" 200 -
+2025-03-05 13:21:27,181 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-05 13:21:27,932 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-05 13:21:27,933 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-05 13:21:27,933 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-05 13:21:27,933 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-05 13:21:27,934 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-05 13:21:32,521 - query_processor - INFO - NLP model loaded successfully
+2025-03-05 13:21:32,534 - __main__ - INFO - All components initialized successfully
+2025-03-05 13:21:32,577 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-05 13:21:32,577 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-05 13:21:32,595 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.162:5000
+2025-03-05 13:21:32,596 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-05 13:21:32,598 - werkzeug - INFO -  * Restarting with stat
+2025-03-05 13:21:36,582 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-05 13:21:37,263 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-05 13:21:37,263 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-05 13:21:37,263 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-05 13:21:37,264 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-05 13:21:37,264 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-05 13:21:39,133 - query_processor - INFO - NLP model loaded successfully
+2025-03-05 13:21:39,135 - __main__ - INFO - All components initialized successfully
+2025-03-05 13:21:39,149 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-05 13:21:39,149 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-05 13:21:39,157 - werkzeug - WARNING -  * Debugger is active!
+2025-03-05 13:21:39,169 - werkzeug - INFO -  * Debugger PIN: 756-040-882
+2025-03-05 13:21:39,191 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 13:21:39] "GET / HTTP/1.1" 200 -
+2025-03-05 13:21:39,255 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 13:21:39] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-03-05 13:21:39,261 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 13:21:39] "GET /static/js/script.js HTTP/1.1" 200 -
+2025-03-05 13:21:39,409 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 13:21:39] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-03-05 13:21:46,429 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-05 13:21:46,429 - model.chatbot_engine - INFO - Using direct query mode (intent classification unavailable)
+2025-03-05 13:21:46,429 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-05 13:21:46,465 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 13:21:46] "POST /api/chat HTTP/1.1" 200 -
+2025-03-05 13:21:58,021 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-05 13:21:58,023 - model.chatbot_engine - INFO - Using direct query mode (intent classification unavailable)
+2025-03-05 13:21:58,023 - query_processor - INFO - Generated SQL query: SELECT * FROM brokers LIMIT 100
+2025-03-05 13:21:58,045 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 13:21:58] "POST /api/chat HTTP/1.1" 200 -
+2025-03-05 13:22:06,539 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-05 13:22:06,539 - model.chatbot_engine - INFO - Using direct query mode (intent classification unavailable)
+2025-03-05 13:22:06,539 - query_processor - INFO - Generated SQL query: SELECT * FROM trades ORDER BY trades.trade_date DESC LIMIT 100
+2025-03-05 13:22:06,562 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 13:22:06] "POST /api/chat HTTP/1.1" 200 -
+2025-03-05 13:22:21,211 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-05 13:22:21,211 - model.chatbot_engine - INFO - Using direct query mode (intent classification unavailable)
+2025-03-05 13:22:21,211 - query_processor - INFO - Generated SQL query: SELECT * FROM trades LIMIT 100
+2025-03-05 13:22:21,215 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 13:22:21] "POST /api/chat HTTP/1.1" 200 -
+2025-03-05 13:22:28,860 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-05 13:22:28,860 - model.chatbot_engine - INFO - Using direct query mode (intent classification unavailable)
+2025-03-05 13:22:28,860 - query_processor - INFO - Generated SQL query: SELECT * FROM trades LIMIT 100
+2025-03-05 13:22:28,861 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 13:22:28] "POST /api/chat HTTP/1.1" 200 -
+2025-03-05 13:22:35,457 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-05 13:22:35,457 - model.chatbot_engine - INFO - Using direct query mode (intent classification unavailable)
+2025-03-05 13:22:35,457 - query_processor - INFO - Generated SQL query: SELECT * FROM transactions LIMIT 100
+2025-03-05 13:22:35,477 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 13:22:35] "POST /api/chat HTTP/1.1" 200 -
+2025-03-05 13:22:44,451 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-05 13:22:44,451 - model.chatbot_engine - INFO - Using direct query mode (intent classification unavailable)
+2025-03-05 13:22:44,454 - query_processor - INFO - Generated SQL query: SELECT * FROM trades LIMIT 100
+2025-03-05 13:22:44,454 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 13:22:44] "POST /api/chat HTTP/1.1" 200 -
+2025-03-05 13:22:46,365 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-05 13:22:46,368 - model.chatbot_engine - INFO - Using direct query mode (intent classification unavailable)
+2025-03-05 13:22:46,368 - query_processor - INFO - Generated SQL query: SELECT * FROM brokers LIMIT 100
+2025-03-05 13:22:46,369 - werkzeug - INFO - 127.0.0.1 - - [05/Mar/2025 13:22:46] "POST /api/chat HTTP/1.1" 200 -
+2025-03-06 12:11:20,241 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-06 12:11:20,995 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-06 12:11:20,995 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-06 12:11:20,995 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-06 12:11:20,996 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-06 12:11:20,996 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-06 12:11:24,912 - query_processor - INFO - NLP model loaded successfully
+2025-03-06 12:11:24,914 - __main__ - INFO - All components initialized successfully
+2025-03-06 12:11:25,010 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-06 12:11:25,010 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-06 12:11:25,026 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.162:5000
+2025-03-06 12:11:25,026 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-06 12:11:25,028 - werkzeug - INFO -  * Restarting with stat
+2025-03-06 12:11:28,528 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-06 12:11:29,198 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-06 12:11:29,198 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-06 12:11:29,199 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-06 12:11:29,199 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-06 12:11:29,199 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-06 12:11:30,970 - query_processor - INFO - NLP model loaded successfully
+2025-03-06 12:11:30,973 - __main__ - INFO - All components initialized successfully
+2025-03-06 12:11:30,995 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-06 12:11:30,995 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-06 12:11:31,004 - werkzeug - WARNING -  * Debugger is active!
+2025-03-06 12:11:31,007 - werkzeug - INFO -  * Debugger PIN: 756-040-882
+2025-03-06 12:16:37,055 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-06 12:16:37,730 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-06 12:16:37,730 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-06 12:16:37,730 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-06 12:16:37,731 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-06 12:16:37,731 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-06 12:16:39,523 - query_processor - INFO - NLP model loaded successfully
+2025-03-06 12:16:39,525 - __main__ - INFO - All components initialized successfully
+2025-03-06 12:16:39,538 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-06 12:16:39,538 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-06 12:16:39,552 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.162:5000
+2025-03-06 12:16:39,552 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-06 12:16:39,554 - werkzeug - INFO -  * Restarting with stat
+2025-03-06 12:16:43,168 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-06 12:16:43,835 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-06 12:16:43,835 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-06 12:16:43,835 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-06 12:16:43,836 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-06 12:16:43,836 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-06 12:16:45,610 - query_processor - INFO - NLP model loaded successfully
+2025-03-06 12:16:45,612 - __main__ - INFO - All components initialized successfully
+2025-03-06 12:16:45,626 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-06 12:16:45,626 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-06 12:16:45,634 - werkzeug - WARNING -  * Debugger is active!
+2025-03-06 12:16:45,637 - werkzeug - INFO -  * Debugger PIN: 756-040-882
+2025-03-06 12:35:11,332 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-06 12:35:12,036 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-06 12:35:12,036 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-06 12:35:12,037 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-06 12:35:12,037 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-06 12:35:12,037 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-06 12:35:15,842 - query_processor - INFO - NLP model loaded successfully
+2025-03-06 12:35:15,845 - __main__ - INFO - All components initialized successfully
+2025-03-06 12:35:17,913 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-06 12:35:17,913 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-06 12:35:17,927 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.162:5000
+2025-03-06 12:35:17,928 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-06 12:35:17,930 - werkzeug - INFO -  * Restarting with stat
+2025-03-06 12:35:21,248 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-06 12:35:21,877 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-06 12:35:21,877 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-06 12:35:21,877 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-06 12:35:21,877 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-06 12:35:21,878 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-06 12:35:23,585 - query_processor - INFO - NLP model loaded successfully
+2025-03-06 12:35:23,588 - __main__ - INFO - All components initialized successfully
+2025-03-06 12:35:25,616 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-06 12:35:25,616 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-06 12:35:25,624 - werkzeug - WARNING -  * Debugger is active!
+2025-03-06 12:35:25,636 - werkzeug - INFO -  * Debugger PIN: 336-142-639
+2025-03-06 12:47:13,204 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-06 12:47:13,851 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-06 12:47:13,851 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-06 12:47:13,852 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-06 12:47:13,852 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-06 12:47:13,852 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-06 12:47:18,006 - query_processor - INFO - NLP model loaded successfully
+2025-03-06 12:47:18,009 - __main__ - INFO - All components initialized successfully
+2025-03-06 12:47:20,057 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-06 12:47:20,058 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-06 12:47:20,088 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.162:5000
+2025-03-06 12:47:20,088 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-06 12:47:20,091 - werkzeug - INFO -  * Restarting with stat
+2025-03-06 12:47:23,415 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-06 12:47:24,063 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-06 12:47:24,064 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-06 12:47:24,064 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-06 12:47:24,064 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-06 12:47:24,064 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-06 12:47:25,745 - query_processor - INFO - NLP model loaded successfully
+2025-03-06 12:47:25,748 - __main__ - INFO - All components initialized successfully
+2025-03-06 12:47:27,796 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-06 12:47:27,796 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-06 12:47:27,804 - werkzeug - WARNING -  * Debugger is active!
+2025-03-06 12:47:27,807 - werkzeug - INFO -  * Debugger PIN: 336-142-639
+2025-03-06 13:22:20,710 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-06 13:22:21,348 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-06 13:22:21,348 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-06 13:22:21,348 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-06 13:22:21,349 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-06 13:22:21,349 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-06 13:22:23,033 - query_processor - INFO - NLP model loaded successfully
+2025-03-06 13:22:23,036 - __main__ - INFO - All components initialized successfully
+2025-03-06 13:22:25,066 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-06 13:22:25,066 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-06 13:22:25,078 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.162:5000
+2025-03-06 13:22:25,078 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-06 13:22:25,080 - werkzeug - INFO -  * Restarting with stat
+2025-03-06 13:22:28,386 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-06 13:22:29,018 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-06 13:22:29,018 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-06 13:22:29,019 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-06 13:22:29,019 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-06 13:22:29,019 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-06 13:22:30,699 - query_processor - INFO - NLP model loaded successfully
+2025-03-06 13:22:30,701 - __main__ - INFO - All components initialized successfully
+2025-03-06 13:22:32,753 - __main__ - INFO - Application shutdown completed
+2025-03-06 13:52:01,817 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-06 13:52:02,569 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-06 13:52:02,569 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-06 13:52:02,570 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-06 13:52:02,570 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-06 13:52:02,570 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-06 13:52:04,543 - query_processor - INFO - NLP model loaded successfully
+2025-03-06 13:52:04,546 - __main__ - INFO - All components initialized successfully
+2025-03-06 13:52:06,599 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-06 13:52:06,599 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-06 13:52:06,614 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.162:5000
+2025-03-06 13:52:06,614 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-06 13:52:06,616 - werkzeug - INFO -  * Restarting with stat
+2025-03-06 13:52:11,617 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-06 13:52:12,347 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-06 13:52:12,347 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-06 13:52:12,347 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-06 13:52:12,348 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-06 13:52:12,348 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-06 13:52:14,296 - query_processor - INFO - NLP model loaded successfully
+2025-03-06 13:52:14,299 - __main__ - INFO - All components initialized successfully
+2025-03-06 13:52:16,329 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-06 13:52:16,329 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-06 13:52:16,342 - werkzeug - WARNING -  * Debugger is active!
+2025-03-06 13:52:16,347 - werkzeug - INFO -  * Debugger PIN: 336-142-639
+2025-03-06 13:58:42,534 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-06 13:58:43,278 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-06 13:58:43,278 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-06 13:58:43,278 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-06 13:58:43,279 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-06 13:58:43,279 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-06 13:58:45,222 - query_processor - INFO - NLP model loaded successfully
+2025-03-06 13:58:45,224 - __main__ - INFO - All components initialized successfully
+2025-03-06 13:58:47,262 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-06 13:58:47,262 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-06 13:58:47,284 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.162:5000
+2025-03-06 13:58:47,284 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-06 13:58:47,287 - werkzeug - INFO -  * Restarting with stat
+2025-03-06 13:58:52,301 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-06 13:58:53,032 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-06 13:58:53,033 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-06 13:58:53,033 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-06 13:58:53,033 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-06 13:58:53,034 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-06 13:58:54,983 - query_processor - INFO - NLP model loaded successfully
+2025-03-06 13:58:54,986 - __main__ - INFO - All components initialized successfully
+2025-03-06 13:58:57,013 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-06 13:58:57,013 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-06 13:58:57,025 - werkzeug - WARNING -  * Debugger is active!
+2025-03-06 13:58:57,030 - werkzeug - INFO -  * Debugger PIN: 336-142-639
+2025-03-06 14:56:26,128 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-06 14:56:26,860 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-06 14:56:26,860 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-06 14:56:26,860 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-06 14:56:26,861 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-06 14:56:26,861 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-06 14:56:28,828 - query_processor - INFO - NLP model loaded successfully
+2025-03-06 14:56:28,831 - __main__ - INFO - All components initialized successfully
+2025-03-06 14:56:30,875 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-06 14:56:30,875 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-06 14:56:30,898 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.162:5000
+2025-03-06 14:56:30,898 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-06 14:56:30,901 - werkzeug - INFO -  * Restarting with stat
+2025-03-06 14:56:35,970 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-06 14:56:36,706 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-06 14:56:36,706 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-06 14:56:36,707 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-06 14:56:36,707 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-06 14:56:36,707 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-06 14:56:38,648 - query_processor - INFO - NLP model loaded successfully
+2025-03-06 14:56:38,650 - __main__ - INFO - All components initialized successfully
+2025-03-06 14:56:40,710 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-06 14:56:40,710 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-06 14:56:40,722 - werkzeug - WARNING -  * Debugger is active!
+2025-03-06 14:56:40,726 - werkzeug - INFO -  * Debugger PIN: 336-142-639
+2025-03-06 15:42:22,789 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-06 15:42:23,527 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-06 15:42:23,528 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-06 15:42:23,528 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-06 15:42:23,528 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-06 15:42:23,529 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-06 15:42:25,423 - query_processor - INFO - NLP model loaded successfully
+2025-03-06 15:42:25,427 - __main__ - INFO - All components initialized successfully
+2025-03-06 15:42:27,465 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-06 15:42:27,466 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-06 15:42:27,482 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.162:5000
+2025-03-06 15:42:27,483 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-06 15:42:27,487 - werkzeug - INFO -  * Restarting with stat
+2025-03-06 15:42:32,645 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-06 15:42:33,379 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-06 15:42:33,379 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-06 15:42:33,380 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-06 15:42:33,380 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-06 15:42:33,380 - distributed.distributed_trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-06 15:42:35,328 - query_processor - INFO - NLP model loaded successfully
+2025-03-06 15:42:35,332 - __main__ - INFO - All components initialized successfully
+2025-03-06 15:42:37,399 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-06 15:42:37,400 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-06 15:42:37,411 - werkzeug - WARNING -  * Debugger is active!
+2025-03-06 15:42:37,416 - werkzeug - INFO -  * Debugger PIN: 336-142-639
+2025-03-07 10:28:13,633 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-07 10:28:14,362 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-07 10:28:14,362 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-07 10:28:14,362 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-07 10:28:14,363 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-07 10:28:14,363 - training.trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-07 10:28:14,363 - training.trainer - INFO - No GPUs detected. Using CPU for training.
+2025-03-07 10:28:18,153 - query_processor - INFO - NLP model loaded successfully
+2025-03-07 10:28:18,157 - __main__ - INFO - All components initialized successfully
+2025-03-07 10:28:20,230 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-07 10:28:20,230 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-07 10:28:20,241 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-07 10:28:20,241 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-07 10:28:20,244 - werkzeug - INFO -  * Restarting with stat
+2025-03-07 10:28:23,811 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-07 10:28:24,490 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-07 10:28:24,490 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-07 10:28:24,491 - tensorflow - WARNING - There are non-GPU devices in `tf.distribute.Strategy`, not using nccl allreduce.
+2025-03-07 10:28:24,491 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-07 10:28:24,491 - training.trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-07 10:28:24,491 - training.trainer - INFO - No GPUs detected. Using CPU for training.
+2025-03-07 10:28:26,265 - query_processor - INFO - NLP model loaded successfully
+2025-03-07 10:28:26,267 - __main__ - INFO - All components initialized successfully
+2025-03-07 10:28:28,320 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-07 10:28:28,320 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-07 10:28:28,327 - werkzeug - WARNING -  * Debugger is active!
+2025-03-07 10:28:28,339 - werkzeug - INFO -  * Debugger PIN: 336-142-639
+2025-03-07 11:34:42,755 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-07 11:34:42,873 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-07 11:34:42,874 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-07 11:34:42,874 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-07 11:34:42,875 - training.trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-07 11:34:42,875 - training.trainer - INFO - No GPUs detected. Using CPU for training.
+2025-03-07 11:34:43,401 - query_processor - WARNING - Error loading NLP model: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject
+2025-03-07 11:34:43,401 - query_processor - WARNING - Using simplified query processing without NLP
+2025-03-07 11:34:43,404 - __main__ - INFO - All components initialized successfully
+2025-03-07 11:34:45,477 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-07 11:34:45,477 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-07 11:34:45,493 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-07 11:34:45,493 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-07 11:34:45,494 - werkzeug - INFO -  * Restarting with stat
+2025-03-07 11:34:49,005 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-07 11:34:49,119 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-07 11:34:49,119 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-07 11:34:49,120 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-07 11:34:49,121 - training.trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-07 11:34:49,121 - training.trainer - INFO - No GPUs detected. Using CPU for training.
+2025-03-07 11:34:49,328 - query_processor - WARNING - Error loading NLP model: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject
+2025-03-07 11:34:49,328 - query_processor - WARNING - Using simplified query processing without NLP
+2025-03-07 11:34:49,330 - __main__ - INFO - All components initialized successfully
+2025-03-07 11:34:51,373 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-07 11:34:51,373 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-07 11:34:51,380 - werkzeug - WARNING -  * Debugger is active!
+2025-03-07 11:34:51,383 - werkzeug - INFO -  * Debugger PIN: 113-125-773
+2025-03-07 12:39:43,282 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-07 12:39:43,430 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-07 12:39:43,430 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-07 12:39:43,430 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-07 12:39:43,432 - training.trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-07 12:39:43,433 - training.trainer - INFO - No GPUs detected. Using CPU for training.
+2025-03-07 12:39:45,323 - query_processor - INFO - NLP model loaded successfully
+2025-03-07 12:39:45,326 - __main__ - INFO - All components initialized successfully
+2025-03-07 12:39:47,380 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-07 12:39:47,380 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-07 12:39:47,394 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-07 12:39:47,394 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-07 12:39:47,397 - werkzeug - INFO -  * Restarting with stat
+2025-03-07 12:39:51,693 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-07 12:39:51,922 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-07 12:39:51,922 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-07 12:39:51,923 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:CPU:0',)
+2025-03-07 12:39:51,924 - training.trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-07 12:39:51,924 - training.trainer - INFO - No GPUs detected. Using CPU for training.
+2025-03-07 12:39:54,166 - query_processor - INFO - NLP model loaded successfully
+2025-03-07 12:39:54,169 - __main__ - INFO - All components initialized successfully
+2025-03-07 12:39:56,235 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-07 12:39:56,235 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-07 12:39:56,243 - werkzeug - WARNING -  * Debugger is active!
+2025-03-07 12:39:56,247 - werkzeug - INFO -  * Debugger PIN: 113-125-773
+2025-03-07 14:23:04,973 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-07 14:23:06,532 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-07 14:23:06,532 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-07 14:23:06,534 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:GPU:0',)
+2025-03-07 14:23:06,534 - training.trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-07 14:23:06,534 - training.trainer - INFO - No GPUs detected. Using CPU for training.
+2025-03-07 14:23:10,278 - query_processor - INFO - NLP model loaded successfully
+2025-03-07 14:23:10,282 - __main__ - INFO - All components initialized successfully
+2025-03-07 14:23:12,369 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-07 14:23:12,369 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-07 14:23:12,384 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-07 14:23:12,384 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-07 14:23:12,386 - werkzeug - INFO -  * Restarting with stat
+2025-03-07 14:27:01,794 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-07 14:27:03,269 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-07 14:27:03,269 - training.trainer - INFO - Found 1 GPU(s): [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+2025-03-07 14:27:03,269 - training.trainer - ERROR - Error configuring GPUs: Physical devices cannot be modified after being initialized
+2025-03-07 14:27:03,269 - training.trainer - INFO - Available physical devices: [PhysicalDevice(name='/physical_device:CPU:0', device_type='CPU'), PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+2025-03-07 14:27:03,270 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-07 14:27:03,272 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:GPU:0',)
+2025-03-07 14:27:03,272 - training.trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-07 14:27:03,272 - training.trainer - INFO - Strategy using single GPU for training
+2025-03-07 14:27:05,047 - query_processor - INFO - NLP model loaded successfully
+2025-03-07 14:27:05,049 - __main__ - INFO - All components initialized successfully
+2025-03-07 14:27:07,110 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-07 14:27:07,110 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-07 14:27:07,122 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-07 14:27:07,122 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-07 14:27:07,124 - werkzeug - INFO -  * Restarting with stat
+2025-03-07 14:27:10,666 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-07 14:27:14,757 - model.intent_classifier - INFO - Intent classification model built successfully
+2025-03-07 14:27:14,757 - training.trainer - INFO - Found 1 GPU(s): [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+2025-03-07 14:27:14,757 - training.trainer - ERROR - Error configuring GPUs: Physical devices cannot be modified after being initialized
+2025-03-07 14:27:14,757 - training.trainer - INFO - Available physical devices: [PhysicalDevice(name='/physical_device:CPU:0', device_type='CPU'), PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+2025-03-07 14:27:14,758 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-07 14:27:14,759 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:GPU:0',)
+2025-03-07 14:27:14,759 - training.trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-07 14:27:14,759 - training.trainer - INFO - Strategy using single GPU for training
+2025-03-07 14:27:16,635 - query_processor - INFO - NLP model loaded successfully
+2025-03-07 14:27:16,638 - __main__ - INFO - All components initialized successfully
+2025-03-07 14:27:18,700 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-07 14:27:18,700 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-07 14:27:18,706 - werkzeug - WARNING -  * Debugger is active!
+2025-03-07 14:27:18,709 - werkzeug - INFO -  * Debugger PIN: 113-125-773
+2025-03-07 14:27:25,524 - werkzeug - INFO - 127.0.0.1 - - [07/Mar/2025 14:27:25] "GET / HTTP/1.1" 200 -
+2025-03-07 14:27:25,637 - werkzeug - INFO - 127.0.0.1 - - [07/Mar/2025 14:27:25] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-03-07 14:27:25,647 - werkzeug - INFO - 127.0.0.1 - - [07/Mar/2025 14:27:25] "GET /static/js/script.js HTTP/1.1" 200 -
+2025-03-07 14:27:25,826 - werkzeug - INFO - 127.0.0.1 - - [07/Mar/2025 14:27:25] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-03-07 14:27:27,752 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-07 14:27:27,753 - model.chatbot_engine - INFO - Using direct query mode (intent classification unavailable)
+2025-03-07 14:27:27,753 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-07 14:27:27,768 - werkzeug - INFO - 127.0.0.1 - - [07/Mar/2025 14:27:27] "POST /api/chat HTTP/1.1" 200 -
+2025-03-07 14:27:32,393 - model.intent_classifier - ERROR - Error classifying intent: 'NoneType' object has no attribute 'texts_to_sequences'
+2025-03-07 14:27:32,393 - model.chatbot_engine - INFO - Using direct query mode (intent classification unavailable)
+2025-03-07 14:27:32,393 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-07 14:27:32,394 - werkzeug - INFO - 127.0.0.1 - - [07/Mar/2025 14:27:32] "POST /api/chat HTTP/1.1" 200 -
