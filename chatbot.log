@@ -1061,3 +1061,68 @@ TypeError: Object of type CKKSVector is not JSON serializable
 2025-03-08 17:28:50,276 - model.chatbot_engine - INFO - Using direct query mode (intent classification unavailable)
 2025-03-08 17:28:50,276 - query_processor - INFO - Generated SQL query: SELECT * FROM trades LIMIT 100
 2025-03-08 17:28:50,296 - werkzeug - INFO - 127.0.0.1 - - [08/Mar/2025 17:28:50] "POST /api/chat HTTP/1.1" 200 -
+2025-03-10 14:05:25,939 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-10 14:05:27,865 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-10 14:05:27,868 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-10 14:05:27,871 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-10 14:05:27,873 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-10 14:05:27,875 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-10 14:05:27,877 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-10 14:05:28,586 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-10 14:05:28,586 - training.trainer - WARNING - GPUs have already been initialized, skipping memory growth configuration
+2025-03-10 14:05:28,586 - training.trainer - INFO - Available physical devices: [PhysicalDevice(name='/physical_device:CPU:0', device_type='CPU'), PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+2025-03-10 14:05:28,586 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-10 14:05:28,588 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:GPU:0',)
+2025-03-10 14:05:28,588 - training.trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-10 14:05:28,589 - training.trainer - INFO - Strategy using single GPU for training
+2025-03-10 14:05:32,422 - query_processor - INFO - NLP model loaded successfully
+2025-03-10 14:05:32,422 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-10 14:05:32,422 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-10 14:05:32,424 - __main__ - INFO - All components initialized successfully
+2025-03-10 14:05:34,481 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-10 14:05:34,481 - __main__ - INFO - Initializing speech recognition routes
+2025-03-10 14:05:34,482 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-10 14:05:34,513 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-10 14:05:34,513 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-10 14:05:34,515 - werkzeug - INFO -  * Restarting with stat
+2025-03-10 14:05:39,409 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-10 14:05:40,029 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-10 14:05:40,033 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-10 14:05:40,036 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-10 14:05:40,038 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-10 14:05:40,040 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-10 14:05:40,042 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-10 14:05:44,684 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-10 14:05:44,684 - training.trainer - WARNING - GPUs have already been initialized, skipping memory growth configuration
+2025-03-10 14:05:44,684 - training.trainer - INFO - Available physical devices: [PhysicalDevice(name='/physical_device:CPU:0', device_type='CPU'), PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+2025-03-10 14:05:44,685 - tensorflow - INFO - Initializing local devices since in-graph multi-worker training with `MirroredStrategy` is not supported in eager mode. TF_CONFIG will be ignored when when initializing `MirroredStrategy`.
+2025-03-10 14:05:44,687 - tensorflow - INFO - Using MirroredStrategy with devices ('/job:localhost/replica:0/task:0/device:GPU:0',)
+2025-03-10 14:05:44,687 - training.trainer - INFO - MirroredStrategy set up with 1 devices
+2025-03-10 14:05:44,687 - training.trainer - INFO - Strategy using single GPU for training
+2025-03-10 14:05:47,345 - query_processor - INFO - NLP model loaded successfully
+2025-03-10 14:05:47,345 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-10 14:05:47,345 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-10 14:05:47,349 - __main__ - INFO - All components initialized successfully
+2025-03-10 14:05:49,406 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-10 14:05:49,406 - __main__ - INFO - Initializing speech recognition routes
+2025-03-10 14:05:49,408 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-10 14:05:49,417 - werkzeug - WARNING -  * Debugger is active!
+2025-03-10 14:05:49,423 - werkzeug - INFO -  * Debugger PIN: 113-125-773
+2025-03-10 14:05:49,464 - werkzeug - INFO - 127.0.0.1 - - [10/Mar/2025 14:05:49] "GET / HTTP/1.1" 200 -
+2025-03-10 14:05:49,603 - werkzeug - INFO - 127.0.0.1 - - [10/Mar/2025 14:05:49] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-10 14:05:49,604 - werkzeug - INFO - 127.0.0.1 - - [10/Mar/2025 14:05:49] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-10 14:05:49,604 - werkzeug - INFO - 127.0.0.1 - - [10/Mar/2025 14:05:49] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-10 14:05:49,715 - werkzeug - INFO - 127.0.0.1 - - [10/Mar/2025 14:05:49] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-03-10 14:06:06,083 - query_processor - INFO - Generated SQL query: SELECT * FROM brokers LIMIT 100
+2025-03-10 14:06:06,085 - werkzeug - INFO - 127.0.0.1 - - [10/Mar/2025 14:06:06] "POST /api/chat HTTP/1.1" 200 -
+2025-03-10 14:06:16,225 - query_processor - INFO - Generated SQL query: SELECT * FROM brokers LIMIT 100
+2025-03-10 14:06:16,226 - werkzeug - INFO - 127.0.0.1 - - [10/Mar/2025 14:06:16] "POST /api/chat HTTP/1.1" 200 -
+2025-03-10 14:06:26,841 - query_processor - INFO - Generated SQL query: SELECT * FROM brokers LIMIT 100
+2025-03-10 14:06:26,843 - werkzeug - INFO - 127.0.0.1 - - [10/Mar/2025 14:06:26] "POST /api/chat HTTP/1.1" 200 -
+2025-03-10 14:06:38,053 - query_processor - INFO - Generated SQL query: SELECT * FROM brokers LIMIT 100
+2025-03-10 14:06:38,056 - werkzeug - INFO - 127.0.0.1 - - [10/Mar/2025 14:06:38] "POST /api/chat HTTP/1.1" 200 -
+2025-03-10 14:06:45,890 - query_processor - INFO - Generated SQL query: SELECT * FROM brokers LIMIT 100
+2025-03-10 14:06:45,891 - werkzeug - INFO - 127.0.0.1 - - [10/Mar/2025 14:06:45] "POST /api/chat HTTP/1.1" 200 -

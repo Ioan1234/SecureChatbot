@@ -5,7 +5,6 @@ import logging
 
 class DatabaseConnector:
     def __init__(self, host, user, password, database):
-        """Initialize database connection"""
         self.host = host
         self.user = user
         self.password = password
@@ -14,7 +13,6 @@ class DatabaseConnector:
         self.logger = logging.getLogger(__name__)
 
     def connect(self):
-        """Establish database connection"""
         try:
             self.connection = mysql.connector.connect(
                 host=self.host,
@@ -30,13 +28,23 @@ class DatabaseConnector:
             return False
 
     def disconnect(self):
-        """Close database connection"""
-        if self.connection and self.connection.is_connected():
-            self.connection.close()
-            self.logger.info("Database connection closed")
+        try:
+            if self.connection:
+                try:
+                    if hasattr(self.connection, 'is_connected') and self.connection.is_connected():
+                        cursor = self.connection.cursor()
+                        cursor.fetchall()
+                        cursor.close()
+                except Error:
+                    pass
+
+                self.connection.close()
+                self.logger.info("Database connection closed")
+        except Exception as e:
+            self.logger.error(f"Error disconnecting from database: {e}")
 
     def execute_query(self, query, params=None):
-        """Execute a regular SQL query"""
+        cursor = None
         try:
             if not self.connection or not self.connection.is_connected():
                 self.connect()
@@ -47,8 +55,8 @@ class DatabaseConnector:
             else:
                 cursor.execute(query)
 
-            if query.strip().upper().startswith(('SELECT', 'SHOW')):
-                result = cursor.fetchall()
+            if query.strip().upper().startswith(('SELECT', 'SHOW', 'DESCRIBE')):
+                result = cursor.fetchall()  # This ensures we consume all results
                 return result
             else:
                 self.connection.commit()
@@ -58,15 +66,23 @@ class DatabaseConnector:
             self.logger.error(f"Error executing query: {e}")
             return None
         finally:
-            if 'cursor' in locals():
+            if cursor:
                 cursor.close()
 
     def get_table_schema(self, table_name):
-        """Get schema information for a table"""
         query = f"DESCRIBE {table_name}"
         return self.execute_query(query)
 
     def get_all_tables(self):
-        """Get all tables in the database"""
         query = "SHOW TABLES"
         return self.execute_query(query)
+
+    def handle_unread_results(self):
+        try:
+            if self.connection and self.connection.is_connected():
+                cursor = self.connection.cursor()
+                while self.connection.unread_result:
+                    cursor.fetchall()
+                cursor.close()
+        except Error as e:
+            self.logger.error(f"Error handling unread results: {e}")

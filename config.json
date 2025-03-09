@@ -48,5 +48,13 @@
   "logging": {
     "level": "INFO",
     "file": "chatbot.log"
-  }
+  },
+  "training": {
+  "data_path": "training/generated_training_data.json",
+  "use_augmentation": true,
+  "early_stopping": true,
+  "reduce_complexity": true,
+  "auto_train": false,
+  "enrich_existing": false
+}
 }

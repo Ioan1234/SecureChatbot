@@ -20,7 +20,6 @@ class SpeechRecognitionHandler {
         this.audioChunks = [];
         this.mediaRecorder = null;
 
-        // Check browser support
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
             console.error('Speech recognition not supported in this browser');
             this.supported = false;
@@ -38,7 +37,6 @@ class SpeechRecognitionHandler {
     }
 
     _setupRecognitionHandlers() {
-        // Set up event handlers for the SpeechRecognition object
         this.recognition.onstart = () => {
             this.isListening = true;
             this.onStartCallback();
@@ -105,7 +103,6 @@ class SpeechRecognitionHandler {
         }
     }
 
-    // Handle audio recording for server-side processing with encryption
     async _startAudioRecording() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -123,7 +120,6 @@ class SpeechRecognitionHandler {
                 const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
                 this._sendAudioToServer(audioBlob);
 
-                // Stop all tracks to release the microphone
                 stream.getTracks().forEach(track => track.stop());
             };
 
@@ -135,11 +131,9 @@ class SpeechRecognitionHandler {
     }
 
     _sendAudioToServer(audioBlob) {
-        // Create FormData to send the audio file
         const formData = new FormData();
         formData.append('audio', audioBlob, 'speech.wav');
 
-        // Send to server for secure processing
         fetch('/api/speech_recognition', {
             method: 'POST',
             body: formData
@@ -148,13 +142,11 @@ class SpeechRecognitionHandler {
         .then(data => {
             console.log('Server response:', data);
             if (data.transcript) {
-                // Update the chat input with the transcribed text
                 const userInput = document.getElementById('user-input');
                 if (userInput) {
                     userInput.value = data.transcript;
                 }
 
-                // Automatically send the message
                 const sendButton = document.getElementById('send-button');
                 if (sendButton && userInput.value.trim() !== '') {
                     setTimeout(() => {
@@ -170,10 +162,8 @@ class SpeechRecognitionHandler {
     }
 }
 
-// Initialize speech recognition when the page loads
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Create microphone button
     const chatInput = document.querySelector('.chat-input');
     const sendButton = document.getElementById('send-button');
 
@@ -182,7 +172,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // Add speech button
     const speechButton = document.createElement('button');
     speechButton.id = 'speech-button';
     speechButton.innerHTML = '<i class="fas fa-microphone"></i>';
@@ -201,7 +190,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     chatInput.insertBefore(speechButton, sendButton);
 
-    // Add listening status indicator
     const statusIndicator = document.createElement('div');
     statusIndicator.id = 'speech-status';
     statusIndicator.textContent = 'Listening...';
@@ -217,11 +205,9 @@ document.addEventListener('DOMContentLoaded', function() {
     statusIndicator.style.opacity = '0';
     statusIndicator.style.transition = 'opacity 0.3s';
 
-    // Make sure chat input has position relative for the status indicator
     chatInput.style.position = 'relative';
     chatInput.appendChild(statusIndicator);
 
-    // Check if speech recognition is supported
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
         console.error('Speech recognition not supported');
         speechButton.disabled = true;
@@ -229,25 +215,21 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // Create speech recognition instance
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
 
-    // Configure recognition
     recognition.continuous = false;
     recognition.interimResults = true;
     recognition.lang = 'en-US';
 
     let isListening = false;
 
-    // Handle recognition events
     recognition.onstart = function() {
         isListening = true;
         speechButton.style.color = '#e74c3c';
         statusIndicator.style.opacity = '1';
         console.log('Speech recognition started');
 
-        // Add pulse animation
         speechButton.animate([
             { transform: 'scale(1)' },
             { transform: 'scale(1.1)' },
@@ -264,7 +246,6 @@ document.addEventListener('DOMContentLoaded', function() {
         statusIndicator.style.opacity = '0';
         console.log('Speech recognition ended');
 
-        // Remove animation
         speechButton.getAnimations().forEach(animation => animation.cancel());
     };
 
@@ -276,24 +257,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
         console.log('Recognized:', transcript);
 
-        // Update input field
         const userInput = document.getElementById('user-input');
         if (userInput) {
             userInput.value = transcript;
         }
 
-        // Auto-submit if final result
         if (event.results[0].isFinal) {
             console.log('Final result - preparing to submit');
             setTimeout(() => {
                 if (userInput.value.trim() !== '') {
                     console.log('Auto-submitting: ', userInput.value);
 
-                    // Try multiple methods to trigger send
-                    // Method 1: Click the button
                     sendButton.click();
 
-                    // Method 2: Dispatch custom event
                     setTimeout(() => {
                         const clickEvent = new MouseEvent('click', {
                             bubbles: true,
@@ -303,14 +279,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         sendButton.dispatchEvent(clickEvent);
                     }, 100);
 
-                    // Method 3: Try to find and call sendMessage function
                     setTimeout(() => {
                         if (typeof window.sendMessage === 'function') {
                             window.sendMessage();
                         }
                     }, 200);
                 }
-            }, 1000); // Longer delay to ensure everything is ready
+            }, 1000);
         }
     };
 
@@ -320,10 +295,8 @@ document.addEventListener('DOMContentLoaded', function() {
         speechButton.style.color = '#0084ff';
         statusIndicator.style.opacity = '0';
 
-        // Remove animation
         speechButton.getAnimations().forEach(animation => animation.cancel());
 
-        // Show error message
         const chatMessages = document.getElementById('chat-messages');
         if (chatMessages) {
             const errorTemplate = document.getElementById('bot-message-template');
@@ -337,7 +310,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Toggle speech recognition on button click
     speechButton.addEventListener('click', function() {
         if (isListening) {
             recognition.stop();
@@ -346,7 +318,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Add keyboard shortcut (Ctrl+Shift+Space) for speech recognition
     document.addEventListener('keydown', (e) => {
         if (e.ctrlKey && e.shiftKey && e.code === 'Space') {
             e.preventDefault();
@@ -358,13 +329,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Check if we can access the sendMessage function from script.js
-    // This is a bit of a hack to try to find the send function
     try {
-        // Look at the click handler of the send button
         const sendButtonClickHandlers = getEventListeners(sendButton).click;
         if (sendButtonClickHandlers && sendButtonClickHandlers.length > 0) {
-            // Store the handler function for later use
             window.sendMessage = sendButtonClickHandlers[0].listener;
             console.log('Found send message function');
         }
