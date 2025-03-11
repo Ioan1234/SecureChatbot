@@ -4,25 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4b6cf9e0-ce6e-4996-8246-8aa85486ce61" name="Changes" comment="added voice module">
+    <list default="true" id="4b6cf9e0-ce6e-4996-8246-8aa85486ce61" name="Changes" comment="added local database query generator and trainer">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/flask_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/flask_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/speech_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/speech_routes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/chatbot.log" beforeDir="false" afterPath="$PROJECT_DIR$/chatbot.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database_connector.py" beforeDir="false" afterPath="$PROJECT_DIR$/database_connector.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/encryption_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/encryption_manager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/chatbot_engine.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/chatbot_engine.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/intent_classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/intent_classifier.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fix_augmentation.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/query_processor.py" beforeDir="false" afterPath="$PROJECT_DIR$/query_processor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/speech/speech_recognition.py" beforeDir="false" afterPath="$PROJECT_DIR$/speech/speech_recognition.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/script.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/script.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/speech.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/speech.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/trainer.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/training_data.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training.log" beforeDir="false" afterPath="$PROJECT_DIR$/training.log" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,7 +124,9 @@
       <workItem from="1741526995222" duration="1830000" />
       <workItem from="1741599276082" duration="6723000" />
       <workItem from="1741614298347" duration="871000" />
-      <workItem from="1741687288166" duration="1609000" />
+      <workItem from="1741687288166" duration="2044000" />
+      <workItem from="1741725535948" duration="33000" />
+      <workItem from="1741765491498" duration="4748000" />
     </task>
     <task id="LOCAL-00001" summary="final version - test only">
       <option name="closed" value="true" />
@@ -211,7 +200,23 @@
       <option name="project" value="LOCAL" />
       <updated>1741527344620</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="added local database generator and trainer">
+      <option name="closed" value="true" />
+      <created>1741689527188</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1741689527188</updated>
+    </task>
+    <task id="LOCAL-00011" summary="added local database query generator and trainer">
+      <option name="closed" value="true" />
+      <created>1741689572766</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1741689572766</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -235,12 +240,15 @@
     <MESSAGE value="included speech module" />
     <MESSAGE value="final version - test only" />
     <MESSAGE value="added voice module" />
-    <option name="LAST_COMMIT_MESSAGE" value="added voice module" />
+    <MESSAGE value="added local database generator and trainer" />
+    <MESSAGE value="Merge branch 'master' of https://github.com/Ioan1234/SecureChatbot&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;app.py&#10;#&#9;chatbot.log&#10;#&#9;config.json&#10;#&#9;templates/index.html&#10;#&#9;training/trainer.py" />
+    <MESSAGE value="added local database query generator and trainer" />
+    <option name="LAST_COMMIT_MESSAGE" value="added local database query generator and trainer" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ChatBot$test_tf_gpu.coverage" NAME="test_tf_gpu Coverage Results" MODIFIED="1741350134702" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ChatBot$tests.coverage" NAME="tests Coverage Results" MODIFIED="1741446356105" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/ChatBot$app.coverage" NAME="app Coverage Results" MODIFIED="1741615932769" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ChatBot$app.coverage" NAME="app Coverage Results" MODIFIED="1741772809500" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ChatBot$train_model.coverage" NAME="train_model Coverage Results" MODIFIED="1741601029931" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ChatBot$intent_classifier.coverage" NAME="intent_classifier Coverage Results" MODIFIED="1740928701613" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />
     <SUITE FILE_PATH="coverage/ChatBot$setup_env.coverage" NAME="setup_env Coverage Results" MODIFIED="1741342513801" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

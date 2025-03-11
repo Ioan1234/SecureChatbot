@@ -98,7 +98,6 @@ class SecureChatbotApplication:
             }
 
     def _check_and_update_model(self):
-        """Check if model needs to be retrained based on configuration"""
         training_config = self.config.get("training", {})
 
         if not training_config.get("auto_train", False):
