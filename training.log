@@ -2486,3 +2486,1483 @@ LookupError:
 2025-03-12 14:10:11,656 - query_processor - INFO - Deduplicating 10 results
 2025-03-12 14:10:11,656 - query_processor - INFO - Deduplication removed 0 records, keeping 10
 2025-03-12 14:10:11,660 - werkzeug - INFO - 127.0.0.1 - - [12/Mar/2025 14:10:11] "POST /api/chat HTTP/1.1" 200 -
+2025-03-14 12:32:36,231 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-14 12:32:38,832 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 12:32:38,836 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 12:32:38,839 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 12:32:38,843 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 12:32:38,847 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 12:32:38,850 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 12:32:40,098 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-14 12:32:43,522 - query_processor - INFO - NLP model loaded successfully
+2025-03-14 12:32:43,523 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-14 12:32:43,523 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-14 12:32:43,535 - __main__ - INFO - All components initialized successfully
+2025-03-14 12:32:45,627 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-14 12:32:45,628 - __main__ - INFO - Initializing speech recognition routes
+2025-03-14 12:32:45,630 - __main__ - INFO - Training API routes added successfully
+2025-03-14 12:32:45,630 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-14 12:32:45,657 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-14 12:32:45,657 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-14 12:32:45,661 - werkzeug - INFO -  * Restarting with stat
+2025-03-14 12:32:50,579 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-14 12:32:51,187 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 12:32:51,189 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 12:32:51,192 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 12:32:51,194 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 12:32:51,196 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 12:32:51,198 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 12:32:55,523 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-14 12:32:57,366 - query_processor - INFO - NLP model loaded successfully
+2025-03-14 12:32:57,366 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-14 12:32:57,366 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-14 12:32:57,369 - __main__ - INFO - All components initialized successfully
+2025-03-14 12:32:59,423 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-14 12:32:59,423 - __main__ - INFO - Initializing speech recognition routes
+2025-03-14 12:32:59,424 - __main__ - INFO - Training API routes added successfully
+2025-03-14 12:32:59,424 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-14 12:32:59,430 - werkzeug - WARNING -  * Debugger is active!
+2025-03-14 12:32:59,433 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-14 12:32:59,456 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 12:32:59] "GET / HTTP/1.1" 200 -
+2025-03-14 12:32:59,552 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 12:32:59] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-14 12:32:59,554 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 12:32:59] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-14 12:32:59,554 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 12:32:59] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-14 12:32:59,657 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 12:32:59] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-03-14 12:35:32,952 - query_processor - INFO - Processing natural language query: 'show me the three highest market prices'
+2025-03-14 12:35:32,952 - query_processor - INFO - Attempting to extract number from: 'show me the three highest market prices'
+2025-03-14 12:35:32,952 - query_processor - INFO - Found word number: three (3)
+2025-03-14 12:35:32,952 - query_processor - INFO - Setting limit to 3 based on extracted number
+2025-03-14 12:35:32,953 - query_processor - INFO - Detected comparative query type: highest
+2025-03-14 12:35:32,953 - query_processor - INFO - Using special approach for highest to handle multiple identical values
+2025-03-14 12:35:32,953 - query_processor - INFO - Comparative query detected. Setting limit to 3
+2025-03-14 12:35:32,953 - query_processor - INFO - Executing subquery to find highest value: SELECT MAX(price_history.close_price) as extreme_value FROM markets, price_history 
+2025-03-14 12:35:32,965 - query_processor - INFO - Found highest value: 480.90
+2025-03-14 12:35:32,965 - query_processor - INFO - Modified query to return all records with highest value
+2025-03-14 12:35:32,965 - query_processor - INFO - Generated SQL query: SELECT * FROM markets, price_history WHERE price_history.close_price = 480.90 ORDER BY price_history.close_price DESC LIMIT 100
+2025-03-14 12:35:32,965 - query_processor - INFO - Generated SQL query: SELECT * FROM markets, price_history WHERE price_history.close_price = 480.90 ORDER BY price_history.close_price DESC LIMIT 100
+2025-03-14 12:35:32,967 - query_processor - INFO - Deduplicating 10 results
+2025-03-14 12:35:32,967 - query_processor - INFO - Deduplication removed 0 records, keeping 10
+2025-03-14 12:35:32,968 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 12:35:32] "POST /api/chat HTTP/1.1" 200 -
+2025-03-14 12:35:58,331 - query_processor - INFO - Processing natural language query: 'show me three highest market prices'
+2025-03-14 12:35:58,331 - query_processor - INFO - Attempting to extract number from: 'show me three highest market prices'
+2025-03-14 12:35:58,331 - query_processor - INFO - Found word number: three (3)
+2025-03-14 12:35:58,331 - query_processor - INFO - Setting limit to 3 based on extracted number
+2025-03-14 12:35:58,331 - query_processor - INFO - Detected comparative query type: highest
+2025-03-14 12:35:58,331 - query_processor - INFO - Using special approach for highest to handle multiple identical values
+2025-03-14 12:35:58,331 - query_processor - INFO - Comparative query detected. Setting limit to 3
+2025-03-14 12:35:58,331 - query_processor - INFO - Executing subquery to find highest value: SELECT MAX(price_history.close_price) as extreme_value FROM markets, price_history 
+2025-03-14 12:35:58,333 - query_processor - INFO - Found highest value: 480.90
+2025-03-14 12:35:58,333 - query_processor - INFO - Modified query to return all records with highest value
+2025-03-14 12:35:58,333 - query_processor - INFO - Generated SQL query: SELECT * FROM markets, price_history WHERE price_history.close_price = 480.90 ORDER BY price_history.close_price DESC LIMIT 100
+2025-03-14 12:35:58,333 - query_processor - INFO - Generated SQL query: SELECT * FROM markets, price_history WHERE price_history.close_price = 480.90 ORDER BY price_history.close_price DESC LIMIT 100
+2025-03-14 12:35:58,334 - query_processor - INFO - Deduplicating 10 results
+2025-03-14 12:35:58,334 - query_processor - INFO - Deduplication removed 0 records, keeping 10
+2025-03-14 12:35:58,335 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 12:35:58] "POST /api/chat HTTP/1.1" 200 -
+2025-03-14 16:17:44,211 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-14 16:17:45,583 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 16:17:45,585 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 16:17:45,588 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 16:17:45,591 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 16:17:45,594 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 16:17:45,597 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 16:17:46,620 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-14 16:17:49,215 - query_processor - INFO - NLP model loaded successfully
+2025-03-14 16:17:49,215 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-14 16:17:49,215 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-14 16:17:49,219 - __main__ - INFO - All components initialized successfully
+2025-03-14 16:17:51,285 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-14 16:17:51,285 - __main__ - INFO - Initializing speech recognition routes
+2025-03-14 16:17:51,287 - __main__ - INFO - Training API routes added successfully
+2025-03-14 16:17:51,287 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-14 16:17:51,305 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-14 16:17:51,305 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-14 16:17:51,307 - werkzeug - INFO -  * Restarting with stat
+2025-03-14 16:17:56,964 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-14 16:17:57,837 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 16:17:57,840 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 16:17:57,843 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 16:17:57,845 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 16:17:57,848 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 16:17:57,850 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 16:18:02,598 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-14 16:18:04,567 - query_processor - INFO - NLP model loaded successfully
+2025-03-14 16:18:04,568 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-14 16:18:04,568 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-14 16:18:04,570 - __main__ - INFO - All components initialized successfully
+2025-03-14 16:18:06,614 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-14 16:18:06,614 - __main__ - INFO - Initializing speech recognition routes
+2025-03-14 16:18:06,616 - __main__ - INFO - Training API routes added successfully
+2025-03-14 16:18:06,616 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-14 16:18:06,626 - werkzeug - WARNING -  * Debugger is active!
+2025-03-14 16:18:06,630 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-14 16:18:07,991 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 16:18:07] "GET / HTTP/1.1" 200 -
+2025-03-14 16:18:08,112 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 16:18:08] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-14 16:18:08,113 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 16:18:08] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-14 16:18:08,114 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 16:18:08] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-14 16:18:08,310 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 16:18:08] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-03-14 16:18:20,271 - query_processor - INFO - Processing natural language query: 'give me the three highest market'
+2025-03-14 16:18:20,271 - query_processor - INFO - Attempting to extract number from: 'give me the three highest market'
+2025-03-14 16:18:20,276 - query_processor - INFO - Found word number: three (3)
+2025-03-14 16:18:20,276 - query_processor - INFO - Setting limit to 3 based on extracted number
+2025-03-14 16:18:20,276 - query_processor - INFO - Detected comparative query type: highest
+2025-03-14 16:18:20,276 - query_processor - INFO - Using special approach for highest to handle multiple identical values
+2025-03-14 16:18:20,276 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 3
+2025-03-14 16:18:20,276 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 3
+2025-03-14 16:18:20,278 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 16:18:20] "POST /api/chat HTTP/1.1" 200 -
+2025-03-14 16:18:39,941 - query_processor - INFO - Processing natural language query: 'give me'
+2025-03-14 16:18:39,949 - query_processor - INFO - Attempting to extract number from: 'give me'
+2025-03-14 16:18:39,949 - query_processor - INFO - Found digit numbers in query: []
+2025-03-14 16:18:39,974 - query_processor - INFO - Generated SQL query: SELECT * FROM accounts LIMIT 100
+2025-03-14 16:18:39,974 - query_processor - INFO - Generated SQL query: SELECT * FROM accounts LIMIT 100
+2025-03-14 16:18:39,995 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 16:18:39] "POST /api/chat HTTP/1.1" 200 -
+2025-03-14 16:18:46,675 - query_processor - INFO - Processing natural language query: 'give me three broker details'
+2025-03-14 16:18:46,675 - query_processor - INFO - Attempting to extract number from: 'give me three broker details'
+2025-03-14 16:18:46,675 - query_processor - INFO - Found word number: three (3)
+2025-03-14 16:18:46,676 - query_processor - INFO - Setting limit to 3 based on extracted number
+2025-03-14 16:18:46,676 - query_processor - INFO - Generated SQL query: SELECT * FROM brokers LIMIT 3
+2025-03-14 16:18:46,676 - query_processor - INFO - Generated SQL query: SELECT * FROM brokers LIMIT 3
+2025-03-14 16:18:46,699 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 16:18:46] "POST /api/chat HTTP/1.1" 200 -
+2025-03-14 17:38:55,519 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-14 17:38:56,271 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:38:56,274 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:38:56,277 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:38:56,280 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:38:56,282 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:38:56,285 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:38:57,072 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-14 17:38:58,955 - query_processor - INFO - NLP model loaded successfully
+2025-03-14 17:38:58,956 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-14 17:38:58,956 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-14 17:38:58,958 - __main__ - INFO - All components initialized successfully
+2025-03-14 17:39:01,011 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-14 17:39:01,011 - __main__ - INFO - Initializing speech recognition routes
+2025-03-14 17:39:01,014 - __main__ - INFO - Training API routes added successfully
+2025-03-14 17:39:01,014 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-14 17:39:01,034 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-14 17:39:01,034 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-14 17:39:01,036 - werkzeug - INFO -  * Restarting with stat
+2025-03-14 17:39:05,540 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-14 17:39:06,147 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:39:06,150 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:39:06,152 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:39:06,155 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:39:06,158 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:39:06,160 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:39:10,887 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-14 17:39:12,830 - query_processor - INFO - NLP model loaded successfully
+2025-03-14 17:39:12,830 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-14 17:39:12,830 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-14 17:39:12,833 - __main__ - INFO - All components initialized successfully
+2025-03-14 17:39:14,890 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-14 17:39:14,890 - __main__ - INFO - Initializing speech recognition routes
+2025-03-14 17:39:14,893 - __main__ - INFO - Training API routes added successfully
+2025-03-14 17:39:14,893 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-14 17:39:14,899 - werkzeug - WARNING -  * Debugger is active!
+2025-03-14 17:39:14,902 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-14 17:39:14,923 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:39:14] "GET / HTTP/1.1" 200 -
+2025-03-14 17:39:15,018 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:39:15] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-14 17:39:15,022 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:39:15] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-14 17:39:15,022 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:39:15] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-14 17:39:22,843 - model.chatbot_engine - ERROR - Error processing user input: 'QueryProcessor' object has no attribute 'secure_process_query'
+2025-03-14 17:39:22,844 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:39:22] "POST /api/chat HTTP/1.1" 200 -
+2025-03-14 17:39:29,655 - model.chatbot_engine - ERROR - Error processing user input: 'QueryProcessor' object has no attribute 'secure_process_query'
+2025-03-14 17:39:29,655 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:39:29] "POST /api/chat HTTP/1.1" 200 -
+2025-03-14 17:41:18,818 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-14 17:41:19,370 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:41:19,373 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:41:19,375 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:41:19,377 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:41:19,379 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:41:19,381 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:41:20,148 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-14 17:41:21,960 - query_processor - INFO - NLP model loaded successfully
+2025-03-14 17:41:21,961 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-14 17:41:21,961 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-14 17:41:21,962 - __main__ - INFO - All components initialized successfully
+2025-03-14 17:41:24,017 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-14 17:41:24,018 - __main__ - INFO - Initializing speech recognition routes
+2025-03-14 17:41:24,019 - __main__ - INFO - Training API routes added successfully
+2025-03-14 17:41:24,019 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-14 17:41:24,032 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-14 17:41:24,032 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-14 17:41:24,034 - werkzeug - INFO -  * Restarting with stat
+2025-03-14 17:41:28,966 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-14 17:41:29,569 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:41:29,572 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:41:29,574 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:41:29,577 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:41:29,579 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:41:29,581 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:41:31,317 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-14 17:41:34,033 - query_processor - INFO - NLP model loaded successfully
+2025-03-14 17:41:34,033 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-14 17:41:34,034 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-14 17:41:34,039 - __main__ - INFO - All components initialized successfully
+2025-03-14 17:41:36,086 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-14 17:41:36,087 - __main__ - INFO - Initializing speech recognition routes
+2025-03-14 17:41:36,090 - __main__ - INFO - Training API routes added successfully
+2025-03-14 17:41:36,090 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-14 17:41:36,102 - werkzeug - WARNING -  * Debugger is active!
+2025-03-14 17:41:36,109 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-14 17:41:36,145 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:41:36] "GET / HTTP/1.1" 200 -
+2025-03-14 17:41:36,300 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:41:36] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-14 17:41:36,302 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:41:36] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-14 17:41:36,308 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:41:36] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-14 17:41:45,593 - model.chatbot_engine - ERROR - Error processing user input: 'QueryProcessor' object has no attribute 'secure_process_query'
+2025-03-14 17:41:45,594 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:41:45] "POST /api/chat HTTP/1.1" 200 -
+2025-03-14 17:41:50,233 - model.chatbot_engine - ERROR - Error processing user input: 'QueryProcessor' object has no attribute 'secure_process_query'
+2025-03-14 17:41:50,234 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:41:50] "POST /api/chat HTTP/1.1" 200 -
+2025-03-14 17:45:00,706 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-14 17:45:01,283 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:45:01,285 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:45:01,288 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:45:01,290 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:45:01,292 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:45:01,294 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:45:02,081 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-14 17:45:03,883 - query_processor - INFO - NLP model loaded successfully
+2025-03-14 17:45:03,883 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-14 17:45:03,883 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-14 17:45:03,886 - __main__ - INFO - All components initialized successfully
+2025-03-14 17:45:05,921 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-14 17:45:05,922 - __main__ - INFO - Initializing speech recognition routes
+2025-03-14 17:45:05,923 - __main__ - INFO - Training API routes added successfully
+2025-03-14 17:45:05,923 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-14 17:45:05,932 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-14 17:45:05,932 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-14 17:45:05,933 - werkzeug - INFO -  * Restarting with stat
+2025-03-14 17:45:10,695 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-14 17:45:11,277 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:45:11,279 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:45:11,283 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:45:11,285 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:45:11,287 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:45:11,289 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:45:12,906 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-14 17:45:15,434 - query_processor - INFO - NLP model loaded successfully
+2025-03-14 17:45:15,434 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-14 17:45:15,434 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-14 17:45:15,439 - __main__ - INFO - All components initialized successfully
+2025-03-14 17:45:17,501 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-14 17:45:17,501 - __main__ - INFO - Initializing speech recognition routes
+2025-03-14 17:45:17,503 - __main__ - INFO - Training API routes added successfully
+2025-03-14 17:45:17,503 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-14 17:45:17,511 - werkzeug - WARNING -  * Debugger is active!
+2025-03-14 17:45:17,515 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-14 17:45:17,544 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:45:17] "GET / HTTP/1.1" 200 -
+2025-03-14 17:45:17,685 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:45:17] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-14 17:45:17,692 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:45:17] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-14 17:45:17,694 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:45:17] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-14 17:45:25,931 - query_processor - INFO - Processing natural language query: 'show me a market'
+2025-03-14 17:45:25,933 - query_processor - INFO - Attempting to extract number from: 'show me a market'
+2025-03-14 17:45:25,934 - query_processor - INFO - Found digit numbers in query: []
+2025-03-14 17:45:25,934 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-14 17:45:25,934 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-14 17:45:25,936 - query_processor - ERROR - Error processing secure query: 'QueryProcessor' object has no attribute '_should_encrypt_field'
+2025-03-14 17:45:25,936 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:45:25] "POST /api/chat HTTP/1.1" 200 -
+2025-03-14 17:49:29,852 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-14 17:49:30,434 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:49:30,436 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:49:30,439 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:49:30,441 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:49:30,443 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:49:30,445 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:49:31,208 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-14 17:49:32,964 - query_processor - INFO - NLP model loaded successfully
+2025-03-14 17:49:32,964 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-14 17:49:32,964 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-14 17:49:32,967 - __main__ - INFO - All components initialized successfully
+2025-03-14 17:49:35,035 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-14 17:49:35,035 - __main__ - INFO - Initializing speech recognition routes
+2025-03-14 17:49:35,038 - __main__ - INFO - Training API routes added successfully
+2025-03-14 17:49:35,038 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-14 17:49:35,050 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-14 17:49:35,051 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-14 17:49:35,052 - werkzeug - INFO -  * Restarting with stat
+2025-03-14 17:49:39,734 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-14 17:49:40,314 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:49:40,316 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:49:40,319 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:49:40,322 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:49:40,323 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:49:40,325 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-14 17:49:41,884 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-14 17:49:44,236 - query_processor - INFO - NLP model loaded successfully
+2025-03-14 17:49:44,236 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-14 17:49:44,236 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-14 17:49:44,240 - __main__ - INFO - All components initialized successfully
+2025-03-14 17:49:46,306 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-14 17:49:46,307 - __main__ - INFO - Initializing speech recognition routes
+2025-03-14 17:49:46,309 - __main__ - INFO - Training API routes added successfully
+2025-03-14 17:49:46,309 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-14 17:49:46,317 - werkzeug - WARNING -  * Debugger is active!
+2025-03-14 17:49:46,322 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-14 17:49:46,350 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:49:46] "GET / HTTP/1.1" 200 -
+2025-03-14 17:49:46,477 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:49:46] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-14 17:49:46,480 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:49:46] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-14 17:49:46,509 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:49:46] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-14 17:49:54,408 - query_processor - INFO - Processing natural language query: 'show me markets'
+2025-03-14 17:49:54,408 - query_processor - INFO - Attempting to extract number from: 'show me markets'
+2025-03-14 17:49:54,409 - query_processor - INFO - Found digit numbers in query: []
+2025-03-14 17:49:54,409 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-14 17:49:54,409 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-14 17:49:54,411 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:49:54] "POST /api/chat HTTP/1.1" 200 -
+2025-03-14 17:50:20,971 - query_processor - INFO - Processing natural language query: 'details about markets'
+2025-03-14 17:50:20,971 - query_processor - INFO - Attempting to extract number from: 'details about markets'
+2025-03-14 17:50:20,971 - query_processor - INFO - Found digit numbers in query: []
+2025-03-14 17:50:20,971 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-14 17:50:20,971 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-14 17:50:20,972 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:50:20] "POST /api/chat HTTP/1.1" 200 -
+2025-03-14 17:50:35,486 - query_processor - INFO - Processing natural language query: 'show me a broker emails'
+2025-03-14 17:50:35,486 - query_processor - INFO - Attempting to extract number from: 'show me a broker emails'
+2025-03-14 17:50:35,486 - query_processor - INFO - Found digit numbers in query: []
+2025-03-14 17:50:35,486 - query_processor - INFO - Generated SQL query: SELECT * FROM brokers LIMIT 100
+2025-03-14 17:50:35,486 - query_processor - INFO - Generated SQL query: SELECT * FROM brokers LIMIT 100
+2025-03-14 17:50:35,488 - werkzeug - INFO - 127.0.0.1 - - [14/Mar/2025 17:50:35] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 10:58:47,650 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 10:58:51,067 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 10:58:51,072 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 10:58:51,075 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 10:58:51,075 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 10:58:51,084 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 10:58:51,084 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 10:58:52,485 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 10:58:56,992 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 10:58:56,994 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 10:58:56,994 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 10:58:57,006 - __main__ - INFO - All components initialized successfully
+2025-03-15 10:58:59,073 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 10:58:59,073 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 10:58:59,075 - __main__ - INFO - Training API routes added successfully
+2025-03-15 10:58:59,075 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 10:58:59,096 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-15 10:58:59,096 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-15 10:58:59,098 - werkzeug - INFO -  * Restarting with stat
+2025-03-15 10:59:04,523 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 10:59:05,330 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 10:59:05,332 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 10:59:05,335 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 10:59:05,338 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 10:59:05,339 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 10:59:05,342 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 10:59:10,758 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 10:59:14,320 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 10:59:14,320 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 10:59:14,320 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 10:59:14,322 - __main__ - INFO - All components initialized successfully
+2025-03-15 10:59:16,367 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 10:59:16,372 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 10:59:16,372 - __main__ - INFO - Training API routes added successfully
+2025-03-15 10:59:16,372 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 10:59:16,387 - werkzeug - WARNING -  * Debugger is active!
+2025-03-15 10:59:16,392 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-15 10:59:16,450 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 10:59:16] "GET / HTTP/1.1" 200 -
+2025-03-15 10:59:16,606 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 10:59:16] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-15 10:59:16,623 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 10:59:16] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-15 10:59:16,664 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 10:59:16] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-15 10:59:16,864 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 10:59:16] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-03-15 10:59:27,958 - query_processor - INFO - Processing natural language query: 'show me markets'
+2025-03-15 10:59:27,958 - query_processor - INFO - Attempting to extract number from: 'show me markets'
+2025-03-15 10:59:27,958 - query_processor - INFO - Found digit numbers in query: []
+2025-03-15 10:59:27,962 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-15 10:59:27,962 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-15 10:59:27,963 - model.chatbot_engine - INFO - Determined primary table: markets
+2025-03-15 10:59:27,963 - model.chatbot_engine - INFO - Checking if query is requesting details: 'show me markets'
+2025-03-15 10:59:27,963 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 10:59:27,963 - model.chatbot_engine - INFO - Essential fields for markets: ['name', 'location']
+2025-03-15 10:59:27,963 - model.chatbot_engine - INFO - Checking if query is requesting details: 'show me markets'
+2025-03-15 10:59:27,963 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 10:59:27] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 10:59:53,272 - query_processor - INFO - Processing natural language query: 'show me details about markets'
+2025-03-15 10:59:53,272 - query_processor - INFO - Attempting to extract number from: 'show me details about markets'
+2025-03-15 10:59:53,273 - query_processor - INFO - Found digit numbers in query: []
+2025-03-15 10:59:53,273 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-15 10:59:53,273 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-15 10:59:53,273 - model.chatbot_engine - INFO - Determined primary table: markets
+2025-03-15 10:59:53,273 - model.chatbot_engine - INFO - Checking if query is requesting details: 'show me details about markets'
+2025-03-15 10:59:53,273 - model.chatbot_engine - INFO - Found detail indicator: 'details about'
+2025-03-15 10:59:53,273 - model.chatbot_engine - INFO - Detailed view requested: True
+2025-03-15 10:59:53,273 - model.chatbot_engine - INFO - Checking if query is requesting details: 'show me details about markets'
+2025-03-15 10:59:53,273 - model.chatbot_engine - INFO - Found detail indicator: 'details about'
+2025-03-15 10:59:53,273 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 10:59:53] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 11:00:26,893 - query_processor - INFO - Processing natural language query: 'show me Traders'
+2025-03-15 11:00:26,894 - query_processor - INFO - Attempting to extract number from: 'show me traders'
+2025-03-15 11:00:26,894 - query_processor - INFO - Found digit numbers in query: []
+2025-03-15 11:00:26,894 - query_processor - INFO - Generated SQL query: SELECT * FROM traders, trades LIMIT 100
+2025-03-15 11:00:26,894 - query_processor - INFO - Generated SQL query: SELECT * FROM traders, trades LIMIT 100
+2025-03-15 11:00:26,935 - model.chatbot_engine - INFO - Determined primary table: markets
+2025-03-15 11:00:26,936 - model.chatbot_engine - INFO - Checking if query is requesting details: 'show me traders'
+2025-03-15 11:00:26,936 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 11:00:26,936 - model.chatbot_engine - INFO - Essential fields for markets: ['name', 'location']
+2025-03-15 11:00:26,936 - model.chatbot_engine - INFO - Checking if query is requesting details: 'show me traders'
+2025-03-15 11:00:26,937 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 11:00:26] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 11:00:38,285 - query_processor - INFO - Processing natural language query: 'show me details about Traders'
+2025-03-15 11:00:38,285 - query_processor - INFO - Attempting to extract number from: 'show me details about traders'
+2025-03-15 11:00:38,285 - query_processor - INFO - Found digit numbers in query: []
+2025-03-15 11:00:38,285 - query_processor - INFO - Generated SQL query: SELECT * FROM traders, trades LIMIT 100
+2025-03-15 11:00:38,285 - query_processor - INFO - Generated SQL query: SELECT * FROM traders, trades LIMIT 100
+2025-03-15 11:00:38,290 - model.chatbot_engine - INFO - Determined primary table: markets
+2025-03-15 11:00:38,290 - model.chatbot_engine - INFO - Checking if query is requesting details: 'show me details about traders'
+2025-03-15 11:00:38,290 - model.chatbot_engine - INFO - Found detail indicator: 'details about'
+2025-03-15 11:00:38,290 - model.chatbot_engine - INFO - Detailed view requested: True
+2025-03-15 11:00:38,290 - model.chatbot_engine - INFO - Checking if query is requesting details: 'show me details about traders'
+2025-03-15 11:00:38,290 - model.chatbot_engine - INFO - Found detail indicator: 'details about'
+2025-03-15 11:00:38,306 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 11:00:38] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 11:38:18,236 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 11:38:18,957 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:38:18,960 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:38:18,963 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:38:18,966 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:38:18,968 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:38:18,970 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:38:19,863 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 11:38:21,932 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 11:38:21,932 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 11:38:21,932 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 11:38:21,935 - __main__ - INFO - All components initialized successfully
+2025-03-15 11:38:23,996 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 11:38:23,996 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 11:38:23,998 - __main__ - INFO - Training API routes added successfully
+2025-03-15 11:38:23,998 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 11:38:24,014 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-15 11:38:24,014 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-15 11:38:24,016 - werkzeug - INFO -  * Restarting with stat
+2025-03-15 11:38:29,395 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 11:38:30,054 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:38:30,056 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:38:30,059 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:38:30,061 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:38:30,063 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:38:30,065 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:38:33,611 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 11:38:37,204 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 11:38:37,204 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 11:38:37,204 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 11:38:37,217 - __main__ - INFO - All components initialized successfully
+2025-03-15 11:38:39,252 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 11:38:39,252 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 11:38:39,259 - __main__ - INFO - Training API routes added successfully
+2025-03-15 11:38:39,259 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 11:38:39,274 - werkzeug - WARNING -  * Debugger is active!
+2025-03-15 11:38:39,282 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-15 11:38:39,325 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 11:38:39] "GET / HTTP/1.1" 200 -
+2025-03-15 11:38:39,531 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 11:38:39] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-03-15 11:38:39,547 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 11:38:39] "GET /static/js/script.js HTTP/1.1" 200 -
+2025-03-15 11:38:39,547 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 11:38:39] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-15 11:42:49,512 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 11:42:50,136 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:42:50,138 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:42:50,141 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:42:50,143 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:42:50,146 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:42:50,148 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:42:51,028 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 11:42:53,078 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 11:42:53,079 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 11:42:53,079 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 11:42:53,081 - __main__ - INFO - All components initialized successfully
+2025-03-15 11:42:55,148 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 11:42:55,148 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 11:42:55,150 - __main__ - INFO - Training API routes added successfully
+2025-03-15 11:42:55,150 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 11:42:55,163 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-15 11:42:55,163 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-15 11:42:55,165 - werkzeug - INFO -  * Restarting with stat
+2025-03-15 11:43:00,539 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 11:43:01,207 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:43:01,210 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:43:01,213 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:43:01,215 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:43:01,217 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:43:01,219 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:43:03,472 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 11:43:07,843 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 11:43:07,843 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 11:43:07,843 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 11:43:07,849 - __main__ - INFO - All components initialized successfully
+2025-03-15 11:43:09,899 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 11:43:09,899 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 11:43:09,899 - __main__ - INFO - Training API routes added successfully
+2025-03-15 11:43:09,899 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 11:43:09,915 - werkzeug - WARNING -  * Debugger is active!
+2025-03-15 11:43:09,921 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-15 11:43:09,957 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 11:43:09] "GET / HTTP/1.1" 200 -
+2025-03-15 11:43:10,145 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 11:43:10] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-03-15 11:43:10,156 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 11:43:10] "GET /static/js/script.js HTTP/1.1" 200 -
+2025-03-15 11:43:10,163 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 11:43:10] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-15 11:43:25,757 - query_processor - INFO - Processing natural language query: 'Show me the highest priced assets'
+2025-03-15 11:43:25,757 - query_processor - INFO - Attempting to extract number from: 'show me the highest priced assets'
+2025-03-15 11:43:25,759 - query_processor - INFO - Found digit numbers in query: []
+2025-03-15 11:43:25,759 - query_processor - INFO - Detected comparative query type: highest
+2025-03-15 11:43:25,759 - query_processor - INFO - Using special approach for highest to handle multiple identical values
+2025-03-15 11:43:25,759 - query_processor - INFO - Comparative query detected. Setting limit to 100
+2025-03-15 11:43:25,759 - query_processor - INFO - Executing subquery to find highest value: SELECT MAX(price_history.close_price) as extreme_value FROM assets, price_history 
+2025-03-15 11:43:25,764 - query_processor - INFO - Found highest value: 480.90
+2025-03-15 11:43:25,764 - query_processor - INFO - Modified query to return all records with highest value
+2025-03-15 11:43:25,764 - query_processor - INFO - Generated SQL query: SELECT * FROM assets, price_history WHERE price_history.close_price = 480.90 ORDER BY price_history.close_price DESC LIMIT 100
+2025-03-15 11:43:25,764 - query_processor - INFO - Generated SQL query: SELECT * FROM assets, price_history WHERE price_history.close_price = 480.90 ORDER BY price_history.close_price DESC LIMIT 100
+2025-03-15 11:43:25,768 - query_processor - INFO - Deduplicating 10 results
+2025-03-15 11:43:25,768 - query_processor - INFO - Deduplication removed 0 records, keeping 10
+2025-03-15 11:43:25,768 - model.chatbot_engine - INFO - Determined primary table: brokers
+2025-03-15 11:43:25,768 - model.chatbot_engine - INFO - Checking if query is requesting details: 'show me the highest priced assets'
+2025-03-15 11:43:25,768 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 11:43:25,768 - model.chatbot_engine - INFO - Essential fields for brokers: ['name']
+2025-03-15 11:43:25,768 - model.chatbot_engine - INFO - Checking if query is requesting details: 'show me the highest priced assets'
+2025-03-15 11:43:25,770 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 11:43:25] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 11:53:38,339 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 11:53:38,978 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:53:38,981 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:53:38,984 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:53:38,986 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:53:38,988 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:53:38,990 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:53:39,864 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 11:53:41,788 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 11:53:41,788 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 11:53:41,788 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 11:53:41,790 - __main__ - INFO - All components initialized successfully
+2025-03-15 11:53:43,843 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 11:53:43,843 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 11:53:43,845 - __main__ - INFO - Training API routes added successfully
+2025-03-15 11:53:43,845 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 11:53:44,303 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-15 11:53:44,304 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-15 11:53:44,305 - werkzeug - INFO -  * Restarting with stat
+2025-03-15 11:53:49,657 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 11:53:50,314 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:53:50,316 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:53:50,319 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:53:50,321 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:53:50,323 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:53:50,326 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:53:52,727 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 11:53:57,039 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 11:53:57,039 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 11:53:57,039 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 11:53:57,049 - __main__ - INFO - All components initialized successfully
+2025-03-15 11:53:59,115 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 11:53:59,115 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 11:53:59,115 - __main__ - INFO - Training API routes added successfully
+2025-03-15 11:53:59,115 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 11:53:59,130 - werkzeug - WARNING -  * Debugger is active!
+2025-03-15 11:53:59,138 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-15 11:53:59,182 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 11:53:59] "GET / HTTP/1.1" 200 -
+2025-03-15 11:53:59,326 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 11:53:59] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-15 11:53:59,380 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 11:53:59] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-15 11:53:59,388 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 11:53:59] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-15 11:54:05,178 - query_processor - INFO - Processing natural language query: 'Show me all details about markets'
+2025-03-15 11:54:05,178 - query_processor - INFO - Attempting to extract number from: 'show me all details about markets'
+2025-03-15 11:54:05,178 - query_processor - INFO - Found digit numbers in query: []
+2025-03-15 11:54:05,178 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-15 11:54:05,178 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-15 11:54:05,178 - model.chatbot_engine - INFO - Determined primary table: markets
+2025-03-15 11:54:05,186 - model.chatbot_engine - INFO - Checking if query is requesting details: 'show me all details about markets'
+2025-03-15 11:54:05,186 - model.chatbot_engine - INFO - Found detail indicator: 'all details'
+2025-03-15 11:54:05,186 - model.chatbot_engine - INFO - Detailed view requested: True
+2025-03-15 11:54:05,187 - model.chatbot_engine - INFO - Checking if query is requesting details: 'show me all details about markets'
+2025-03-15 11:54:05,187 - model.chatbot_engine - INFO - Found detail indicator: 'all details'
+2025-03-15 11:54:05,187 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 11:54:05] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 11:54:12,059 - query_processor - INFO - Processing enhanced natural language query: 'Show me the highest priced assets'
+2025-03-15 11:54:12,059 - query_processor - INFO - Detected comparative query type: highest
+2025-03-15 11:54:12,059 - query_processor - INFO - Using special approach for highest to handle multiple identical values
+2025-03-15 11:54:12,059 - query_processor - INFO - Generated enhanced SQL query: SELECT assets.asset_id, assets.name AS asset_name, assets.asset_type, brokers.name AS broker_name, price_history.close_price FROM assets, price_history, brokers WHERE assets.broker_id = brokers.broker_id ORDER BY price_history.close_price DESC LIMIT 100
+2025-03-15 11:54:12,059 - query_processor - INFO - Generated SQL query: SELECT assets.asset_id, assets.name AS asset_name, assets.asset_type, brokers.name AS broker_name, price_history.close_price FROM assets, price_history, brokers WHERE assets.broker_id = brokers.broker_id ORDER BY price_history.close_price DESC LIMIT 100
+2025-03-15 11:54:12,078 - query_processor - INFO - Deduplicating 100 results
+2025-03-15 11:54:12,084 - query_processor - INFO - Deduplication removed 0 records, keeping 100
+2025-03-15 11:54:12,084 - model.chatbot_engine - INFO - Determined primary table: assets
+2025-03-15 11:54:12,084 - model.chatbot_engine - INFO - Checking if query is requesting details: 'show me the highest priced assets'
+2025-03-15 11:54:12,084 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 11:54:12,084 - model.chatbot_engine - INFO - Essential fields for assets: ['name', 'asset_type']
+2025-03-15 11:54:12,084 - model.chatbot_engine - INFO - Checking if query is requesting details: 'show me the highest priced assets'
+2025-03-15 11:54:12,084 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 11:54:12] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 11:59:51,303 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 11:59:51,917 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:59:51,920 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:59:51,923 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:59:51,925 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:59:51,927 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:59:51,929 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 11:59:52,726 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 11:59:54,644 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 11:59:54,644 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 11:59:54,644 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 11:59:54,646 - __main__ - INFO - All components initialized successfully
+2025-03-15 11:59:56,694 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 11:59:56,695 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 11:59:56,696 - __main__ - INFO - Training API routes added successfully
+2025-03-15 11:59:56,696 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 11:59:57,155 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-15 11:59:57,155 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-15 11:59:57,158 - werkzeug - INFO -  * Restarting with stat
+2025-03-15 12:00:02,569 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 12:00:03,255 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:00:03,258 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:00:03,261 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:00:03,264 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:00:03,266 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:00:03,268 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:00:05,530 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 12:00:09,939 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 12:00:09,939 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 12:00:09,939 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 12:00:09,946 - __main__ - INFO - All components initialized successfully
+2025-03-15 12:00:12,004 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 12:00:12,004 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 12:00:12,004 - __main__ - INFO - Training API routes added successfully
+2025-03-15 12:00:12,004 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 12:00:12,020 - werkzeug - WARNING -  * Debugger is active!
+2025-03-15 12:00:12,028 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-15 12:00:12,070 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:00:12] "GET / HTTP/1.1" 200 -
+2025-03-15 12:00:12,209 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:00:12] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-15 12:00:12,275 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:00:12] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-15 12:00:12,275 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:00:12] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-15 12:00:18,621 - query_processor - INFO - Processing enhanced natural language query: 'Show me the highest priced assets'
+2025-03-15 12:00:18,621 - query_processor - INFO - Detected comparative query type: highest
+2025-03-15 12:00:18,621 - query_processor - INFO - Using special approach for highest to handle multiple identical values
+2025-03-15 12:00:18,621 - query_processor - INFO - Generated enhanced SQL query: SELECT assets.asset_id, assets.name AS asset_name, assets.asset_type, brokers.name AS broker_name, price_history.close_price FROM assets, price_history, brokers WHERE assets.broker_id = brokers.broker_id ORDER BY price_history.close_price DESC LIMIT 100
+2025-03-15 12:00:18,621 - query_processor - INFO - Generated SQL query: SELECT assets.asset_id, assets.name AS asset_name, assets.asset_type, brokers.name AS broker_name, price_history.close_price FROM assets, price_history, brokers WHERE assets.broker_id = brokers.broker_id ORDER BY price_history.close_price DESC LIMIT 100
+2025-03-15 12:00:18,632 - query_processor - INFO - Deduplicating 100 results
+2025-03-15 12:00:18,632 - query_processor - INFO - Deduplication removed 0 records, keeping 100
+2025-03-15 12:00:18,632 - model.chatbot_engine - INFO - Determined primary table: assets
+2025-03-15 12:00:18,632 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'show me the highest priced assets'
+2025-03-15 12:00:18,632 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:00:18,632 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:00:18,632 - model.chatbot_engine - INFO - Essential fields for assets: ['name', 'asset_type']
+2025-03-15 12:00:18,638 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:00:18] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:00:25,721 - query_processor - INFO - Processing natural language query: 'Show me recent trades in New York markets'
+2025-03-15 12:00:25,721 - query_processor - INFO - Attempting to extract number from: 'show me recent trades in new york markets'
+2025-03-15 12:00:25,723 - query_processor - INFO - Found digit numbers in query: []
+2025-03-15 12:00:25,724 - query_processor - INFO - Generated SQL query: SELECT * FROM markets, trades ORDER BY trades.trade_date DESC LIMIT 100
+2025-03-15 12:00:25,724 - query_processor - INFO - Generated SQL query: SELECT * FROM markets, trades ORDER BY trades.trade_date DESC LIMIT 100
+2025-03-15 12:00:25,741 - model.chatbot_engine - INFO - Determined primary table: markets
+2025-03-15 12:00:25,741 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'show me recent trades in new york markets'
+2025-03-15 12:00:25,741 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:00:25,741 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:00:25,741 - model.chatbot_engine - INFO - Essential fields for markets: ['name', 'location']
+2025-03-15 12:00:25,746 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:00:25] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:00:44,607 - query_processor - INFO - Processing natural language query: 'Show me brokers with their contact details'
+2025-03-15 12:00:44,607 - query_processor - INFO - Attempting to extract number from: 'show me brokers with their contact details'
+2025-03-15 12:00:44,607 - query_processor - INFO - Found digit numbers in query: []
+2025-03-15 12:00:44,607 - query_processor - INFO - Generated SQL query: SELECT * FROM brokers LIMIT 100
+2025-03-15 12:00:44,607 - query_processor - INFO - Generated SQL query: SELECT * FROM brokers LIMIT 100
+2025-03-15 12:00:44,607 - model.chatbot_engine - INFO - Determined primary table: brokers
+2025-03-15 12:00:44,607 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'show me brokers with their contact details'
+2025-03-15 12:00:44,607 - model.chatbot_engine - INFO - Detailed view requested - found indicator: 'details'
+2025-03-15 12:00:44,607 - model.chatbot_engine - INFO - Detailed view requested: True
+2025-03-15 12:00:44,607 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:00:44] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:01:01,307 - query_processor - INFO - Processing natural language query: 'Show me all details about markets'
+2025-03-15 12:01:01,307 - query_processor - INFO - Attempting to extract number from: 'show me all details about markets'
+2025-03-15 12:01:01,307 - query_processor - INFO - Found digit numbers in query: []
+2025-03-15 12:01:01,307 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-15 12:01:01,307 - query_processor - INFO - Generated SQL query: SELECT * FROM markets LIMIT 100
+2025-03-15 12:01:01,307 - model.chatbot_engine - INFO - Determined primary table: markets
+2025-03-15 12:01:01,307 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'show me all details about markets'
+2025-03-15 12:01:01,307 - model.chatbot_engine - INFO - Detailed view requested - found indicator: 'all details'
+2025-03-15 12:01:01,307 - model.chatbot_engine - INFO - Detailed view requested: True
+2025-03-15 12:01:01,307 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:01:01] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:08:33,163 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 12:08:33,855 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:08:33,859 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:08:33,861 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:08:33,864 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:08:33,867 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:08:33,870 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:08:34,676 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 12:08:36,675 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 12:08:36,675 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 12:08:36,675 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 12:08:36,679 - __main__ - INFO - All components initialized successfully
+2025-03-15 12:08:38,726 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 12:08:38,726 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 12:08:38,727 - __main__ - INFO - Training API routes added successfully
+2025-03-15 12:08:38,728 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 12:08:39,207 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-15 12:08:39,209 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-15 12:08:39,211 - werkzeug - INFO -  * Restarting with stat
+2025-03-15 12:08:44,282 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 12:08:44,853 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:08:44,855 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:08:44,858 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:08:44,860 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:08:44,862 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:08:44,864 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:08:46,377 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 12:08:49,050 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 12:08:49,051 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 12:08:49,051 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 12:08:49,054 - __main__ - INFO - All components initialized successfully
+2025-03-15 12:08:51,109 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 12:08:51,109 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 12:08:51,111 - __main__ - INFO - Training API routes added successfully
+2025-03-15 12:08:51,111 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 12:08:51,120 - werkzeug - WARNING -  * Debugger is active!
+2025-03-15 12:08:51,125 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-15 12:08:51,156 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:08:51] "GET / HTTP/1.1" 200 -
+2025-03-15 12:08:51,301 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:08:51] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-15 12:08:51,304 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:08:51] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-15 12:08:51,307 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:08:51] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-15 12:08:58,008 - query_processor - INFO - Processing natural language query: 'Show me brokers with their contact details'
+2025-03-15 12:08:58,008 - query_processor - INFO - Detailed request detected: False
+2025-03-15 12:08:58,008 - query_processor - INFO - Generated SQL query: SELECT name FROM brokers LIMIT 100
+2025-03-15 12:08:58,008 - query_processor - INFO - Generated SQL query: SELECT name FROM brokers LIMIT 100
+2025-03-15 12:08:58,020 - model.chatbot_engine - INFO - Determined primary table: None
+2025-03-15 12:08:58,020 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'show me brokers with their contact details'
+2025-03-15 12:08:58,020 - model.chatbot_engine - INFO - Detailed view requested - found indicator: 'details'
+2025-03-15 12:08:58,020 - model.chatbot_engine - INFO - Detailed view requested: True
+2025-03-15 12:08:58,021 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:08:58] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:09:07,581 - query_processor - INFO - Processing natural language query: 'Show me recent trades in New York markets'
+2025-03-15 12:09:07,581 - query_processor - INFO - Detailed request detected: False
+2025-03-15 12:09:07,581 - query_processor - INFO - Generated SQL query: SELECT name, location, operating_hours FROM markets, trades ORDER BY trades.trade_date DESC LIMIT 100
+2025-03-15 12:09:07,581 - query_processor - INFO - Generated SQL query: SELECT name, location, operating_hours FROM markets, trades ORDER BY trades.trade_date DESC LIMIT 100
+2025-03-15 12:09:07,584 - model.chatbot_engine - INFO - Determined primary table: markets
+2025-03-15 12:09:07,584 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'show me recent trades in new york markets'
+2025-03-15 12:09:07,584 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:09:07,584 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:09:07,587 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:09:07] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:09:13,563 - query_processor - INFO - Processing natural language query: 'Show me all details about markets'
+2025-03-15 12:09:13,564 - query_processor - INFO - Detailed request detected: True
+2025-03-15 12:09:13,564 - query_processor - INFO - Generated SQL query: SELECT market_id, name, location, operating_hours FROM markets LIMIT 100
+2025-03-15 12:09:13,564 - query_processor - INFO - Generated SQL query: SELECT market_id, name, location, operating_hours FROM markets LIMIT 100
+2025-03-15 12:09:13,565 - model.chatbot_engine - INFO - Determined primary table: markets
+2025-03-15 12:09:13,565 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'show me all details about markets'
+2025-03-15 12:09:13,565 - model.chatbot_engine - INFO - Detailed view requested - found indicator: 'all details'
+2025-03-15 12:09:13,565 - model.chatbot_engine - INFO - Detailed view requested: True
+2025-03-15 12:09:13,566 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:09:13] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:09:22,078 - query_processor - INFO - Processing natural language query: 'Show me recent trades in New York markets'
+2025-03-15 12:09:22,078 - query_processor - INFO - Detailed request detected: False
+2025-03-15 12:09:22,078 - query_processor - INFO - Generated SQL query: SELECT name, location, operating_hours FROM markets, trades ORDER BY trades.trade_date DESC LIMIT 100
+2025-03-15 12:09:22,078 - query_processor - INFO - Generated SQL query: SELECT name, location, operating_hours FROM markets, trades ORDER BY trades.trade_date DESC LIMIT 100
+2025-03-15 12:09:22,083 - model.chatbot_engine - INFO - Determined primary table: markets
+2025-03-15 12:09:22,083 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'show me recent trades in new york markets'
+2025-03-15 12:09:22,083 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:09:22,083 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:09:22,085 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:09:22] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:09:31,145 - query_processor - INFO - Processing natural language query: 'Show me recent trades in New York markets'
+2025-03-15 12:09:31,145 - query_processor - INFO - Detailed request detected: False
+2025-03-15 12:09:31,146 - query_processor - INFO - Generated SQL query: SELECT name, location, operating_hours FROM markets, trades ORDER BY trades.trade_date DESC LIMIT 100
+2025-03-15 12:09:31,146 - query_processor - INFO - Generated SQL query: SELECT name, location, operating_hours FROM markets, trades ORDER BY trades.trade_date DESC LIMIT 100
+2025-03-15 12:09:31,149 - model.chatbot_engine - INFO - Determined primary table: markets
+2025-03-15 12:09:31,149 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'show me recent trades in new york markets'
+2025-03-15 12:09:31,149 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:09:31,149 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:09:31,152 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:09:31] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:09:35,844 - query_processor - INFO - Processing enhanced natural language query: 'Show me the highest priced assets'
+2025-03-15 12:09:35,844 - query_processor - INFO - Detected comparative query type: highest
+2025-03-15 12:09:35,845 - query_processor - INFO - Using special approach for highest to handle multiple identical values
+2025-03-15 12:09:35,845 - query_processor - INFO - Generated enhanced SQL query: SELECT assets.asset_id, assets.name AS asset_name, assets.asset_type, brokers.name AS broker_name, price_history.close_price FROM assets, price_history, brokers WHERE assets.broker_id = brokers.broker_id ORDER BY price_history.close_price DESC LIMIT 100
+2025-03-15 12:09:35,845 - query_processor - INFO - Generated SQL query: SELECT assets.asset_id, assets.name AS asset_name, assets.asset_type, brokers.name AS broker_name, price_history.close_price FROM assets, price_history, brokers WHERE assets.broker_id = brokers.broker_id ORDER BY price_history.close_price DESC LIMIT 100
+2025-03-15 12:09:35,848 - query_processor - INFO - Deduplicating 100 results
+2025-03-15 12:09:35,849 - query_processor - INFO - Deduplication removed 0 records, keeping 100
+2025-03-15 12:09:35,849 - model.chatbot_engine - INFO - Determined primary table: assets
+2025-03-15 12:09:35,849 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'show me the highest priced assets'
+2025-03-15 12:09:35,849 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:09:35,849 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:09:35,852 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:09:35] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:10:03,986 - query_processor - INFO - Processing natural language query: 'show me markets'
+2025-03-15 12:10:03,986 - query_processor - INFO - Detailed request detected: False
+2025-03-15 12:10:03,986 - query_processor - INFO - Executing subquery to find highest value: SELECT MAX(price_history.close_price) as extreme_value FROM markets 
+2025-03-15 12:10:03,997 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'price_history.close_price' in 'field list'
+2025-03-15 12:10:03,997 - query_processor - INFO - Generated SQL query: SELECT name, location, operating_hours FROM markets LIMIT 100
+2025-03-15 12:10:03,997 - query_processor - INFO - Generated SQL query: SELECT name, location, operating_hours FROM markets LIMIT 100
+2025-03-15 12:10:03,998 - query_processor - INFO - Deduplicating 10 results
+2025-03-15 12:10:03,998 - query_processor - INFO - Deduplication removed 0 records, keeping 10
+2025-03-15 12:10:03,998 - model.chatbot_engine - INFO - Determined primary table: markets
+2025-03-15 12:10:03,998 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'show me markets'
+2025-03-15 12:10:03,998 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:10:03,998 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:10:03,999 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:10:03] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:10:26,606 - query_processor - INFO - Processing natural language query: 'show me all details about traders'
+2025-03-15 12:10:26,606 - query_processor - INFO - Detailed request detected: True
+2025-03-15 12:10:26,606 - query_processor - INFO - Executing subquery to find highest value: SELECT MAX(price_history.close_price) as extreme_value FROM traders, trades 
+2025-03-15 12:10:26,608 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'price_history.close_price' in 'field list'
+2025-03-15 12:10:26,608 - query_processor - INFO - Generated SQL query: SELECT traders.trader_id, traders.name, traders.registration_date, traders.email, traders.phone FROM traders, trades LIMIT 100
+2025-03-15 12:10:26,608 - query_processor - INFO - Generated SQL query: SELECT traders.trader_id, traders.name, traders.registration_date, traders.email, traders.phone FROM traders, trades LIMIT 100
+2025-03-15 12:10:26,620 - query_processor - INFO - Deduplicating 100 results
+2025-03-15 12:10:26,620 - query_processor - INFO - Skipped duplicate with name: Jasmine Blue
+2025-03-15 12:10:26,620 - query_processor - INFO - Skipped duplicate with name: Ian Green
+2025-03-15 12:10:26,620 - query_processor - INFO - Skipped duplicate with name: Hannah Black
+2025-03-15 12:10:26,620 - query_processor - INFO - Skipped duplicate with name: George White
+2025-03-15 12:10:26,620 - query_processor - INFO - Skipped duplicate with name: Fiona Gray
+2025-03-15 12:10:26,620 - query_processor - INFO - Skipped duplicate with name: Evan Lee
+2025-03-15 12:10:26,621 - query_processor - INFO - Skipped duplicate with name: Diana Prince
+2025-03-15 12:10:26,621 - query_processor - INFO - Skipped duplicate with name: Charlie Brown
+2025-03-15 12:10:26,621 - query_processor - INFO - Skipped duplicate with name: Bob Johnson
+2025-03-15 12:10:26,621 - query_processor - INFO - Skipped duplicate with name: Alice Smith
+2025-03-15 12:10:26,621 - query_processor - INFO - Skipped duplicate with name: Jasmine Blue
+2025-03-15 12:10:26,621 - query_processor - INFO - Skipped duplicate with name: Ian Green
+2025-03-15 12:10:26,621 - query_processor - INFO - Skipped duplicate with name: Hannah Black
+2025-03-15 12:10:26,621 - query_processor - INFO - Skipped duplicate with name: George White
+2025-03-15 12:10:26,621 - query_processor - INFO - Skipped duplicate with name: Fiona Gray
+2025-03-15 12:10:26,622 - query_processor - INFO - Skipped duplicate with name: Evan Lee
+2025-03-15 12:10:26,622 - query_processor - INFO - Skipped duplicate with name: Diana Prince
+2025-03-15 12:10:26,622 - query_processor - INFO - Skipped duplicate with name: Charlie Brown
+2025-03-15 12:10:26,622 - query_processor - INFO - Skipped duplicate with name: Bob Johnson
+2025-03-15 12:10:26,622 - query_processor - INFO - Skipped duplicate with name: Alice Smith
+2025-03-15 12:10:26,622 - query_processor - INFO - Skipped duplicate with name: Jasmine Blue
+2025-03-15 12:10:26,622 - query_processor - INFO - Skipped duplicate with name: Ian Green
+2025-03-15 12:10:26,622 - query_processor - INFO - Skipped duplicate with name: Hannah Black
+2025-03-15 12:10:26,622 - query_processor - INFO - Skipped duplicate with name: George White
+2025-03-15 12:10:26,622 - query_processor - INFO - Skipped duplicate with name: Fiona Gray
+2025-03-15 12:10:26,623 - query_processor - INFO - Skipped duplicate with name: Evan Lee
+2025-03-15 12:10:26,623 - query_processor - INFO - Skipped duplicate with name: Diana Prince
+2025-03-15 12:10:26,623 - query_processor - INFO - Skipped duplicate with name: Charlie Brown
+2025-03-15 12:10:26,623 - query_processor - INFO - Skipped duplicate with name: Bob Johnson
+2025-03-15 12:10:26,623 - query_processor - INFO - Skipped duplicate with name: Alice Smith
+2025-03-15 12:10:26,623 - query_processor - INFO - Skipped duplicate with name: Jasmine Blue
+2025-03-15 12:10:26,623 - query_processor - INFO - Skipped duplicate with name: Ian Green
+2025-03-15 12:10:26,624 - query_processor - INFO - Skipped duplicate with name: Hannah Black
+2025-03-15 12:10:26,624 - query_processor - INFO - Skipped duplicate with name: George White
+2025-03-15 12:10:26,624 - query_processor - INFO - Skipped duplicate with name: Fiona Gray
+2025-03-15 12:10:26,624 - query_processor - INFO - Skipped duplicate with name: Evan Lee
+2025-03-15 12:10:26,624 - query_processor - INFO - Skipped duplicate with name: Diana Prince
+2025-03-15 12:10:26,624 - query_processor - INFO - Skipped duplicate with name: Charlie Brown
+2025-03-15 12:10:26,624 - query_processor - INFO - Skipped duplicate with name: Bob Johnson
+2025-03-15 12:10:26,624 - query_processor - INFO - Skipped duplicate with name: Alice Smith
+2025-03-15 12:10:26,624 - query_processor - INFO - Skipped duplicate with name: Jasmine Blue
+2025-03-15 12:10:26,625 - query_processor - INFO - Skipped duplicate with name: Ian Green
+2025-03-15 12:10:26,625 - query_processor - INFO - Skipped duplicate with name: Hannah Black
+2025-03-15 12:10:26,625 - query_processor - INFO - Skipped duplicate with name: George White
+2025-03-15 12:10:26,625 - query_processor - INFO - Skipped duplicate with name: Fiona Gray
+2025-03-15 12:10:26,625 - query_processor - INFO - Skipped duplicate with name: Evan Lee
+2025-03-15 12:10:26,625 - query_processor - INFO - Skipped duplicate with name: Diana Prince
+2025-03-15 12:10:26,625 - query_processor - INFO - Skipped duplicate with name: Charlie Brown
+2025-03-15 12:10:26,625 - query_processor - INFO - Skipped duplicate with name: Bob Johnson
+2025-03-15 12:10:26,625 - query_processor - INFO - Skipped duplicate with name: Alice Smith
+2025-03-15 12:10:26,625 - query_processor - INFO - Skipped duplicate with name: Jasmine Blue
+2025-03-15 12:10:26,626 - query_processor - INFO - Skipped duplicate with name: Ian Green
+2025-03-15 12:10:26,626 - query_processor - INFO - Skipped duplicate with name: Hannah Black
+2025-03-15 12:10:26,626 - query_processor - INFO - Skipped duplicate with name: George White
+2025-03-15 12:10:26,626 - query_processor - INFO - Skipped duplicate with name: Fiona Gray
+2025-03-15 12:10:26,626 - query_processor - INFO - Skipped duplicate with name: Evan Lee
+2025-03-15 12:10:26,626 - query_processor - INFO - Skipped duplicate with name: Diana Prince
+2025-03-15 12:10:26,626 - query_processor - INFO - Skipped duplicate with name: Charlie Brown
+2025-03-15 12:10:26,626 - query_processor - INFO - Skipped duplicate with name: Bob Johnson
+2025-03-15 12:10:26,626 - query_processor - INFO - Skipped duplicate with name: Alice Smith
+2025-03-15 12:10:26,626 - query_processor - INFO - Skipped duplicate with name: Jasmine Blue
+2025-03-15 12:10:26,627 - query_processor - INFO - Skipped duplicate with name: Ian Green
+2025-03-15 12:10:26,627 - query_processor - INFO - Skipped duplicate with name: Hannah Black
+2025-03-15 12:10:26,627 - query_processor - INFO - Skipped duplicate with name: George White
+2025-03-15 12:10:26,627 - query_processor - INFO - Skipped duplicate with name: Fiona Gray
+2025-03-15 12:10:26,627 - query_processor - INFO - Skipped duplicate with name: Evan Lee
+2025-03-15 12:10:26,627 - query_processor - INFO - Skipped duplicate with name: Diana Prince
+2025-03-15 12:10:26,627 - query_processor - INFO - Skipped duplicate with name: Charlie Brown
+2025-03-15 12:10:26,627 - query_processor - INFO - Skipped duplicate with name: Bob Johnson
+2025-03-15 12:10:26,627 - query_processor - INFO - Skipped duplicate with name: Alice Smith
+2025-03-15 12:10:26,627 - query_processor - INFO - Skipped duplicate with name: Jasmine Blue
+2025-03-15 12:10:26,638 - query_processor - INFO - Skipped duplicate with name: Ian Green
+2025-03-15 12:10:26,638 - query_processor - INFO - Skipped duplicate with name: Hannah Black
+2025-03-15 12:10:26,638 - query_processor - INFO - Skipped duplicate with name: George White
+2025-03-15 12:10:26,639 - query_processor - INFO - Skipped duplicate with name: Fiona Gray
+2025-03-15 12:10:26,639 - query_processor - INFO - Skipped duplicate with name: Evan Lee
+2025-03-15 12:10:26,639 - query_processor - INFO - Skipped duplicate with name: Diana Prince
+2025-03-15 12:10:26,639 - query_processor - INFO - Skipped duplicate with name: Charlie Brown
+2025-03-15 12:10:26,639 - query_processor - INFO - Skipped duplicate with name: Bob Johnson
+2025-03-15 12:10:26,640 - query_processor - INFO - Skipped duplicate with name: Alice Smith
+2025-03-15 12:10:26,640 - query_processor - INFO - Skipped duplicate with name: Jasmine Blue
+2025-03-15 12:10:26,640 - query_processor - INFO - Skipped duplicate with name: Ian Green
+2025-03-15 12:10:26,640 - query_processor - INFO - Skipped duplicate with name: Hannah Black
+2025-03-15 12:10:26,640 - query_processor - INFO - Skipped duplicate with name: George White
+2025-03-15 12:10:26,640 - query_processor - INFO - Skipped duplicate with name: Fiona Gray
+2025-03-15 12:10:26,642 - query_processor - INFO - Skipped duplicate with name: Evan Lee
+2025-03-15 12:10:26,642 - query_processor - INFO - Skipped duplicate with name: Diana Prince
+2025-03-15 12:10:26,642 - query_processor - INFO - Skipped duplicate with name: Charlie Brown
+2025-03-15 12:10:26,642 - query_processor - INFO - Skipped duplicate with name: Bob Johnson
+2025-03-15 12:10:26,642 - query_processor - INFO - Skipped duplicate with name: Alice Smith
+2025-03-15 12:10:26,643 - query_processor - INFO - Deduplication removed 90 records, keeping 10
+2025-03-15 12:10:26,643 - model.chatbot_engine - INFO - Determined primary table: traders
+2025-03-15 12:10:26,643 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'show me all details about traders'
+2025-03-15 12:10:26,643 - model.chatbot_engine - INFO - Detailed view requested - found indicator: 'all details'
+2025-03-15 12:10:26,643 - model.chatbot_engine - INFO - Detailed view requested: True
+2025-03-15 12:10:26,644 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:10:26] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:10:46,469 - query_processor - INFO - Processing natural language query: 'what is jasmine blue's id'
+2025-03-15 12:10:46,470 - query_processor - INFO - Detailed request detected: False
+2025-03-15 12:10:46,473 - query_processor - INFO - Executing subquery to find highest value: SELECT MAX(price_history.close_price) as extreme_value FROM accounts, traders WHERE accounts.trader_id = traders.trader_id
+2025-03-15 12:10:46,473 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'price_history.close_price' in 'field list'
+2025-03-15 12:10:46,473 - query_processor - INFO - Generated SQL query: SELECT traders.name AS trader_name, accounts.account_type, accounts.balance FROM accounts, traders WHERE accounts.trader_id = traders.trader_id LIMIT 100
+2025-03-15 12:10:46,474 - query_processor - INFO - Generated SQL query: SELECT traders.name AS trader_name, accounts.account_type, accounts.balance FROM accounts, traders WHERE accounts.trader_id = traders.trader_id LIMIT 100
+2025-03-15 12:10:46,474 - query_processor - INFO - Deduplicating 10 results
+2025-03-15 12:10:46,475 - query_processor - INFO - Deduplication removed 0 records, keeping 10
+2025-03-15 12:10:46,475 - model.chatbot_engine - INFO - Determined primary table: None
+2025-03-15 12:10:46,475 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'what is jasmine blue's id'
+2025-03-15 12:10:46,475 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:10:46,475 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:10:46,475 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:10:46] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:10:59,410 - query_processor - INFO - Processing natural language query: 'id for jasmine blue'
+2025-03-15 12:10:59,410 - query_processor - INFO - Detailed request detected: False
+2025-03-15 12:10:59,412 - query_processor - INFO - Executing subquery to find highest value: SELECT MAX(price_history.close_price) as extreme_value FROM accounts, traders WHERE accounts.trader_id = traders.trader_id
+2025-03-15 12:10:59,413 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'price_history.close_price' in 'field list'
+2025-03-15 12:10:59,413 - query_processor - INFO - Generated SQL query: SELECT traders.name AS trader_name, accounts.account_type, accounts.balance FROM accounts, traders WHERE accounts.trader_id = traders.trader_id LIMIT 100
+2025-03-15 12:10:59,413 - query_processor - INFO - Generated SQL query: SELECT traders.name AS trader_name, accounts.account_type, accounts.balance FROM accounts, traders WHERE accounts.trader_id = traders.trader_id LIMIT 100
+2025-03-15 12:10:59,414 - query_processor - INFO - Deduplicating 10 results
+2025-03-15 12:10:59,414 - query_processor - INFO - Deduplication removed 0 records, keeping 10
+2025-03-15 12:10:59,414 - model.chatbot_engine - INFO - Determined primary table: None
+2025-03-15 12:10:59,414 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'id for jasmine blue'
+2025-03-15 12:10:59,414 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:10:59,414 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:10:59,415 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:10:59] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:12:10,243 - query_processor - INFO - Processing natural language query: 'jasmine blue'
+2025-03-15 12:12:10,244 - query_processor - INFO - Detailed request detected: False
+2025-03-15 12:12:10,246 - query_processor - INFO - Executing subquery to find highest value: SELECT MAX(price_history.close_price) as extreme_value FROM accounts, traders WHERE accounts.trader_id = traders.trader_id
+2025-03-15 12:12:10,246 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'price_history.close_price' in 'field list'
+2025-03-15 12:12:10,247 - query_processor - INFO - Generated SQL query: SELECT traders.name AS trader_name, accounts.account_type, accounts.balance FROM accounts, traders WHERE accounts.trader_id = traders.trader_id LIMIT 100
+2025-03-15 12:12:10,247 - query_processor - INFO - Generated SQL query: SELECT traders.name AS trader_name, accounts.account_type, accounts.balance FROM accounts, traders WHERE accounts.trader_id = traders.trader_id LIMIT 100
+2025-03-15 12:12:10,247 - query_processor - INFO - Deduplicating 10 results
+2025-03-15 12:12:10,247 - query_processor - INFO - Deduplication removed 0 records, keeping 10
+2025-03-15 12:12:10,247 - model.chatbot_engine - INFO - Determined primary table: None
+2025-03-15 12:12:10,247 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'jasmine blue'
+2025-03-15 12:12:10,248 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:12:10,248 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:12:10,248 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:12:10] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:14:32,458 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 12:14:33,029 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:14:33,032 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:14:33,034 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:14:33,037 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:14:33,039 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:14:33,041 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:14:33,790 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 12:14:35,633 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 12:14:35,633 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 12:14:35,633 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 12:14:35,635 - __main__ - INFO - All components initialized successfully
+2025-03-15 12:14:37,691 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 12:14:37,691 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 12:14:37,693 - __main__ - INFO - Training API routes added successfully
+2025-03-15 12:14:37,693 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 12:14:38,234 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-15 12:14:38,234 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-15 12:14:38,236 - werkzeug - INFO -  * Restarting with stat
+2025-03-15 12:14:42,959 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 12:14:43,565 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:14:43,568 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:14:43,571 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:14:43,573 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:14:43,575 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:14:43,577 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:14:45,101 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 12:14:47,517 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 12:14:47,517 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 12:14:47,517 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 12:14:47,522 - __main__ - INFO - All components initialized successfully
+2025-03-15 12:14:49,583 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 12:14:49,583 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 12:14:49,585 - __main__ - INFO - Training API routes added successfully
+2025-03-15 12:14:49,585 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 12:14:49,593 - werkzeug - WARNING -  * Debugger is active!
+2025-03-15 12:14:49,597 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-15 12:14:49,628 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:14:49] "GET / HTTP/1.1" 200 -
+2025-03-15 12:14:49,770 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:14:49] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-15 12:14:49,771 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:14:49] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-15 12:14:49,775 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:14:49] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-15 12:14:58,844 - query_processor - INFO - Processing natural language query: 'jasmine blue'
+2025-03-15 12:14:58,845 - query_processor - INFO - Detected search for specific trader: Jasmine Blue
+2025-03-15 12:14:58,846 - query_processor - INFO - Generated SQL query: SELECT name, registration_date FROM traders WHERE LOWER(name) LIKE '%jasmine blue%' LIMIT 100
+2025-03-15 12:14:58,858 - model.chatbot_engine - INFO - Determined primary table: None
+2025-03-15 12:14:58,858 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'jasmine blue'
+2025-03-15 12:14:58,858 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:14:58,858 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:14:58,859 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:14:58] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:15:18,064 - query_processor - INFO - Processing natural language query: 'Show me brokers with their contact details'
+2025-03-15 12:15:18,064 - query_processor - INFO - Detailed request detected: False
+2025-03-15 12:15:18,064 - query_processor - INFO - Generated SQL query: SELECT name FROM brokers LIMIT 100
+2025-03-15 12:15:18,065 - query_processor - INFO - Generated SQL query: SELECT name FROM brokers LIMIT 100
+2025-03-15 12:15:18,066 - model.chatbot_engine - INFO - Determined primary table: None
+2025-03-15 12:15:18,066 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'show me brokers with their contact details'
+2025-03-15 12:15:18,066 - model.chatbot_engine - INFO - Detailed view requested - found indicator: 'details'
+2025-03-15 12:15:18,066 - model.chatbot_engine - INFO - Detailed view requested: True
+2025-03-15 12:15:18,067 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:15:18] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:15:26,634 - query_processor - INFO - Processing natural language query: 'BrokerOne'
+2025-03-15 12:15:26,634 - query_processor - INFO - Detailed request detected: False
+2025-03-15 12:15:26,634 - query_processor - INFO - Generated SQL query: SELECT name FROM brokers LIMIT 100
+2025-03-15 12:15:26,634 - query_processor - INFO - Generated SQL query: SELECT name FROM brokers LIMIT 100
+2025-03-15 12:15:26,635 - model.chatbot_engine - INFO - Determined primary table: None
+2025-03-15 12:15:26,635 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'brokerone'
+2025-03-15 12:15:26,635 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:15:26,635 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:15:26,636 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:15:26] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:16:04,371 - query_processor - INFO - Processing enhanced natural language query: 'stock A'
+2025-03-15 12:16:04,371 - query_processor - INFO - Generated enhanced SQL query: SELECT assets.asset_id, assets.name AS asset_name, assets.asset_type, brokers.name AS broker_name FROM assets, brokers WHERE assets.broker_id = brokers.broker_id LIMIT 100
+2025-03-15 12:16:04,371 - query_processor - INFO - Generated SQL query: SELECT assets.asset_id, assets.name AS asset_name, assets.asset_type, brokers.name AS broker_name FROM assets, brokers WHERE assets.broker_id = brokers.broker_id LIMIT 100
+2025-03-15 12:16:04,372 - model.chatbot_engine - INFO - Determined primary table: assets
+2025-03-15 12:16:04,372 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'stock a'
+2025-03-15 12:16:04,372 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:16:04,372 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:16:04,373 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:16:04] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:16:16,678 - query_processor - INFO - Processing enhanced natural language query: 'New York Stock Exchange'
+2025-03-15 12:16:16,678 - query_processor - INFO - Generated enhanced SQL query: SELECT assets.asset_id, assets.name AS asset_name, assets.asset_type, brokers.name AS broker_name FROM markets, assets, brokers WHERE assets.broker_id = brokers.broker_id LIMIT 100
+2025-03-15 12:16:16,678 - query_processor - INFO - Generated SQL query: SELECT assets.asset_id, assets.name AS asset_name, assets.asset_type, brokers.name AS broker_name FROM markets, assets, brokers WHERE assets.broker_id = brokers.broker_id LIMIT 100
+2025-03-15 12:16:16,691 - model.chatbot_engine - INFO - Determined primary table: assets
+2025-03-15 12:16:16,691 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'new york stock exchange'
+2025-03-15 12:16:16,691 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:16:16,691 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:16:16,693 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:16:16] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:18:25,640 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 12:18:26,218 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:18:26,220 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:18:26,223 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:18:26,225 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:18:26,227 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:18:26,229 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:18:27,064 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 12:18:28,897 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 12:18:28,897 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 12:18:28,897 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 12:18:28,901 - __main__ - INFO - All components initialized successfully
+2025-03-15 12:18:30,941 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 12:18:30,941 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 12:18:30,943 - __main__ - INFO - Training API routes added successfully
+2025-03-15 12:18:30,943 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 12:18:31,405 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-15 12:18:31,406 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-15 12:18:31,408 - werkzeug - INFO -  * Restarting with stat
+2025-03-15 12:18:36,090 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 12:18:36,674 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:18:36,676 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:18:36,679 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:18:36,682 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:18:36,684 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:18:36,686 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:18:38,199 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 12:18:40,549 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 12:18:40,549 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 12:18:40,549 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 12:18:40,552 - __main__ - INFO - All components initialized successfully
+2025-03-15 12:18:42,610 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 12:18:42,610 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 12:18:42,612 - __main__ - INFO - Training API routes added successfully
+2025-03-15 12:18:42,612 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 12:18:42,621 - werkzeug - WARNING -  * Debugger is active!
+2025-03-15 12:18:42,625 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-15 12:18:42,654 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:18:42] "GET / HTTP/1.1" 200 -
+2025-03-15 12:18:42,790 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:18:42] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-15 12:18:42,806 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:18:42] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-15 12:18:42,809 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:18:42] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-15 12:18:52,584 - query_processor - INFO - Processing natural language query: 'show me account for jasmine blue'
+2025-03-15 12:18:52,584 - query_processor - ERROR - Error converting natural language to SQL: 'QueryProcessor' object has no attribute '_get_trader_names'
+2025-03-15 12:18:52,585 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:18:52] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:19:34,878 - query_processor - INFO - Processing natural language query: 'show me all completed orders'
+2025-03-15 12:19:34,878 - query_processor - ERROR - Error converting natural language to SQL: 'QueryProcessor' object has no attribute '_get_trader_names'
+2025-03-15 12:19:34,878 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:19:34] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:21:37,980 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 12:21:38,539 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:21:38,541 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:21:38,544 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:21:38,546 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:21:38,548 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:21:38,550 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:21:39,338 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 12:21:41,098 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 12:21:41,098 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 12:21:41,098 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 12:21:41,100 - __main__ - INFO - All components initialized successfully
+2025-03-15 12:21:43,155 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 12:21:43,155 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 12:21:43,157 - __main__ - INFO - Training API routes added successfully
+2025-03-15 12:21:43,157 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 12:21:43,617 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-15 12:21:43,617 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-15 12:21:43,619 - werkzeug - INFO -  * Restarting with stat
+2025-03-15 12:21:48,394 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 12:21:48,974 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:21:48,978 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:21:48,980 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:21:48,983 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:21:48,985 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:21:48,987 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:21:50,442 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 12:21:52,791 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 12:21:52,791 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 12:21:52,791 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 12:21:52,794 - __main__ - INFO - All components initialized successfully
+2025-03-15 12:21:54,848 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 12:21:54,849 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 12:21:54,851 - __main__ - INFO - Training API routes added successfully
+2025-03-15 12:21:54,851 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 12:21:54,859 - werkzeug - WARNING -  * Debugger is active!
+2025-03-15 12:21:54,864 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-15 12:21:54,894 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:21:54] "GET / HTTP/1.1" 200 -
+2025-03-15 12:21:55,043 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:21:55] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-15 12:21:55,043 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:21:55] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-15 12:21:55,045 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:21:55] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-15 12:21:59,897 - query_processor - INFO - Processing natural language query: 'show me account for jasmine blue'
+2025-03-15 12:21:59,900 - query_processor - INFO - Detected search for specific trader: Jasmine Blue
+2025-03-15 12:21:59,900 - query_processor - INFO - Generated SQL query: SELECT name, registration_date FROM traders WHERE LOWER(name) LIKE '%jasmine blue%' LIMIT 100
+2025-03-15 12:21:59,901 - model.chatbot_engine - INFO - Determined primary table: None
+2025-03-15 12:21:59,901 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'show me account for jasmine blue'
+2025-03-15 12:21:59,901 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:21:59,901 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:21:59,903 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:21:59] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:22:17,950 - query_processor - INFO - Processing natural language query: 'show me all completed orders'
+2025-03-15 12:22:17,950 - query_processor - INFO - Detailed request detected: True
+2025-03-15 12:22:17,950 - query_processor - INFO - Generated SQL query: SELECT orders.order_id, orders.order_type, orders.order_date, order_status.status, trades.price FROM orders, trades, order_status WHERE orders.trade_id = trades.trade_id AND orders.order_id = order_status.order_id AND order_status.status = 'Completed' LIMIT 100
+2025-03-15 12:22:17,950 - query_processor - INFO - Generated SQL query: SELECT orders.order_id, orders.order_type, orders.order_date, order_status.status, trades.price FROM orders, trades, order_status WHERE orders.trade_id = trades.trade_id AND orders.order_id = order_status.order_id AND order_status.status = 'Completed' LIMIT 100
+2025-03-15 12:22:17,980 - model.chatbot_engine - INFO - Determined primary table: orders
+2025-03-15 12:22:17,981 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'show me all completed orders'
+2025-03-15 12:22:17,981 - model.chatbot_engine - INFO - Detailed view requested - found indicator: 'complete'
+2025-03-15 12:22:17,981 - model.chatbot_engine - INFO - Detailed view requested: True
+2025-03-15 12:22:17,981 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:22:17] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:22:38,167 - query_processor - INFO - Processing natural language query: 'BrokerOne'
+2025-03-15 12:22:38,167 - query_processor - INFO - Detected search for specific broker: BrokerOne
+2025-03-15 12:22:38,167 - query_processor - INFO - Generated SQL query: SELECT name FROM brokers WHERE LOWER(name) LIKE '%brokerone%' LIMIT 100
+2025-03-15 12:22:38,168 - model.chatbot_engine - INFO - Determined primary table: None
+2025-03-15 12:22:38,168 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'brokerone'
+2025-03-15 12:22:38,168 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:22:38,168 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:22:38,169 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:22:38] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:22:59,138 - query_processor - INFO - Processing natural language query: 'BrokerOne details'
+2025-03-15 12:22:59,139 - query_processor - INFO - Detected search for specific broker: BrokerOne
+2025-03-15 12:22:59,139 - query_processor - INFO - Generated SQL query: SELECT name FROM brokers WHERE LOWER(name) LIKE '%brokerone%' LIMIT 100
+2025-03-15 12:22:59,139 - model.chatbot_engine - INFO - Determined primary table: None
+2025-03-15 12:22:59,140 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'brokerone details'
+2025-03-15 12:22:59,140 - model.chatbot_engine - INFO - Detailed view requested - found indicator: 'details'
+2025-03-15 12:22:59,140 - model.chatbot_engine - INFO - Detailed view requested: True
+2025-03-15 12:22:59,140 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:22:59] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:23:11,081 - query_processor - INFO - Processing natural language query: 'all brokerone details'
+2025-03-15 12:23:11,081 - query_processor - INFO - Detected search for specific broker: BrokerOne
+2025-03-15 12:23:11,081 - query_processor - INFO - Generated SQL query: SELECT name FROM brokers WHERE LOWER(name) LIKE '%brokerone%' LIMIT 100
+2025-03-15 12:23:11,082 - model.chatbot_engine - INFO - Determined primary table: None
+2025-03-15 12:23:11,082 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'all brokerone details'
+2025-03-15 12:23:11,082 - model.chatbot_engine - INFO - Detailed view requested - found indicator: 'details'
+2025-03-15 12:23:11,082 - model.chatbot_engine - INFO - Detailed view requested: True
+2025-03-15 12:23:11,082 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:23:11] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:24:18,903 - query_processor - INFO - Processing natural language query: 'jasmine blue details'
+2025-03-15 12:24:18,903 - query_processor - INFO - Detected search for specific trader: Jasmine Blue
+2025-03-15 12:24:18,903 - query_processor - INFO - Generated SQL query: SELECT name, registration_date FROM traders WHERE LOWER(name) LIKE '%jasmine blue%' LIMIT 100
+2025-03-15 12:24:18,904 - model.chatbot_engine - INFO - Determined primary table: None
+2025-03-15 12:24:18,905 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'jasmine blue details'
+2025-03-15 12:24:18,905 - model.chatbot_engine - INFO - Detailed view requested - found indicator: 'details'
+2025-03-15 12:24:18,905 - model.chatbot_engine - INFO - Detailed view requested: True
+2025-03-15 12:24:18,905 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:24:18] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:24:47,482 - query_processor - INFO - Processing natural language query: 'show me all completed orders'
+2025-03-15 12:24:47,483 - query_processor - INFO - Detailed request detected: True
+2025-03-15 12:24:47,483 - query_processor - INFO - Generated SQL query: SELECT orders.order_id, orders.order_type, orders.order_date, order_status.status, trades.price FROM orders, trades, order_status WHERE orders.trade_id = trades.trade_id AND orders.order_id = order_status.order_id AND order_status.status = 'Completed' LIMIT 100
+2025-03-15 12:24:47,483 - query_processor - INFO - Generated SQL query: SELECT orders.order_id, orders.order_type, orders.order_date, order_status.status, trades.price FROM orders, trades, order_status WHERE orders.trade_id = trades.trade_id AND orders.order_id = order_status.order_id AND order_status.status = 'Completed' LIMIT 100
+2025-03-15 12:24:47,484 - model.chatbot_engine - INFO - Determined primary table: orders
+2025-03-15 12:24:47,484 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'show me all completed orders'
+2025-03-15 12:24:47,484 - model.chatbot_engine - INFO - Detailed view requested - found indicator: 'complete'
+2025-03-15 12:24:47,485 - model.chatbot_engine - INFO - Detailed view requested: True
+2025-03-15 12:24:47,486 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:24:47] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:40:46,302 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 12:40:48,189 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:40:48,192 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:40:48,194 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:40:48,197 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:40:48,199 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:40:48,202 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:40:48,995 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 12:40:52,400 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 12:40:52,400 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 12:40:52,400 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 12:40:52,403 - __main__ - INFO - All components initialized successfully
+2025-03-15 12:40:54,463 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 12:40:54,463 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 12:40:54,465 - __main__ - INFO - Training API routes added successfully
+2025-03-15 12:40:54,465 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 12:40:54,940 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-15 12:40:54,940 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-15 12:40:54,942 - werkzeug - INFO -  * Restarting with stat
+2025-03-15 12:40:59,643 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 12:41:00,225 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:41:00,228 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:41:00,230 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:41:00,233 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:41:00,235 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:41:00,237 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:41:03,880 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 12:41:06,519 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 12:41:06,519 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 12:41:06,519 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 12:41:06,523 - __main__ - INFO - All components initialized successfully
+2025-03-15 12:41:08,583 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 12:41:08,584 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 12:41:08,586 - __main__ - INFO - Training API routes added successfully
+2025-03-15 12:41:08,586 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 12:41:08,594 - werkzeug - WARNING -  * Debugger is active!
+2025-03-15 12:41:08,599 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-15 12:41:08,630 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:41:08] "GET / HTTP/1.1" 200 -
+2025-03-15 12:41:08,777 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:41:08] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-15 12:41:08,786 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:41:08] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-15 12:41:08,793 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:41:08] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-15 12:41:13,722 - query_processor - INFO - Processing natural language query: 'Trade 7 details'
+2025-03-15 12:41:13,723 - query_processor - INFO - Detailed request detected: True
+2025-03-15 12:41:13,723 - query_processor - ERROR - Error converting natural language to SQL: 'QueryProcessor' object has no attribute '_check_for_name_search'
+2025-03-15 12:41:13,723 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:41:13] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:42:25,422 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 12:42:26,093 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:42:26,097 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:42:26,100 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:42:26,103 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:42:26,105 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:42:26,107 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:42:27,003 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 12:42:29,044 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 12:42:29,045 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 12:42:29,045 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 12:42:29,048 - __main__ - INFO - All components initialized successfully
+2025-03-15 12:42:31,109 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 12:42:31,109 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 12:42:31,110 - __main__ - INFO - Training API routes added successfully
+2025-03-15 12:42:31,110 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 12:42:31,608 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-15 12:42:31,608 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-15 12:42:31,611 - werkzeug - INFO -  * Restarting with stat
+2025-03-15 12:42:36,406 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 12:42:36,978 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:42:36,981 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:42:36,984 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:42:36,986 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:42:36,988 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:42:36,990 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:42:38,683 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 12:42:41,286 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 12:42:41,286 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 12:42:41,286 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 12:42:41,290 - __main__ - INFO - All components initialized successfully
+2025-03-15 12:42:43,341 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 12:42:43,341 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 12:42:43,343 - __main__ - INFO - Training API routes added successfully
+2025-03-15 12:42:43,343 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 12:42:43,352 - werkzeug - WARNING -  * Debugger is active!
+2025-03-15 12:42:43,357 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-15 12:42:43,385 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:42:43] "GET / HTTP/1.1" 200 -
+2025-03-15 12:42:43,524 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:42:43] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-15 12:42:43,528 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:42:43] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-15 12:42:43,529 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:42:43] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-15 12:42:54,412 - query_processor - INFO - Processing natural language query: 'trade 7 details'
+2025-03-15 12:42:54,412 - query_processor - INFO - Detailed request detected: True
+2025-03-15 12:42:54,415 - query_processor - INFO - Detailed request detected: True
+2025-03-15 12:42:54,415 - query_processor - INFO - Generated SQL query: SELECT trades.trade_id, trades.trade_date, trades.quantity, trades.price, assets.name AS asset_name, traders.name AS trader_name, markets.name AS market_name FROM trades, assets, traders, markets WHERE trades.asset_id = assets.asset_id AND trades.trader_id = traders.trader_id AND trades.market_id = markets.market_id LIMIT 100
+2025-03-15 12:42:54,415 - query_processor - INFO - Generated SQL query: SELECT trades.trade_id, trades.trade_date, trades.quantity, trades.price, assets.name AS asset_name, traders.name AS trader_name, markets.name AS market_name FROM trades, assets, traders, markets WHERE trades.asset_id = assets.asset_id AND trades.trader_id = traders.trader_id AND trades.market_id = markets.market_id LIMIT 100
+2025-03-15 12:42:54,416 - model.chatbot_engine - INFO - Determined primary table: trades
+2025-03-15 12:42:54,416 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'trade 7 details'
+2025-03-15 12:42:54,416 - model.chatbot_engine - INFO - Detailed view requested - found indicator: 'details'
+2025-03-15 12:42:54,416 - model.chatbot_engine - INFO - Detailed view requested: True
+2025-03-15 12:42:54,417 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:42:54] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:43:15,871 - query_processor - INFO - Processing natural language query: 'trade 7'
+2025-03-15 12:43:15,871 - query_processor - INFO - Detailed request detected: False
+2025-03-15 12:43:15,871 - query_processor - INFO - Detailed request detected: False
+2025-03-15 12:43:15,871 - query_processor - INFO - Generated SQL query: SELECT trades.trade_date, trades.quantity, trades.price, assets.name AS asset_name, traders.name AS trader_name, markets.name AS market_name FROM trades, assets, traders, markets WHERE trades.asset_id = assets.asset_id AND trades.trader_id = traders.trader_id AND trades.market_id = markets.market_id LIMIT 100
+2025-03-15 12:43:15,871 - query_processor - INFO - Generated SQL query: SELECT trades.trade_date, trades.quantity, trades.price, assets.name AS asset_name, traders.name AS trader_name, markets.name AS market_name FROM trades, assets, traders, markets WHERE trades.asset_id = assets.asset_id AND trades.trader_id = traders.trader_id AND trades.market_id = markets.market_id LIMIT 100
+2025-03-15 12:43:15,872 - model.chatbot_engine - INFO - Determined primary table: None
+2025-03-15 12:43:15,872 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'trade 7'
+2025-03-15 12:43:15,872 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:43:15,873 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:43:15,873 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:43:15] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:43:24,737 - query_processor - INFO - Processing natural language query: 'ian green'
+2025-03-15 12:43:24,737 - query_processor - INFO - Detailed request detected: False
+2025-03-15 12:43:24,737 - query_processor - INFO - Detected search for specific trader: Ian Green
+2025-03-15 12:43:24,737 - query_processor - INFO - Generated SQL query: SELECT name, registration_date FROM traders WHERE LOWER(name) LIKE '%ian green%' LIMIT 100
+2025-03-15 12:43:24,738 - model.chatbot_engine - INFO - Determined primary table: None
+2025-03-15 12:43:24,738 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'ian green'
+2025-03-15 12:43:24,739 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:43:24,739 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:43:24,739 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:43:24] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:43:34,565 - query_processor - INFO - Processing natural language query: 'Commodity E'
+2025-03-15 12:43:34,565 - query_processor - INFO - Detailed request detected: False
+2025-03-15 12:43:34,565 - query_processor - INFO - Detected search for specific asset: Commodity E
+2025-03-15 12:43:34,565 - query_processor - INFO - Generated SQL query: 
+                SELECT 
+                    assets.name, 
+                    assets.asset_type, 
+                    brokers.name AS broker_name,
+                    price_history.close_price
+                FROM 
+                    assets 
+                    JOIN brokers ON assets.broker_id = brokers.broker_id
+                    LEFT JOIN price_history ON assets.asset_id = price_history.asset_id
+                WHERE 
+                    LOWER(assets.name) LIKE '%commodity e%'
+                LIMIT 100
+            
+2025-03-15 12:43:34,567 - model.chatbot_engine - INFO - Determined primary table: None
+2025-03-15 12:43:34,567 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'commodity e'
+2025-03-15 12:43:34,567 - model.chatbot_engine - INFO - No detailed view requested
+2025-03-15 12:43:34,567 - model.chatbot_engine - INFO - Detailed view requested: False
+2025-03-15 12:43:34,568 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:43:34] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:44:24,597 - query_processor - INFO - Processing natural language query: 'jasmine blue details'
+2025-03-15 12:44:24,598 - query_processor - INFO - Detailed request detected: True
+2025-03-15 12:44:24,598 - query_processor - INFO - Detected search for specific trader: Jasmine Blue
+2025-03-15 12:44:24,598 - query_processor - INFO - Generated SQL query: 
+                SELECT 
+                    t.trader_id, 
+                    t.name, 
+                    t.email, 
+                    t.phone, 
+                    t.registration_date,
+                    a.account_id,
+                    a.account_type,
+                    a.balance,
+                    a.creation_date,
+                    COUNT(DISTINCT tr.trade_id) as trade_count,
+                    SUM(tr.quantity) as total_trade_quantity,
+                    SUM(tr.price * tr.quantity) as total_trade_value
+                FROM 
+                    traders t
+                    LEFT JOIN accounts a ON t.trader_id = a.trader_id
+                    LEFT JOIN trades tr ON t.trader_id = tr.trader_id
+                WHERE 
+                    LOWER(t.name) LIKE '%jasmine blue%'
+                GROUP BY 
+                    t.trader_id, a.account_id
+                LIMIT 100
+            
+2025-03-15 12:44:24,612 - model.chatbot_engine - INFO - Determined primary table: traders
+2025-03-15 12:44:24,612 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'jasmine blue details'
+2025-03-15 12:44:24,612 - model.chatbot_engine - INFO - Detailed view requested - found indicator: 'details'
+2025-03-15 12:44:24,612 - model.chatbot_engine - INFO - Detailed view requested: True
+2025-03-15 12:44:24,613 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:44:24] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:46:18,557 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 12:46:19,373 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:46:19,375 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:46:19,378 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:46:19,380 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:46:19,382 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:46:19,384 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:46:20,120 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 12:46:21,866 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 12:46:21,867 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 12:46:21,867 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 12:46:21,869 - __main__ - INFO - All components initialized successfully
+2025-03-15 12:46:23,936 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 12:46:23,936 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 12:46:23,937 - __main__ - INFO - Training API routes added successfully
+2025-03-15 12:46:23,937 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 12:46:24,473 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-15 12:46:24,473 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-15 12:46:24,475 - werkzeug - INFO -  * Restarting with stat
+2025-03-15 12:46:29,084 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 12:46:29,663 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:46:29,666 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:46:29,670 - tensorflow - WARNING - Layer lstm_2 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:46:29,672 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:46:29,674 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:46:29,676 - tensorflow - WARNING - Layer lstm_3 will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 12:46:31,313 - model.intent_classifier - INFO - Model loaded from models/intent_classifier
+2025-03-15 12:46:33,790 - query_processor - INFO - NLP model loaded successfully
+2025-03-15 12:46:33,790 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 12:46:33,790 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 12:46:33,795 - __main__ - INFO - All components initialized successfully
+2025-03-15 12:46:35,850 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 12:46:35,851 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 12:46:35,853 - __main__ - INFO - Training API routes added successfully
+2025-03-15 12:46:35,853 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 12:46:35,860 - werkzeug - WARNING -  * Debugger is active!
+2025-03-15 12:46:35,866 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-15 12:46:35,895 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:46:35] "GET / HTTP/1.1" 200 -
+2025-03-15 12:46:36,040 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:46:36] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-15 12:46:36,042 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:46:36] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-15 12:46:36,043 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:46:36] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-15 12:46:45,927 - query_processor - INFO - Processing natural language query: 'trade 7 details'
+2025-03-15 12:46:45,927 - query_processor - INFO - Detected query for specific trade ID: 7
+2025-03-15 12:46:45,927 - query_processor - INFO - Generated SQL query: 
+                    SELECT 
+                        t.trade_id,
+                        t.trade_date,
+                        t.quantity,
+                        t.price,
+                        t.quantity * t.price as trade_value,
+                        tr.name as trader_name,
+                        a.name as asset_name,
+                        a.asset_type,
+                        m.name as market_name,
+                        o.order_type,
+                        os.status
+                    FROM 
+                        trades t
+                        JOIN traders tr ON t.trader_id = tr.trader_id
+                        JOIN assets a ON t.asset_id = a.asset_id
+                        JOIN markets m ON t.market_id = m.market_id
+                        LEFT JOIN orders o ON t.trade_id = o.trade_id
+                        LEFT JOIN order_status os ON o.order_id = os.order_id
+                    WHERE 
+                        t.trade_id = 7
+                    LIMIT 100
+                
+2025-03-15 12:46:45,930 - model.chatbot_engine - INFO - Determined primary table: trades
+2025-03-15 12:46:45,930 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'trade 7 details'
+2025-03-15 12:46:45,930 - model.chatbot_engine - INFO - Detailed view requested - found indicator: 'details'
+2025-03-15 12:46:45,931 - model.chatbot_engine - INFO - Detailed view requested: True
+2025-03-15 12:46:45,931 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:46:45] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 12:46:58,632 - query_processor - INFO - Processing natural language query: 'order 7 details'
+2025-03-15 12:46:58,632 - query_processor - INFO - Detected query for specific order ID: 7
+2025-03-15 12:46:58,632 - query_processor - INFO - Generated SQL query: 
+                    SELECT 
+                        o.order_id,
+                        o.order_type,
+                        o.order_date,
+                        os.status,
+                        os.status_date,
+                        t.trade_id,
+                        t.trade_date,
+                        t.quantity,
+                        t.price,
+                        tr.name as trader_name,
+                        a.name as asset_name
+                    FROM 
+                        orders o
+                        JOIN trades t ON o.trade_id = t.trade_id
+                        JOIN traders tr ON t.trader_id = tr.trader_id
+                        JOIN assets a ON t.asset_id = a.asset_id
+                        LEFT JOIN order_status os ON o.order_id = os.order_id
+                    WHERE 
+                        o.order_id = 7
+                    LIMIT 100
+                
+2025-03-15 12:46:58,633 - model.chatbot_engine - INFO - Determined primary table: trades
+2025-03-15 12:46:58,633 - model.chatbot_engine - INFO - Checking if detailed view is requested: 'order 7 details'
+2025-03-15 12:46:58,633 - model.chatbot_engine - INFO - Detailed view requested - found indicator: 'details'
+2025-03-15 12:46:58,635 - model.chatbot_engine - INFO - Detailed view requested: True
+2025-03-15 12:46:58,635 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:46:58] "POST /api/chat HTTP/1.1" 200 -

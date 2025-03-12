@@ -49,6 +49,12 @@ class DatabaseQueryGenerator:
                 "Find {entity} number {id}",
                 "Get details for {entity} {id}",
                 "Display information about {entity} {id}"
+            ],
+            "detailed": [
+                "Show me all details about {entities}",
+                "Give me complete information on {entities}",
+                "Show full records for {entities}",
+                "I want to see all data for {entities}"
             ]
         }
 
@@ -76,6 +82,19 @@ class DatabaseQueryGenerator:
             "orders": "order",
             "order_status": "order status",
             "price_history": "price record"
+        }
+
+        self.essential_fields = {
+            "markets": ["name", "location"],
+            "brokers": ["name"],
+            "traders": ["name", "registration_date"],
+            "assets": ["name", "asset_type"],
+            "trades": ["trade_date", "quantity", "price"],
+            "accounts": ["account_type", "balance"],
+            "transactions": ["transaction_date", "transaction_type", "amount"],
+            "orders": ["order_type", "order_date"],
+            "order_status": ["status", "status_date"],
+            "price_history": ["price_date", "open_price", "close_price"]
         }
 
     def get_table_metadata(self):
@@ -165,7 +184,6 @@ class DatabaseQueryGenerator:
             return {}
 
     def generate_queries(self):
-
         queries = []
         labels = []
 
@@ -186,6 +204,13 @@ class DatabaseQueryGenerator:
                                                            table_name[:-1] if table_name.endswith('s') else table_name)
 
                 for template in self.question_templates["list_all"]:
+                    for entity_name in entity_plural:
+                        query = template.format(entities=entity_name)
+                        queries.append(query)
+                        labels.append("database_query")
+
+                # Add detailed view queries
+                for template in self.question_templates["detailed"]:
                     for entity_name in entity_plural:
                         query = template.format(entities=entity_name)
                         queries.append(query)
@@ -257,6 +282,21 @@ class DatabaseQueryGenerator:
                                     queries.append(query)
                                     labels.append("database_query")
 
+            # Add queries for sensitive data
+            sensitive_data_queries = [
+                "Show me broker emails",
+                "What are the license numbers for brokers",
+                "Show me trader contact information",
+                "What's the email address for trader 1",
+                "Show me sensitive data for brokers",
+                "Display all encrypted fields",
+                "Show me broker 1's license number"
+            ]
+
+            for query in sensitive_data_queries:
+                queries.append(query)
+                labels.append("database_query")
+
             finance_queries = [
                 "Show me trades with highest value",
                 "What is the average trade amount",
@@ -298,7 +338,6 @@ class DatabaseQueryGenerator:
             return [], []
 
     def generate_training_data(self):
-
         try:
             db_queries, db_labels = self.generate_queries()
 
@@ -350,7 +389,6 @@ class DatabaseQueryGenerator:
             return {"texts": [], "labels": []}
 
     def enrich_existing_training_data(self, existing_path="training/training_data.json"):
-
         try:
             new_data = self.generate_training_data()
 

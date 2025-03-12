@@ -173,12 +173,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     clearButton.addEventListener('click', clearChat);
 
-    const exampleQuestions = [
-        "What markets are available?",
-        "Show me all brokers",
-        "What types of assets do we have?",
-        "Show me recent trades",
-        "Which orders are completed?"
+    const exampleQueries = [
+        {
+            query: "Show me markets",
+            description: "Basic view with only essential fields"
+        },
+        {
+            query: "Show me all details about markets",
+            description: "Detailed view with all available fields"
+        },
+        {
+            query: "Show me brokers with their contact details",
+            description: "Query with sensitive encrypted fields"
+        },
+        {
+            query: "Show me the highest priced assets",
+            description: "Comparative query with ranking"
+        },
+        {
+            query: "Show me recent trades in New York markets",
+            description: "Complex query with filtering and relationships"
+        }
     ];
 
     function createExampleQuestions() {
@@ -187,19 +202,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const exampleContent = document.createElement('div');
         exampleContent.className = 'message-content';
-        exampleContent.innerHTML = '<p>Try asking one of these questions:</p>';
+        exampleContent.innerHTML = '<p>Try one of these example queries:</p>';
 
         const questionsList = document.createElement('div');
         questionsList.className = 'example-questions';
 
-        exampleQuestions.forEach(question => {
+        exampleQueries.forEach(example => {
             const questionButton = document.createElement('button');
             questionButton.className = 'example-question-btn';
-            questionButton.textContent = question;
+
+            const queryContainer = document.createElement('div');
+
+            const queryText = document.createElement('div');
+            queryText.className = 'query-text';
+            queryText.textContent = example.query;
+            queryContainer.appendChild(queryText);
+
+            const queryDescription = document.createElement('div');
+            queryDescription.className = 'query-description';
+            queryDescription.textContent = example.description;
+            queryContainer.appendChild(queryDescription);
+
+            questionButton.appendChild(queryContainer);
+
             questionButton.addEventListener('click', () => {
-                userInput.value = question;
+                userInput.value = example.query;
                 sendMessage();
             });
+
             questionsList.appendChild(questionButton);
         });
 
@@ -214,37 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
         chatMessages.appendChild(exampleContainer);
     }
 
-    function addExampleQuestionsStyles() {
-        const style = document.createElement('style');
-        style.textContent = `
-            .example-questions {
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
-                margin-top: 10px;
-            }
-            
-            .example-question-btn {
-                background-color: #f0f0f0;
-                border: 1px solid #ddd;
-                border-radius: 16px;
-                padding: 8px 12px;
-                text-align: left;
-                cursor: pointer;
-                transition: background-color 0.2s;
-                font-size: 14px;
-                color: #0084ff;
-            }
-            
-            .example-question-btn:hover {
-                background-color: #e4e6eb;
-            }
-        `;
-        document.head.appendChild(style);
-    }
-
     setTimeout(() => {
-        addExampleQuestionsStyles();
         createExampleQuestions();
         scrollToBottom();
     }, 1000);
