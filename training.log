@@ -3966,3 +3966,487 @@ LookupError:
 2025-03-15 12:46:58,633 - model.chatbot_engine - INFO - Detailed view requested - found indicator: 'details'
 2025-03-15 12:46:58,635 - model.chatbot_engine - INFO - Detailed view requested: True
 2025-03-15 12:46:58,635 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 12:46:58] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 14:04:46,359 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 14:04:46,359 - __main__ - ERROR - Error initializing components: IntentClassifier.__init__() got an unexpected keyword argument 'model_path'
+2025-03-15 14:04:46,359 - __main__ - ERROR - Failed to initialize components. Exiting.
+2025-03-15 14:07:40,537 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 14:07:40,537 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-15 14:07:40,538 - model.intent_classifier - INFO - Loaded 4 intent classes from models/intent_classifier\intent_classes.json
+2025-03-15 14:07:40,538 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-15 14:07:40,539 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 14:07:40,539 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 14:07:40,541 - __main__ - INFO - All components initialized successfully
+2025-03-15 14:07:42,589 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 14:07:42,590 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 14:07:42,591 - __main__ - INFO - Training API routes added successfully
+2025-03-15 14:07:42,591 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 14:07:42,608 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-15 14:07:42,608 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-15 14:07:42,610 - werkzeug - INFO -  * Restarting with stat
+2025-03-15 14:07:47,790 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 14:07:47,791 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-15 14:07:47,791 - model.intent_classifier - INFO - Loaded 4 intent classes from models/intent_classifier\intent_classes.json
+2025-03-15 14:07:47,792 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-15 14:07:47,792 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 14:07:47,792 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 14:07:47,794 - __main__ - INFO - All components initialized successfully
+2025-03-15 14:07:49,849 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 14:07:49,849 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 14:07:49,851 - __main__ - INFO - Training API routes added successfully
+2025-03-15 14:07:49,851 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 14:07:49,858 - werkzeug - WARNING -  * Debugger is active!
+2025-03-15 14:07:49,862 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-15 14:08:03,719 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:08:03] "GET / HTTP/1.1" 200 -
+2025-03-15 14:08:03,837 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:08:03] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-15 14:08:03,842 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:08:03] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-15 14:08:03,842 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:08:03] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-15 14:08:06,393 - model.intent_classifier - ERROR - Model or tokenizer not initialized
+2025-03-15 14:08:06,393 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_list', 'confidence': 0.5}
+2025-03-15 14:08:06,393 - model.chatbot_engine - ERROR - Error processing user input: 'QueryProcessor' object has no attribute 'secure_process_query'
+2025-03-15 14:08:06,394 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:08:06] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 14:08:38,853 - werkzeug - INFO -  * Detected change in 'C:\\Users\\ioanc\\PycharmProjects\\ChatBot\\query_processor.py', reloading
+2025-03-15 14:08:39,361 - werkzeug - INFO -  * Restarting with stat
+2025-03-15 14:08:44,773 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 14:08:44,773 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-15 14:08:44,773 - model.intent_classifier - INFO - Loaded 4 intent classes from models/intent_classifier\intent_classes.json
+2025-03-15 14:08:44,773 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-15 14:08:44,773 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 14:08:44,773 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 14:08:44,779 - __main__ - INFO - All components initialized successfully
+2025-03-15 14:08:46,839 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 14:08:46,839 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 14:08:46,839 - __main__ - INFO - Training API routes added successfully
+2025-03-15 14:08:46,839 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 14:08:46,850 - werkzeug - WARNING -  * Debugger is active!
+2025-03-15 14:08:46,852 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-15 14:09:26,679 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 14:09:26,680 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-15 14:09:26,680 - model.intent_classifier - INFO - Loaded 4 intent classes from models/intent_classifier\intent_classes.json
+2025-03-15 14:09:26,681 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-15 14:09:26,681 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 14:09:26,681 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 14:09:26,684 - __main__ - INFO - All components initialized successfully
+2025-03-15 14:09:28,713 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 14:09:28,713 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 14:09:28,715 - __main__ - INFO - Training API routes added successfully
+2025-03-15 14:09:28,715 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 14:09:28,725 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-15 14:09:28,727 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-15 14:09:28,728 - werkzeug - INFO -  * Restarting with stat
+2025-03-15 14:09:34,026 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 14:09:34,026 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-15 14:09:34,026 - model.intent_classifier - INFO - Loaded 4 intent classes from models/intent_classifier\intent_classes.json
+2025-03-15 14:09:34,027 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-15 14:09:34,028 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 14:09:34,028 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 14:09:34,030 - __main__ - INFO - All components initialized successfully
+2025-03-15 14:09:36,080 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 14:09:36,080 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 14:09:36,082 - __main__ - INFO - Training API routes added successfully
+2025-03-15 14:09:36,082 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 14:09:36,091 - werkzeug - WARNING -  * Debugger is active!
+2025-03-15 14:09:36,096 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-15 14:09:36,118 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:09:36] "GET / HTTP/1.1" 200 -
+2025-03-15 14:09:36,218 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:09:36] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-15 14:09:36,223 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:09:36] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-15 14:09:36,228 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:09:36] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-15 14:09:37,837 - model.intent_classifier - ERROR - Model or tokenizer not initialized
+2025-03-15 14:09:37,837 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_list', 'confidence': 0.5}
+2025-03-15 14:09:37,837 - model.chatbot_engine - ERROR - Error processing user input: 'QueryProcessor' object has no attribute 'secure_process_query'
+2025-03-15 14:09:37,838 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:09:37] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 14:10:50,185 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 14:10:50,185 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-15 14:10:50,185 - model.intent_classifier - INFO - Loaded 4 intent classes from models/intent_classifier\intent_classes.json
+2025-03-15 14:10:50,186 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-15 14:10:50,187 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 14:10:50,187 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 14:10:50,190 - __main__ - INFO - All components initialized successfully
+2025-03-15 14:10:52,217 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 14:10:52,217 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 14:10:52,219 - __main__ - INFO - Training API routes added successfully
+2025-03-15 14:10:52,219 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 14:10:52,234 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-15 14:10:52,235 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-15 14:10:52,237 - werkzeug - INFO -  * Restarting with stat
+2025-03-15 14:10:57,605 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 14:10:57,606 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-15 14:10:57,606 - model.intent_classifier - INFO - Loaded 4 intent classes from models/intent_classifier\intent_classes.json
+2025-03-15 14:10:57,608 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-15 14:10:57,608 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 14:10:57,608 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 14:10:57,610 - __main__ - INFO - All components initialized successfully
+2025-03-15 14:10:59,644 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 14:10:59,644 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 14:10:59,644 - __main__ - INFO - Training API routes added successfully
+2025-03-15 14:10:59,644 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 14:10:59,654 - werkzeug - WARNING -  * Debugger is active!
+2025-03-15 14:10:59,657 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-15 14:10:59,677 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:10:59] "GET / HTTP/1.1" 200 -
+2025-03-15 14:10:59,792 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:10:59] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-15 14:10:59,796 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:10:59] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-15 14:10:59,796 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:10:59] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-15 14:11:01,392 - model.intent_classifier - ERROR - Model or tokenizer not initialized
+2025-03-15 14:11:01,392 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_list', 'confidence': 0.5}
+2025-03-15 14:11:01,394 - model.chatbot_engine - ERROR - Error processing user input: 'QueryProcessor' object has no attribute 'secure_process_query'
+2025-03-15 14:11:01,394 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:11:01] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 14:24:55,217 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 14:24:55,217 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-15 14:24:55,218 - model.intent_classifier - INFO - Loaded 4 intent classes from models/intent_classifier\intent_classes.json
+2025-03-15 14:24:55,218 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-15 14:24:55,219 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 14:24:55,219 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 14:24:55,221 - __main__ - INFO - All components initialized successfully
+2025-03-15 14:24:57,278 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 14:24:57,278 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 14:24:57,279 - __main__ - INFO - Training API routes added successfully
+2025-03-15 14:24:57,279 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 14:24:57,289 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-15 14:24:57,289 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-15 14:24:57,290 - werkzeug - INFO -  * Restarting with stat
+2025-03-15 14:25:02,038 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 14:25:02,038 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-15 14:25:02,039 - model.intent_classifier - INFO - Loaded 4 intent classes from models/intent_classifier\intent_classes.json
+2025-03-15 14:25:02,039 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-15 14:25:02,039 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 14:25:02,039 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 14:25:02,043 - __main__ - INFO - All components initialized successfully
+2025-03-15 14:25:04,099 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 14:25:04,100 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 14:25:04,101 - __main__ - INFO - Training API routes added successfully
+2025-03-15 14:25:04,101 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 14:25:04,107 - werkzeug - WARNING -  * Debugger is active!
+2025-03-15 14:25:04,110 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-15 14:25:04,131 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:25:04] "GET / HTTP/1.1" 200 -
+2025-03-15 14:25:04,195 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:25:04] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-15 14:25:04,220 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:25:04] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-15 14:25:04,223 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:25:04] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-15 14:25:06,283 - model.intent_classifier - ERROR - Model or tokenizer not initialized
+2025-03-15 14:25:06,284 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_list', 'confidence': 0.5}
+2025-03-15 14:25:06,284 - query_processor - INFO - Direct query processing for: Show me the highest priced assets
+2025-03-15 14:25:06,284 - query_processor - INFO - Generated SQL from natural language: SELECT price_history.price_date, price_history.close_price, assets.name FROM price_history, assets WHERE price_history.asset_id = assets.asset_id LIMIT 100
+2025-03-15 14:25:06,286 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:25:06] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 14:25:17,621 - model.intent_classifier - ERROR - Model or tokenizer not initialized
+2025-03-15 14:25:17,621 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_list', 'confidence': 0.5}
+2025-03-15 14:25:17,621 - query_processor - INFO - Direct query processing for: Show me recent trades in New York markets
+2025-03-15 14:25:17,621 - query_processor - INFO - Generated SQL from natural language: SELECT trades.trade_date FROM trades, markets WHERE trades.market_id = markets.market_id LIMIT 100
+2025-03-15 14:25:17,623 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:25:17] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 14:25:23,391 - model.intent_classifier - ERROR - Model or tokenizer not initialized
+2025-03-15 14:25:23,392 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_list', 'confidence': 0.5}
+2025-03-15 14:25:23,392 - query_processor - INFO - Direct query processing for: Show me all details about markets
+2025-03-15 14:25:23,392 - query_processor - INFO - Generated SQL from natural language: SELECT markets.name, markets.location FROM markets LIMIT 100
+2025-03-15 14:25:23,394 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:25:23] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 14:25:36,587 - model.intent_classifier - ERROR - Model or tokenizer not initialized
+2025-03-15 14:25:36,587 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_list', 'confidence': 0.5}
+2025-03-15 14:25:36,588 - query_processor - INFO - Direct query processing for: all details about jasmine blue
+2025-03-15 14:25:36,588 - query_processor - WARNING - No tables identified in the query
+2025-03-15 14:25:36,588 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:25:36] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 14:25:43,856 - model.intent_classifier - ERROR - Model or tokenizer not initialized
+2025-03-15 14:25:43,858 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_list', 'confidence': 0.5}
+2025-03-15 14:25:43,858 - query_processor - INFO - Direct query processing for: jasmine blue details
+2025-03-15 14:25:43,858 - query_processor - WARNING - No tables identified in the query
+2025-03-15 14:25:43,858 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:25:43] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 14:25:47,628 - model.intent_classifier - ERROR - Model or tokenizer not initialized
+2025-03-15 14:25:47,628 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_list', 'confidence': 0.5}
+2025-03-15 14:25:47,628 - query_processor - INFO - Direct query processing for: jasmine blue
+2025-03-15 14:25:47,628 - query_processor - WARNING - No tables identified in the query
+2025-03-15 14:25:47,629 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:25:47] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 14:25:58,760 - model.intent_classifier - ERROR - Model or tokenizer not initialized
+2025-03-15 14:25:58,760 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_list', 'confidence': 0.5}
+2025-03-15 14:25:58,760 - query_processor - INFO - Direct query processing for: trade 7 details
+2025-03-15 14:25:58,760 - query_processor - INFO - Generated SQL from natural language: SELECT trades.trade_date, trades.quantity, trades.price FROM trades LIMIT 100
+2025-03-15 14:25:58,762 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:25:58] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 14:26:08,830 - model.intent_classifier - ERROR - Model or tokenizer not initialized
+2025-03-15 14:26:08,830 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_list', 'confidence': 0.5}
+2025-03-15 14:26:08,830 - query_processor - INFO - Direct query processing for: details about brokerone
+2025-03-15 14:26:08,830 - query_processor - INFO - Generated SQL from natural language: SELECT brokers.name FROM brokers LIMIT 100
+2025-03-15 14:26:08,832 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:26:08] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 14:31:09,776 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 14:31:09,777 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-15 14:31:09,777 - model.intent_classifier - INFO - Loaded 4 intent classes from models/intent_classifier\intent_classes.json
+2025-03-15 14:31:09,778 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-15 14:31:09,778 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 14:31:09,778 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 14:31:09,781 - __main__ - INFO - All components initialized successfully
+2025-03-15 14:31:11,844 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 14:31:11,845 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 14:31:11,846 - __main__ - INFO - Training API routes added successfully
+2025-03-15 14:31:11,846 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 14:31:11,855 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-15 14:31:11,855 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-15 14:31:11,858 - werkzeug - INFO -  * Restarting with stat
+2025-03-15 14:31:16,487 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-15 14:31:16,487 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-15 14:31:16,488 - model.intent_classifier - INFO - Loaded 4 intent classes from models/intent_classifier\intent_classes.json
+2025-03-15 14:31:16,488 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-15 14:31:16,489 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-15 14:31:16,489 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-15 14:31:16,491 - __main__ - INFO - All components initialized successfully
+2025-03-15 14:31:18,535 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 14:31:18,535 - __main__ - INFO - Initializing speech recognition routes
+2025-03-15 14:31:18,537 - __main__ - INFO - Training API routes added successfully
+2025-03-15 14:31:18,537 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-15 14:31:18,542 - werkzeug - WARNING -  * Debugger is active!
+2025-03-15 14:31:18,545 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-15 14:31:18,566 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:31:18] "GET / HTTP/1.1" 200 -
+2025-03-15 14:31:18,641 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:31:18] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-15 14:31:18,654 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:31:18] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-15 14:31:18,658 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:31:18] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-15 14:31:24,788 - model.intent_classifier - ERROR - Model or tokenizer not initialized
+2025-03-15 14:31:24,788 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_list', 'confidence': 0.5}
+2025-03-15 14:31:24,788 - query_processor - INFO - Direct query processing for: jasmine blue all details
+2025-03-15 14:31:24,788 - query_processor - WARNING - No tables identified in the query
+2025-03-15 14:31:24,788 - werkzeug - INFO - 127.0.0.1 - - [15/Mar/2025 14:31:24] "POST /api/chat HTTP/1.1" 200 -
+2025-03-15 16:08:58,573 - __main__ - INFO - Debug mode enabled
+2025-03-15 16:08:58,588 - __main__ - INFO - Training model with args: Namespace(config='config.json', generate_only=False, enrich=False, augment=True, output='training/generated_training_data.json', model_output='models/intent_classifier', early_stopping=True, patience=5, reduce_complexity=True, cross_validation=0, debug=True)
+2025-03-15 16:08:58,658 - __main__ - INFO - Loading database configuration...
+2025-03-15 16:08:58,659 - __main__ - INFO - Connecting to database fm_database...
+2025-03-15 16:09:00,720 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 16:09:00,720 - __main__ - INFO - Setting up query generator with output path: training/generated_training_data.json
+2025-03-15 16:09:00,720 - __main__ - INFO - Generating new training data
+2025-03-15 16:09:00,767 - training.query_generator - INFO - Processing table: accounts
+2025-03-15 16:09:00,774 - training.query_generator - INFO - Processing table: assets
+2025-03-15 16:09:00,778 - training.query_generator - INFO - Processing table: brokers
+2025-03-15 16:09:00,782 - training.query_generator - INFO - Processing table: markets
+2025-03-15 16:09:00,785 - training.query_generator - INFO - Processing table: order_status
+2025-03-15 16:09:00,787 - training.query_generator - INFO - Processing table: orders
+2025-03-15 16:09:00,789 - training.query_generator - INFO - Processing table: price_history
+2025-03-15 16:09:00,789 - training.query_generator - INFO - Processing table: traders
+2025-03-15 16:09:00,789 - training.query_generator - INFO - Processing table: trades
+2025-03-15 16:09:00,798 - training.query_generator - INFO - Processing table: transactions
+2025-03-15 16:09:00,808 - training.query_generator - INFO - Generated 6319 unique queries from database schema
+2025-03-15 16:09:00,822 - training.query_generator - INFO - Generated 6359 training examples and saved to training/generated_training_data.json
+2025-03-15 16:09:00,822 - __main__ - INFO - Successfully generated 6359 training examples
+2025-03-15 16:09:00,822 - database_connector - INFO - Database connection closed
+2025-03-15 16:09:00,840 - __main__ - INFO - Applying data augmentation...
+2025-03-15 16:09:00,843 - __main__ - INFO - Augmenting 1907 examples with simple methods
+2025-03-15 16:09:00,847 - __main__ - INFO - Data augmentation complete. Original size: 6359, New size: 7964
+2025-03-15 16:09:00,855 - __main__ - INFO - Comparative augmentation complete. Original size: 6359, New size: 7957
+2025-03-15 16:09:00,855 - __main__ - INFO - Applying specialized comparative query augmentation...
+2025-03-15 16:09:00,863 - __main__ - INFO - Augmenting 1314 comparative queries
+2025-03-15 16:09:00,863 - __main__ - ERROR - Error training intent classifier: cannot unpack non-iterable NoneType object
+2025-03-15 16:14:30,030 - __main__ - INFO - === Starting intent classifier training ===
+2025-03-15 16:14:30,030 - __main__ - INFO - Parsing command line arguments...
+2025-03-15 16:14:30,030 - __main__ - INFO - Arguments: Namespace(config='config.json', generate_only=True, enrich=False, augment=False, output='training/generated_training_data.json', model_output='models/intent_classifier', early_stopping=False, reduce_complexity=False, cross_validation=0, debug=True)
+2025-03-15 16:14:30,030 - __main__ - INFO - Debug mode enabled
+2025-03-15 16:14:30,030 - __main__ - INFO - Preparing training data...
+2025-03-15 16:14:30,030 - __main__ - INFO - Loading database configuration...
+2025-03-15 16:14:30,030 - __main__ - INFO - Using config file: config.json
+2025-03-15 16:14:30,038 - __main__ - INFO - Connecting to database fm_database at localhost...
+2025-03-15 16:14:32,102 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 16:14:32,102 - __main__ - INFO - Database connection result: True
+2025-03-15 16:14:32,102 - __main__ - INFO - Setting up query generator with output path: training/generated_training_data.json
+2025-03-15 16:14:32,102 - __main__ - INFO - Generating new training data
+2025-03-15 16:14:32,106 - training.query_generator - INFO - Processing table: accounts
+2025-03-15 16:14:32,110 - training.query_generator - INFO - Processing table: assets
+2025-03-15 16:14:32,110 - training.query_generator - INFO - Processing table: brokers
+2025-03-15 16:14:32,110 - training.query_generator - INFO - Processing table: markets
+2025-03-15 16:14:32,118 - training.query_generator - INFO - Processing table: order_status
+2025-03-15 16:14:32,121 - training.query_generator - INFO - Processing table: orders
+2025-03-15 16:14:32,123 - training.query_generator - INFO - Processing table: price_history
+2025-03-15 16:14:32,126 - training.query_generator - INFO - Processing table: traders
+2025-03-15 16:14:32,126 - training.query_generator - INFO - Processing table: trades
+2025-03-15 16:14:32,135 - training.query_generator - INFO - Processing table: transactions
+2025-03-15 16:14:32,143 - training.query_generator - INFO - Generated 6319 unique queries from database schema
+2025-03-15 16:14:32,160 - training.query_generator - INFO - Generated 6359 training examples and saved to training/generated_training_data.json
+2025-03-15 16:14:32,160 - __main__ - INFO - Generation complete, got 6359 examples
+2025-03-15 16:14:32,160 - __main__ - INFO - Successfully prepared 6359 training examples
+2025-03-15 16:14:32,160 - __main__ - INFO - Generate-only mode. Skipping model training.
+2025-03-15 16:14:32,167 - database_connector - INFO - Database connection closed
+2025-03-15 16:14:32,167 - __main__ - INFO - Database connection closed
+2025-03-15 16:14:32,167 - __main__ - INFO - Training data generation complete. Exiting as requested.
+2025-03-15 16:14:32,167 - __main__ - INFO - === Training completed successfully ===
+2025-03-15 16:14:50,509 - __main__ - INFO - === Starting intent classifier training ===
+2025-03-15 16:14:50,509 - __main__ - INFO - Parsing command line arguments...
+2025-03-15 16:14:50,509 - __main__ - INFO - Arguments: Namespace(config='config.json', generate_only=False, enrich=False, augment=True, output='training/generated_training_data.json', model_output='models/intent_classifier', early_stopping=True, reduce_complexity=True, cross_validation=0, debug=False)
+2025-03-15 16:14:50,509 - __main__ - INFO - Preparing training data...
+2025-03-15 16:14:50,509 - __main__ - INFO - Loading database configuration...
+2025-03-15 16:14:50,509 - __main__ - INFO - Using config file: config.json
+2025-03-15 16:14:50,509 - __main__ - INFO - Connecting to database fm_database at localhost...
+2025-03-15 16:14:52,543 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 16:14:52,543 - __main__ - INFO - Database connection result: True
+2025-03-15 16:14:52,543 - __main__ - INFO - Setting up query generator with output path: training/generated_training_data.json
+2025-03-15 16:14:52,543 - __main__ - INFO - Generating new training data
+2025-03-15 16:14:52,543 - training.query_generator - INFO - Processing table: accounts
+2025-03-15 16:14:52,551 - training.query_generator - INFO - Processing table: assets
+2025-03-15 16:14:52,551 - training.query_generator - INFO - Processing table: brokers
+2025-03-15 16:14:52,556 - training.query_generator - INFO - Processing table: markets
+2025-03-15 16:14:52,559 - training.query_generator - INFO - Processing table: order_status
+2025-03-15 16:14:52,559 - training.query_generator - INFO - Processing table: orders
+2025-03-15 16:14:52,574 - training.query_generator - INFO - Processing table: price_history
+2025-03-15 16:14:52,578 - training.query_generator - INFO - Processing table: traders
+2025-03-15 16:14:52,578 - training.query_generator - INFO - Processing table: trades
+2025-03-15 16:14:52,583 - training.query_generator - INFO - Processing table: transactions
+2025-03-15 16:14:52,593 - training.query_generator - INFO - Generated 6319 unique queries from database schema
+2025-03-15 16:14:52,612 - training.query_generator - INFO - Generated 6359 training examples and saved to training/generated_training_data.json
+2025-03-15 16:14:52,612 - __main__ - INFO - Generation complete, got 6359 examples
+2025-03-15 16:14:52,612 - __main__ - INFO - Successfully prepared 6359 training examples
+2025-03-15 16:14:52,612 - database_connector - INFO - Database connection closed
+2025-03-15 16:14:52,612 - __main__ - INFO - Database connection closed
+2025-03-15 16:14:52,612 - __main__ - INFO - Proceeding to model training...
+2025-03-15 16:14:52,612 - __main__ - INFO - Starting model training...
+2025-03-15 16:14:52,612 - __main__ - INFO - Training with 6359 examples across 16 intent classes
+2025-03-15 16:14:52,612 - __main__ - INFO - Applying data augmentation...
+2025-03-15 16:14:52,618 - __main__ - INFO - Augmenting 1907 examples with simple methods
+2025-03-15 16:14:52,619 - __main__ - INFO - Data augmentation complete. Original size: 6359, New size: 7955
+2025-03-15 16:14:52,626 - __main__ - INFO - Comparative augmentation complete. Original size: 6359, New size: 7947
+2025-03-15 16:14:52,626 - __main__ - INFO - After basic augmentation: 7947 examples
+2025-03-15 16:14:52,626 - __main__ - INFO - Applying specialized comparative query augmentation...
+2025-03-15 16:14:52,636 - __main__ - INFO - Augmenting 1317 comparative queries
+2025-03-15 16:14:52,638 - __main__ - ERROR - Error in model training: cannot unpack non-iterable NoneType object
+2025-03-15 16:14:52,651 - __main__ - ERROR - Model training failed
+2025-03-15 16:14:52,651 - __main__ - INFO - === Training failed ===
+2025-03-15 16:15:57,411 - __main__ - INFO - === Starting intent classifier training ===
+2025-03-15 16:15:57,411 - __main__ - INFO - Parsing command line arguments...
+2025-03-15 16:15:57,411 - __main__ - INFO - Arguments: Namespace(config='config.json', generate_only=False, enrich=False, augment=True, output='training/generated_training_data.json', model_output='models/intent_classifier', early_stopping=True, reduce_complexity=True, cross_validation=0, debug=False)
+2025-03-15 16:15:57,411 - __main__ - INFO - Preparing training data...
+2025-03-15 16:15:57,411 - __main__ - INFO - Loading database configuration...
+2025-03-15 16:15:57,411 - __main__ - INFO - Using config file: config.json
+2025-03-15 16:15:57,411 - __main__ - INFO - Connecting to database fm_database at localhost...
+2025-03-15 16:15:59,454 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 16:15:59,454 - __main__ - INFO - Database connection result: True
+2025-03-15 16:15:59,454 - __main__ - INFO - Setting up query generator with output path: training/generated_training_data.json
+2025-03-15 16:15:59,454 - __main__ - INFO - Generating new training data
+2025-03-15 16:15:59,458 - training.query_generator - INFO - Processing table: accounts
+2025-03-15 16:15:59,462 - training.query_generator - INFO - Processing table: assets
+2025-03-15 16:15:59,462 - training.query_generator - INFO - Processing table: brokers
+2025-03-15 16:15:59,471 - training.query_generator - INFO - Processing table: markets
+2025-03-15 16:15:59,473 - training.query_generator - INFO - Processing table: order_status
+2025-03-15 16:15:59,474 - training.query_generator - INFO - Processing table: orders
+2025-03-15 16:15:59,477 - training.query_generator - INFO - Processing table: price_history
+2025-03-15 16:15:59,479 - training.query_generator - INFO - Processing table: traders
+2025-03-15 16:15:59,482 - training.query_generator - INFO - Processing table: trades
+2025-03-15 16:15:59,482 - training.query_generator - INFO - Processing table: transactions
+2025-03-15 16:15:59,496 - training.query_generator - INFO - Generated 6319 unique queries from database schema
+2025-03-15 16:15:59,512 - training.query_generator - INFO - Generated 6359 training examples and saved to training/generated_training_data.json
+2025-03-15 16:15:59,512 - __main__ - INFO - Generation complete, got 6359 examples
+2025-03-15 16:15:59,512 - __main__ - INFO - Successfully prepared 6359 training examples
+2025-03-15 16:15:59,512 - database_connector - INFO - Database connection closed
+2025-03-15 16:15:59,512 - __main__ - INFO - Database connection closed
+2025-03-15 16:15:59,512 - __main__ - INFO - Proceeding to model training...
+2025-03-15 16:15:59,512 - __main__ - INFO - Starting model training...
+2025-03-15 16:15:59,512 - __main__ - INFO - Training with 6359 examples across 16 intent classes
+2025-03-15 16:15:59,512 - __main__ - INFO - Applying data augmentation...
+2025-03-15 16:15:59,519 - __main__ - INFO - Augmenting 1907 examples with simple methods
+2025-03-15 16:15:59,527 - __main__ - INFO - Data augmentation complete. Original size: 6359, New size: 7944
+2025-03-15 16:15:59,531 - __main__ - INFO - Comparative augmentation complete. Original size: 6359, New size: 7939
+2025-03-15 16:15:59,531 - __main__ - INFO - After basic augmentation: 7939 examples
+2025-03-15 16:15:59,531 - __main__ - INFO - Applying specialized comparative query augmentation...
+2025-03-15 16:15:59,535 - __main__ - INFO - Augmenting 1308 comparative queries
+2025-03-15 16:15:59,543 - __main__ - INFO - After comparative augmentation: 8283 examples
+2025-03-15 16:15:59,543 - __main__ - INFO - Tokenizing text data...
+2025-03-15 16:15:59,674 - __main__ - INFO - Intent classes: ['database_query_comparative_highest', 'database_query_comparative_lowest', 'database_query_comparative_middle', 'database_query_count', 'database_query_detailed', 'database_query_filter', 'database_query_list', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_sort_ascending', 'database_query_sort_descending', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-15 16:15:59,674 - __main__ - INFO - Creating intent classifier with output to models/intent_classifier
+2025-03-15 16:15:59,674 - __main__ - INFO - Using simplified model architecture
+2025-03-15 16:16:01,088 - tensorflow - WARNING - Layer lstm will not use cuDNN kernels since it doesn't meet the criteria. It will use a generic GPU kernel as fallback when running on GPU.
+2025-03-15 16:16:01,549 - __main__ - INFO - Adding early stopping callback
+2025-03-15 16:16:01,549 - __main__ - INFO - Beginning model training...
+2025-03-15 16:31:45,265 - __main__ - INFO - Training complete. Saving model to models/intent_classifier
+2025-03-15 16:31:45,290 - model.intent_classifier - INFO - Model saved to models/intent_classifier\intent_model.h5
+2025-03-15 16:31:45,290 - model.intent_classifier - INFO - Tokenizer saved to models/intent_classifier\tokenizer.json
+2025-03-15 16:31:45,297 - model.intent_classifier - INFO - Intent classes saved to models/intent_classifier\intent_classes.json
+2025-03-15 16:31:45,297 - model.intent_classifier - INFO - Model configuration saved to models/intent_classifier\model_config.json
+2025-03-15 16:31:45,297 - __main__ - INFO - Model saved successfully
+2025-03-15 16:31:45,297 - __main__ - INFO - Model training completed successfully
+2025-03-15 16:31:45,297 - __main__ - INFO - === Training completed successfully ===
+2025-03-15 16:56:43,397 - __main__ - INFO - === Starting intent classifier training ===
+2025-03-15 16:56:43,397 - __main__ - INFO - Parsing command line arguments...
+2025-03-15 16:56:43,398 - __main__ - INFO - Arguments: Namespace(config='config.json', generate_only=False, enrich=False, augment=True, output='training/generated_training_data.json', model_output='models/intent_classifier', early_stopping=True, reduce_complexity=False, epochs=40, debug=False)
+2025-03-15 16:56:43,398 - __main__ - INFO - Removing existing model files from models/intent_classifier
+2025-03-15 16:56:43,402 - __main__ - INFO - Preparing training data...
+2025-03-15 16:56:43,402 - __main__ - INFO - Loading database configuration...
+2025-03-15 16:56:43,403 - __main__ - INFO - Using config file: config.json
+2025-03-15 16:56:43,403 - __main__ - INFO - Connecting to database fm_database at localhost...
+2025-03-15 16:56:45,460 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 16:56:45,460 - __main__ - INFO - Database connection result: True
+2025-03-15 16:56:45,461 - __main__ - INFO - Setting up query generator with output path: training/generated_training_data.json
+2025-03-15 16:56:45,461 - __main__ - INFO - Generating new training data
+2025-03-15 16:56:45,463 - training.query_generator - INFO - Processing table: accounts
+2025-03-15 16:56:45,465 - training.query_generator - INFO - Processing table: assets
+2025-03-15 16:56:45,467 - training.query_generator - INFO - Processing table: brokers
+2025-03-15 16:56:45,469 - training.query_generator - INFO - Processing table: markets
+2025-03-15 16:56:45,472 - training.query_generator - INFO - Processing table: order_status
+2025-03-15 16:56:45,474 - training.query_generator - INFO - Processing table: orders
+2025-03-15 16:56:45,477 - training.query_generator - INFO - Processing table: price_history
+2025-03-15 16:56:45,479 - training.query_generator - INFO - Processing table: traders
+2025-03-15 16:56:45,481 - training.query_generator - INFO - Processing table: trades
+2025-03-15 16:56:45,483 - training.query_generator - INFO - Processing table: transactions
+2025-03-15 16:56:45,491 - training.query_generator - INFO - Generated 6639 unique queries from database schema
+2025-03-15 16:56:45,508 - training.query_generator - INFO - Generated 6679 training examples and saved to training/generated_training_data.json
+2025-03-15 16:56:45,508 - __main__ - INFO - Generation complete, got 6679 examples
+2025-03-15 16:56:45,509 - __main__ - INFO - Successfully prepared 6679 training examples
+2025-03-15 16:56:45,509 - database_connector - INFO - Database connection closed
+2025-03-15 16:56:45,509 - __main__ - INFO - Database connection closed
+2025-03-15 16:56:45,510 - __main__ - INFO - Proceeding to model training...
+2025-03-15 16:56:45,510 - __main__ - INFO - Starting model training...
+2025-03-15 16:56:45,510 - __main__ - INFO - Simplified intent classes from 16 to 12
+2025-03-15 16:56:45,512 - __main__ - ERROR - Error in model training: 'builtin_function_or_method' object has no attribute 'shuffle'
+2025-03-15 16:56:45,513 - __main__ - ERROR - Model training failed
+2025-03-15 16:56:45,513 - __main__ - INFO - === Training failed ===
+2025-03-15 16:57:59,031 - __main__ - INFO - === Starting intent classifier training ===
+2025-03-15 16:57:59,031 - __main__ - INFO - Parsing command line arguments...
+2025-03-15 16:57:59,033 - __main__ - INFO - Arguments: Namespace(config='config.json', generate_only=False, enrich=False, augment=True, output='training/generated_training_data.json', model_output='models/intent_classifier', early_stopping=True, reduce_complexity=False, epochs=40, debug=False)
+2025-03-15 16:57:59,033 - __main__ - INFO - Removing existing model files from models/intent_classifier
+2025-03-15 16:57:59,033 - __main__ - INFO - Preparing training data...
+2025-03-15 16:57:59,034 - __main__ - INFO - Loading database configuration...
+2025-03-15 16:57:59,034 - __main__ - INFO - Using config file: config.json
+2025-03-15 16:57:59,034 - __main__ - INFO - Connecting to database fm_database at localhost...
+2025-03-15 16:58:01,094 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-15 16:58:01,094 - __main__ - INFO - Database connection result: True
+2025-03-15 16:58:01,094 - __main__ - INFO - Setting up query generator with output path: training/generated_training_data.json
+2025-03-15 16:58:01,095 - __main__ - INFO - Generating new training data
+2025-03-15 16:58:01,097 - training.query_generator - INFO - Processing table: accounts
+2025-03-15 16:58:01,098 - training.query_generator - INFO - Processing table: assets
+2025-03-15 16:58:01,100 - training.query_generator - INFO - Processing table: brokers
+2025-03-15 16:58:01,102 - training.query_generator - INFO - Processing table: markets
+2025-03-15 16:58:01,104 - training.query_generator - INFO - Processing table: order_status
+2025-03-15 16:58:01,106 - training.query_generator - INFO - Processing table: orders
+2025-03-15 16:58:01,107 - training.query_generator - INFO - Processing table: price_history
+2025-03-15 16:58:01,109 - training.query_generator - INFO - Processing table: traders
+2025-03-15 16:58:01,111 - training.query_generator - INFO - Processing table: trades
+2025-03-15 16:58:01,113 - training.query_generator - INFO - Processing table: transactions
+2025-03-15 16:58:01,122 - training.query_generator - INFO - Generated 6639 unique queries from database schema
+2025-03-15 16:58:01,138 - training.query_generator - INFO - Generated 6679 training examples and saved to training/generated_training_data.json
+2025-03-15 16:58:01,138 - __main__ - INFO - Generation complete, got 6679 examples
+2025-03-15 16:58:01,138 - __main__ - INFO - Successfully prepared 6679 training examples
+2025-03-15 16:58:01,139 - database_connector - INFO - Database connection closed
+2025-03-15 16:58:01,139 - __main__ - INFO - Database connection closed
+2025-03-15 16:58:01,139 - __main__ - INFO - Proceeding to model training...
+2025-03-15 16:58:01,139 - __main__ - INFO - Starting model training...
+2025-03-15 16:58:01,140 - __main__ - INFO - Simplified intent classes from 16 to 12
+2025-03-15 16:58:01,142 - __main__ - INFO - Balanced dataset from 6679 to 2106 examples
+2025-03-15 16:58:01,142 - __main__ - INFO - Applying data augmentation...
+2025-03-15 16:58:01,143 - __main__ - INFO - Augmenting 421 examples with simple methods
+2025-03-15 16:58:01,145 - __main__ - INFO - Data augmentation complete. Original size: 2106, New size: 2432
+2025-03-15 16:58:01,146 - __main__ - INFO - Comparative augmentation complete. Original size: 2106, New size: 2262
+2025-03-15 16:58:01,146 - __main__ - INFO - After augmentation: 2262 examples
+2025-03-15 16:58:01,146 - __main__ - INFO - Tokenizing text data...
+2025-03-15 16:58:01,180 - __main__ - INFO - Training with 12 intent classes: ['database_query_comparative', 'database_query_count', 'database_query_detailed', 'database_query_filter', 'database_query_list', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-15 16:58:01,181 - __main__ - INFO - Creating intent classifier with output to models/intent_classifier
+2025-03-15 16:58:01,181 - __main__ - INFO - Using simplified CNN model architecture
+2025-03-15 16:58:02,003 - __main__ - INFO - Adding early stopping callback with increased patience
+2025-03-15 16:58:02,004 - __main__ - INFO - Beginning model training with increased epochs...
+2025-03-15 16:58:21,686 - __main__ - INFO - Validation accuracy progression: [0.8091872930526733, 0.9752650260925293, 0.971731424331665, 0.9770318269729614, 0.982332170009613, 0.9858657121658325, 0.9858657121658325, 0.9893993139266968, 0.9893993139266968, 0.9840989112854004, 0.9911660552024841, 0.9946996569633484, 0.9929328560829163, 0.9911660552024841, 0.9893993139266968, 0.9946996569633484, 0.9929328560829163, 0.9929328560829163, 0.9929328560829163, 0.9946996569633484]
+2025-03-15 16:58:21,687 - __main__ - INFO - Best validation accuracy: 0.9946996569633484
+2025-03-15 16:58:21,687 - __main__ - INFO - Training complete. Saving model to models/intent_classifier
+2025-03-15 16:58:21,714 - model.intent_classifier - INFO - Model saved to models/intent_classifier\intent_model.h5
+2025-03-15 16:58:21,715 - model.intent_classifier - INFO - Tokenizer saved to models/intent_classifier\tokenizer.json
+2025-03-15 16:58:21,716 - model.intent_classifier - INFO - Intent classes saved to models/intent_classifier\intent_classes.json
+2025-03-15 16:58:21,717 - model.intent_classifier - INFO - Model configuration saved to models/intent_classifier\model_config.json
+2025-03-15 16:58:21,717 - __main__ - INFO - Model saved successfully
+2025-03-15 16:58:21,717 - __main__ - INFO - Model training completed successfully
+2025-03-15 16:58:21,718 - __main__ - INFO - === Training completed successfully ===

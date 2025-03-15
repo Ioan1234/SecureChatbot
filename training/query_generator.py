@@ -243,6 +243,24 @@ class DatabaseQueryGenerator:
                 self.logger.warning("No table metadata available. Cannot generate queries.")
                 return [], []
 
+            additional_templates = {
+                "list_all": [
+                    "Can you show me all {entities}?",
+                    "I'd like to see all {entities}",
+                    "Please display all {entities}",
+                    "Give me a list of all {entities}"
+                ],
+                "count": [
+                    "Tell me how many {entities} we have",
+                    "I want to know the number of {entities}",
+                    "Could you count all {entities} for me?",
+                    "What's the total number of {entities}?"
+                ]
+            }
+
+            for template_type, template_list in additional_templates.items():
+                self.question_templates[template_type].extend(template_list)
+
             for table_name, metadata in tables_metadata.items():
                 if table_name not in self.entity_variations and table_name not in self.entity_singular:
                     self.entity_variations[table_name] = [table_name]

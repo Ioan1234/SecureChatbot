@@ -139,13 +139,14 @@ def main():
         )
 
         logger.info(f"Loading intent classifier from {args.model_path}...")
-        intent_classifier = IntentClassifier(model_path=args.model_path)
+        intent_classifier = IntentClassifier()
+        intent_classifier.load_model(args.model_path)
 
         logger.info("Testing query generation...")
         generated_samples = test_query_generation(db_connector, args.num_samples)
 
         logger.info(f"Generated {len(generated_samples)} sample queries:")
-        for i, sample in enumerate(generated_samples[:20]):  # Show first 20 samples
+        for i, sample in enumerate(generated_samples[:20]):
             logger.info(f"  {i + 1}. {sample}")
 
         logger.info("Testing query processing...")

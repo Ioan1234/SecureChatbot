@@ -19,16 +19,18 @@ class IntentClassifier:
         self.intent_classes = []
 
     def build_model(self, num_intent_classes):
-
         model = tf.keras.Sequential([
             tf.keras.layers.Embedding(self.vocab_size, self.embedding_dim, input_length=self.max_sequence_length),
-            tf.keras.layers.LSTM(64, dropout=0.2, recurrent_dropout=0.2),
+            tf.keras.layers.Conv1D(128, 5, activation='relu'),
+            tf.keras.layers.GlobalMaxPooling1D(),
+            tf.keras.layers.Dense(128, activation='relu'),
+            tf.keras.layers.Dropout(0.3),
             tf.keras.layers.Dense(num_intent_classes, activation='softmax')
         ])
 
         model.compile(
             loss='categorical_crossentropy',
-            optimizer='adam',
+            optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
             metrics=['accuracy']
         )
 
