@@ -1,256 +1,180 @@
-import tensorflow as tf
-import numpy as np
 import os
-import json
+import numpy as np
 import logging
-from tensorflow.keras.layers import Input, Embedding, LSTM, Dense, Dropout, Bidirectional
-from tensorflow.keras.models import Model
-from tensorflow.keras.regularizers import l2
-from tensorflow.keras.optimizers import Adam
+import json
+import tensorflow as tf
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.models import load_model
 
 
 class IntentClassifier:
-    def __init__(self, vocab_size=5000, embedding_dim=128, max_sequence_length=50, model_path=None):
+    def __init__(self, vocab_size=5000, embedding_dim=128, max_sequence_length=50):
         self.logger = logging.getLogger(__name__)
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
         self.max_sequence_length = max_sequence_length
-        self.model_path = model_path
         self.model = None
         self.tokenizer = None
         self.intent_classes = []
 
-        if model_path and os.path.exists(f"{model_path}/model.h5"):
-            self.load_model(model_path)
-        else:
-            self.build_model()
+    def build_model(self, num_intent_classes):
 
-    def build_model(self, num_intent_classes=10):
-        try:
-            input_layer = Input(shape=(self.max_sequence_length,))
+        model = tf.keras.Sequential([
+            tf.keras.layers.Embedding(self.vocab_size, self.embedding_dim, input_length=self.max_sequence_length),
+            tf.keras.layers.LSTM(64, dropout=0.2, recurrent_dropout=0.2),
+            tf.keras.layers.Dense(num_intent_classes, activation='softmax')
+        ])
 
-            embedding_layer = Embedding(
-                input_dim=self.vocab_size,
-                output_dim=self.embedding_dim,
-                input_length=self.max_sequence_length
-            )(input_layer)
+        model.compile(
+            loss='categorical_crossentropy',
+            optimizer='adam',
+            metrics=['accuracy']
+        )
 
-            lstm_layer = Bidirectional(
-                LSTM(64, return_sequences=True)
-            )(embedding_layer)
-            lstm_layer = Bidirectional(
-                LSTM(32)
-            )(lstm_layer)
+        self.model = model
+        return model
 
-            dense_layer = Dense(64, activation='relu')(lstm_layer)
-            dropout_layer = Dropout(0.5)(dense_layer)
-
-            output_layer = Dense(num_intent_classes, activation='softmax')(dropout_layer)
-
-            self.model = Model(inputs=input_layer, outputs=output_layer)
-
-            self.model.compile(
-                loss='categorical_crossentropy',
-                optimizer='adam',
-                metrics=['accuracy']
-            )
-
-            self.logger.info("Intent classification model built successfully")
-            return self.model
-        except Exception as e:
-            self.logger.error(f"Error building intent classification model: {e}")
-            return None
-
-    def build_regularized_model(self, num_intent_classes=10, lstm_units=64, dropout_rate=0.5, recurrent_dropout=0.2,
+    def build_regularized_model(self, num_intent_classes, lstm_units=64, dropout_rate=0.5, recurrent_dropout=0.2,
                                 l2_factor=0.001):
-        try:
-            input_layer = Input(shape=(self.max_sequence_length,))
+        regularizer = tf.keras.regularizers.l2(l2_factor)
 
-            embedding_layer = Embedding(
-                input_dim=self.vocab_size,
-                output_dim=self.embedding_dim,
+        model = tf.keras.Sequential([
+            tf.keras.layers.Embedding(
+                self.vocab_size,
+                self.embedding_dim,
                 input_length=self.max_sequence_length,
-                embeddings_regularizer=l2(l2_factor)
-            )(input_layer)
-
-            embedding_dropout = Dropout(dropout_rate / 2)(embedding_layer)
-
-            lstm_layer = Bidirectional(
-                LSTM(lstm_units,
-                     return_sequences=True,
-                     dropout=dropout_rate,
-                     recurrent_dropout=recurrent_dropout,
-                     kernel_regularizer=l2(l2_factor),
-                     recurrent_regularizer=l2(l2_factor / 2))
-            )(embedding_dropout)
-
-            lstm_dropout = Dropout(dropout_rate)(lstm_layer)
-
-            lstm_layer = Bidirectional(
-                LSTM(lstm_units // 2,
-                     dropout=dropout_rate,
-                     recurrent_dropout=recurrent_dropout,
-                     kernel_regularizer=l2(l2_factor),
-                     recurrent_regularizer=l2(l2_factor / 2))
-            )(lstm_dropout)
-
-            dense_layer = Dense(
-                lstm_units,
-                activation='relu',
-                kernel_regularizer=l2(l2_factor)
-            )(lstm_layer)
-
-            dropout_layer = Dropout(dropout_rate)(dense_layer)
-
-            output_layer = Dense(
-                num_intent_classes,
-                activation='softmax',
-                kernel_regularizer=l2(l2_factor / 2)
-            )(dropout_layer)
-
-            self.model = Model(inputs=input_layer, outputs=output_layer)
-
-            self.model.compile(
-                loss='categorical_crossentropy',
-                optimizer=Adam(learning_rate=0.001),
-                metrics=['accuracy']
-            )
-
-            self.logger.info("Regularized intent classification model built successfully")
-            return self.model
-        except Exception as e:
-            self.logger.error(f"Error building regularized intent classification model: {e}")
-            return None
-
-    def train(self, texts, labels, validation_split=0.2, epochs=20, batch_size=32):
-        try:
-            if self.tokenizer is None:
-                self.tokenizer = tf.keras.preprocessing.text.Tokenizer(num_words=self.vocab_size)
-                self.tokenizer.fit_on_texts(texts)
-
-            sequences = self.tokenizer.texts_to_sequences(texts)
-
-            padded_sequences = tf.keras.preprocessing.sequence.pad_sequences(
-                sequences, maxlen=self.max_sequence_length, padding='post'
-            )
-
-            self.intent_classes = sorted(list(set(labels)))
-            num_intent_classes = len(self.intent_classes)
-
-            if self.model is None or self.model.output_shape[-1] != num_intent_classes:
-                self.logger.info(f"Building model with {num_intent_classes} output classes")
-                self.build_model(num_intent_classes)
-
-            label_indices = [self.intent_classes.index(label) for label in labels]
-            one_hot_labels = tf.keras.utils.to_categorical(label_indices, num_classes=num_intent_classes)
-
-            from sklearn.model_selection import train_test_split
-
-            X_train, X_val, y_train, y_val = train_test_split(
-                padded_sequences,
-                one_hot_labels,
-                test_size=validation_split,
-                stratify=label_indices,
-                random_state=42
-            )
-
-            callbacks = [
-                tf.keras.callbacks.EarlyStopping(
-                    monitor='val_loss',
-                    patience=5,
-                    restore_best_weights=True
-                ),
-                tf.keras.callbacks.ReduceLROnPlateau(
-                    monitor='val_loss',
-                    factor=0.5,
-                    patience=2,
-                    min_lr=1e-6
+                embeddings_regularizer=regularizer
+            ),
+            tf.keras.layers.Bidirectional(
+                tf.keras.layers.LSTM(
+                    lstm_units,
+                    dropout=dropout_rate,
+                    recurrent_dropout=recurrent_dropout,
+                    return_sequences=True,
+                    kernel_regularizer=regularizer
                 )
-            ]
+            ),
+            tf.keras.layers.Bidirectional(
+                tf.keras.layers.LSTM(
+                    lstm_units,
+                    dropout=dropout_rate,
+                    recurrent_dropout=recurrent_dropout,
+                    kernel_regularizer=regularizer
+                )
+            ),
+            tf.keras.layers.Dense(64, activation='relu', kernel_regularizer=regularizer),
+            tf.keras.layers.Dropout(dropout_rate),
+            tf.keras.layers.Dense(num_intent_classes, activation='softmax')
+        ])
 
-            history = self.model.fit(
-                X_train, y_train,
-                validation_data=(X_val, y_val),
-                epochs=epochs,
-                batch_size=batch_size,
-                callbacks=callbacks
-            )
+        model.compile(
+            loss='categorical_crossentropy',
+            optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+            metrics=['accuracy']
+        )
 
-            self.logger.info("Intent classification model trained successfully")
-            return history
-        except Exception as e:
-            self.logger.error(f"Error training intent classification model: {e}")
-            return None
+        self.model = model
+        return model
 
-    def save_model(self, directory_path):
+    def classify_intent(self, query):
+
         try:
-            os.makedirs(directory_path, exist_ok=True)
+            if self.model is None or self.tokenizer is None:
+                self.logger.error("Model or tokenizer not initialized")
+                return {"intent": "database_query_list", "confidence": 0.5}
 
-            self.model.save(f"{directory_path}/model.h5")
+            sequence = self.tokenizer.texts_to_sequences([query])
+            padded_sequence = pad_sequences(sequence, maxlen=self.max_sequence_length, padding='post')
+
+            prediction = self.model.predict(padded_sequence, verbose=0)[0]
+            intent_index = np.argmax(prediction)
+            confidence = float(prediction[intent_index])
+
+            if intent_index < len(self.intent_classes):
+                intent = self.intent_classes[intent_index]
+            else:
+                self.logger.warning(f"Intent index {intent_index} out of range for intent classes")
+                intent = "database_query_list"  # Default to database query
+
+            return {
+                "intent": intent,
+                "confidence": confidence
+            }
+        except Exception as e:
+            self.logger.error(f"Error classifying intent: {e}")
+            return {"intent": "database_query_list", "confidence": 0.5}
+
+    def save_model(self, model_dir):
+
+        try:
+            if not os.path.exists(model_dir):
+                os.makedirs(model_dir)
+
+            if self.model:
+                model_path = os.path.join(model_dir, "intent_model.h5")
+                self.model.save(model_path)
+                self.logger.info(f"Model saved to {model_path}")
 
             if self.tokenizer:
+                tokenizer_path = os.path.join(model_dir, "tokenizer.json")
                 tokenizer_json = self.tokenizer.to_json()
-                with open(f"{directory_path}/tokenizer.json", 'w') as f:
+                with open(tokenizer_path, 'w') as f:
                     f.write(tokenizer_json)
+                self.logger.info(f"Tokenizer saved to {tokenizer_path}")
 
-            with open(f"{directory_path}/intent_classes.json", 'w') as f:
-                json.dump(self.intent_classes, f)
+            if self.intent_classes:
+                classes_path = os.path.join(model_dir, "intent_classes.json")
+                with open(classes_path, 'w') as f:
+                    json.dump(self.intent_classes, f)
+                self.logger.info(f"Intent classes saved to {classes_path}")
 
-            params = {
-                'vocab_size': self.vocab_size,
-                'embedding_dim': self.embedding_dim,
-                'max_sequence_length': self.max_sequence_length
+            config_path = os.path.join(model_dir, "model_config.json")
+            config = {
+                "vocab_size": self.vocab_size,
+                "embedding_dim": self.embedding_dim,
+                "max_sequence_length": self.max_sequence_length
             }
-            with open(f"{directory_path}/params.json", 'w') as f:
-                json.dump(params, f)
+            with open(config_path, 'w') as f:
+                json.dump(config, f)
+            self.logger.info(f"Model configuration saved to {config_path}")
 
-            self.logger.info(f"Model saved to {directory_path}")
             return True
         except Exception as e:
             self.logger.error(f"Error saving model: {e}")
             return False
 
-    def load_model(self, directory_path):
+    def load_model(self, model_dir):
+
         try:
-            self.model = tf.keras.models.load_model(f"{directory_path}/model.h5")
+            config_path = os.path.join(model_dir, "model_config.json")
+            if os.path.exists(config_path):
+                with open(config_path, 'r') as f:
+                    config = json.load(f)
+                self.vocab_size = config.get("vocab_size", 5000)
+                self.embedding_dim = config.get("embedding_dim", 128)
+                self.max_sequence_length = config.get("max_sequence_length", 50)
+                self.logger.info(f"Loaded model configuration from {config_path}")
 
-            with open(f"{directory_path}/tokenizer.json", 'r') as f:
-                tokenizer_json = f.read()
+            classes_path = os.path.join(model_dir, "intent_classes.json")
+            if os.path.exists(classes_path):
+                with open(classes_path, 'r') as f:
+                    self.intent_classes = json.load(f)
+                self.logger.info(f"Loaded {len(self.intent_classes)} intent classes from {classes_path}")
+
+            tokenizer_path = os.path.join(model_dir, "tokenizer.json")
+            if os.path.exists(tokenizer_path):
+                with open(tokenizer_path, 'r') as f:
+                    tokenizer_json = f.read()
                 self.tokenizer = tf.keras.preprocessing.text.tokenizer_from_json(tokenizer_json)
+                self.logger.info(f"Loaded tokenizer from {tokenizer_path}")
 
-            with open(f"{directory_path}/intent_classes.json", 'r') as f:
-                self.intent_classes = json.load(f)
+            model_path = os.path.join(model_dir, "intent_model.h5")
+            if os.path.exists(model_path):
+                self.model = load_model(model_path)
+                self.logger.info(f"Loaded model from {model_path}")
 
-            with open(f"{directory_path}/params.json", 'r') as f:
-                params = json.load(f)
-                self.vocab_size = params['vocab_size']
-                self.embedding_dim = params['embedding_dim']
-                self.max_sequence_length = params['max_sequence_length']
-
-            self.logger.info(f"Model loaded from {directory_path}")
             return True
         except Exception as e:
             self.logger.error(f"Error loading model: {e}")
             return False
-
-    def classify_intent(self, text):
-        try:
-            sequence = self.tokenizer.texts_to_sequences([text])
-
-            padded_sequence = tf.keras.preprocessing.sequence.pad_sequences(
-                sequence, maxlen=self.max_sequence_length, padding='post'
-            )
-
-            prediction = self.model.predict(padded_sequence)[0]
-
-            intent_index = np.argmax(prediction)
-            intent = self.intent_classes[intent_index]
-            confidence = float(prediction[intent_index])
-
-            return {
-                'intent': intent,
-                'confidence': confidence
-            }
-        except Exception as e:
-            self.logger.error(f"Error classifying intent: {e}")
-            return None

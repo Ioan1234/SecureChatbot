@@ -456,7 +456,6 @@ if __name__ == "__main__":
             print("Application terminated.")
     elif args.command == 'train' and TRAINING_AVAILABLE:
         sys.argv = [sys.argv[0]] + sys.argv[2:]
-        train_module.main()
     else:
         print(f"Unknown command: {args.command}")
         sys.exit(1)

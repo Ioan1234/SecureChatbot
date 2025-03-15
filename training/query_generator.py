@@ -55,6 +55,43 @@ class DatabaseQueryGenerator:
                 "Give me complete information on {entities}",
                 "Show full records for {entities}",
                 "I want to see all data for {entities}"
+            ],
+            "comparative_highest": [
+                "Show me {entities} with highest {attribute}",
+                "Which {entities} have the highest {attribute}",
+                "Find {entities} with maximum {attribute}",
+                "List the most expensive {entities}",
+                "What are the top {entities} by {attribute}",
+                "Show me the {entities} with greatest {attribute}",
+                "Display {entities} with the largest {attribute}"
+            ],
+            "comparative_lowest": [
+                "Show me {entities} with lowest {attribute}",
+                "Which {entities} have the lowest {attribute}",
+                "Find {entities} with minimum {attribute}",
+                "List the cheapest {entities}",
+                "What are the bottom {entities} by {attribute}",
+                "Show me the {entities} with least {attribute}",
+                "Display {entities} with the smallest {attribute}"
+            ],
+            "comparative_middle": [
+                "Show me {entities} with median {attribute}",
+                "Which {entities} have the middle {attribute}",
+                "Find {entities} with average {attribute}",
+                "List {entities} with mid-range {attribute}",
+                "What are the middle-valued {entities} by {attribute}"
+            ],
+            "sort_ascending": [
+                "Sort {entities} by {attribute} in ascending order",
+                "Show {entities} from low to high by {attribute}",
+                "List {entities} in increasing order of {attribute}",
+                "Display {entities} with {attribute} from smallest to largest"
+            ],
+            "sort_descending": [
+                "Sort {entities} by {attribute} in descending order",
+                "Show {entities} from high to low by {attribute}",
+                "List {entities} in decreasing order of {attribute}",
+                "Display {entities} with {attribute} from largest to smallest"
             ]
         }
 
@@ -95,6 +132,18 @@ class DatabaseQueryGenerator:
             "orders": ["order_type", "order_date"],
             "order_status": ["status", "status_date"],
             "price_history": ["price_date", "open_price", "close_price"]
+        }
+
+        self.comparative_attributes = {
+            "markets": ["trade_volume", "number_of_assets"],
+            "brokers": ["client_count", "total_assets"],
+            "traders": ["transaction_count", "account_balance", "total_trades"],
+            "assets": ["price", "volume", "market_cap", "value"],
+            "trades": ["price", "quantity", "value", "amount"],
+            "accounts": ["balance", "transaction_count", "age"],
+            "transactions": ["amount", "value"],
+            "orders": ["quantity", "value", "price"],
+            "price_history": ["open_price", "close_price", "volume", "price_change"]
         }
 
     def get_table_metadata(self):
@@ -207,20 +256,19 @@ class DatabaseQueryGenerator:
                     for entity_name in entity_plural:
                         query = template.format(entities=entity_name)
                         queries.append(query)
-                        labels.append("database_query")
+                        labels.append("database_query_list")
 
-                # Add detailed view queries
                 for template in self.question_templates["detailed"]:
                     for entity_name in entity_plural:
                         query = template.format(entities=entity_name)
                         queries.append(query)
-                        labels.append("database_query")
+                        labels.append("database_query_detailed")
 
                 for template in self.question_templates["count"]:
                     for entity_name in entity_plural:
                         query = template.format(entities=entity_name)
                         queries.append(query)
-                        labels.append("database_query")
+                        labels.append("database_query_count")
 
                 if not metadata.get('columns'):
                     continue
@@ -235,7 +283,56 @@ class DatabaseQueryGenerator:
                                     attribute=col_name.replace('_', ' ')
                                 )
                                 queries.append(query)
-                                labels.append("database_query")
+                                labels.append("database_query_sort")
+
+                        for template in self.question_templates["sort_ascending"]:
+                            for entity_name in entity_plural:
+                                query = template.format(
+                                    entities=entity_name,
+                                    attribute=col_name.replace('_', ' ')
+                                )
+                                queries.append(query)
+                                labels.append("database_query_sort_ascending")
+
+                        for template in self.question_templates["sort_descending"]:
+                            for entity_name in entity_plural:
+                                query = template.format(
+                                    entities=entity_name,
+                                    attribute=col_name.replace('_', ' ')
+                                )
+                                queries.append(query)
+                                labels.append("database_query_sort_descending")
+
+                        numeric_types = ['int', 'float', 'decimal', 'double', 'numeric', 'tinyint', 'smallint',
+                                         'bigint']
+                        is_numeric = any(num_type in column.get('type', '').lower() for num_type in numeric_types)
+                        if is_numeric:
+                            for template in self.question_templates["comparative_highest"]:
+                                for entity_name in entity_plural:
+                                    query = template.format(
+                                        entities=entity_name,
+                                        attribute=col_name.replace('_', ' ')
+                                    )
+                                    queries.append(query)
+                                    labels.append("database_query_comparative_highest")
+
+                            for template in self.question_templates["comparative_lowest"]:
+                                for entity_name in entity_plural:
+                                    query = template.format(
+                                        entities=entity_name,
+                                        attribute=col_name.replace('_', ' ')
+                                    )
+                                    queries.append(query)
+                                    labels.append("database_query_comparative_lowest")
+
+                            for template in self.question_templates["comparative_middle"]:
+                                for entity_name in entity_plural:
+                                    query = template.format(
+                                        entities=entity_name,
+                                        attribute=col_name.replace('_', ' ')
+                                    )
+                                    queries.append(query)
+                                    labels.append("database_query_comparative_middle")
 
                 has_date_field = any('date' in col.get('name', '').lower() for col in metadata['columns'])
                 if has_date_field:
@@ -243,7 +340,7 @@ class DatabaseQueryGenerator:
                         for entity_name in entity_plural:
                             query = template.format(entities=entity_name)
                             queries.append(query)
-                            labels.append("database_query")
+                            labels.append("database_query_recent")
 
                 primary_key = metadata.get('primary_key')
                 if primary_key and 'sample_values' in metadata and primary_key in metadata['sample_values']:
@@ -258,7 +355,7 @@ class DatabaseQueryGenerator:
                                 id=id_value
                             )
                             queries.append(query)
-                            labels.append("database_query")
+                            labels.append("database_query_specific_id")
 
                 for column in metadata['columns']:
                     column_name = column.get('name', '')
@@ -280,44 +377,45 @@ class DatabaseQueryGenerator:
                                         value=value
                                     )
                                     queries.append(query)
-                                    labels.append("database_query")
+                                    labels.append("database_query_filter")
 
-            # Add queries for sensitive data
             sensitive_data_queries = [
-                "Show me broker emails",
-                "What are the license numbers for brokers",
-                "Show me trader contact information",
-                "What's the email address for trader 1",
-                "Show me sensitive data for brokers",
-                "Display all encrypted fields",
-                "Show me broker 1's license number"
+                ("Show me broker emails", "database_query_sensitive"),
+                ("What are the license numbers for brokers", "database_query_sensitive"),
+                ("Show me trader contact information", "database_query_sensitive"),
+                ("What's the email address for trader 1", "database_query_sensitive"),
+                ("Show me sensitive data for brokers", "database_query_sensitive"),
+                ("Display all encrypted fields", "database_query_sensitive"),
+                ("Show me broker 1's license number", "database_query_sensitive")
             ]
-
-            for query in sensitive_data_queries:
-                queries.append(query)
-                labels.append("database_query")
 
             finance_queries = [
-                "Show me trades with highest value",
-                "What is the average trade amount",
-                "List markets with most trading activity",
-                "Show me the most active traders",
-                "Find transactions above $10000",
-                "Which assets have the highest price",
-                "Show me orders placed today",
-                "Which traders have the largest account balance",
-                "What is the total value of all trades",
-                "Show me the price history of asset 1",
-                "Find completed orders with high value",
-                "Which market has the most traders",
-                "Show me brokers with most clients",
-                "List all buy orders",
-                "Show all sell orders"
+                ("Show me trades with highest value", "database_query_comparative_highest"),
+                ("What is the average trade amount", "database_query_comparative_middle"),
+                ("List markets with most trading activity", "database_query_comparative_highest"),
+                ("Show me the most active traders", "database_query_comparative_highest"),
+                ("Find transactions above $10000", "database_query_filter"),
+                ("Which assets have the highest price", "database_query_comparative_highest"),
+                ("Show me orders placed today", "database_query_recent"),
+                ("Which traders have the largest account balance", "database_query_comparative_highest"),
+                ("What is the total value of all trades", "database_query_count"),
+                ("Show me the price history of asset 1", "database_query_specific_id"),
+                ("Find completed orders with high value", "database_query_filter"),
+                ("Which market has the most traders", "database_query_comparative_highest"),
+                ("Show me brokers with most clients", "database_query_comparative_highest"),
+                ("List all buy orders", "database_query_filter"),
+                ("Show all sell orders", "database_query_filter"),
+                ("Sort assets by price from highest to lowest", "database_query_sort_descending"),
+                ("Order trades by date newest first", "database_query_sort_descending")
             ]
 
-            for query in finance_queries:
+            for query, label in sensitive_data_queries:
                 queries.append(query)
-                labels.append("database_query")
+                labels.append(label)
+
+            for query, label in finance_queries:
+                queries.append(query)
+                labels.append(label)
 
             unique_queries = []
             unique_labels = []

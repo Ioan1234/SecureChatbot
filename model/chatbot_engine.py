@@ -17,6 +17,7 @@ class ChatbotEngine:
             intent_result = None
             try:
                 intent_result = self.intent_classifier.classify_intent(user_input)
+                self.logger.info(f"Classified intent: {intent_result}")
             except Exception as e:
                 self.logger.error(f"Error classifying intent: {e}")
 
@@ -25,25 +26,41 @@ class ChatbotEngine:
                 query_result = self.query_processor.secure_process_query(user_input)
 
                 if query_result:
-                    return self.generate_response("database_query", query_result)
+                    return self.generate_response("database_query_list", query_result)
                 else:
                     return {"response": "I couldn't find any information for your query."}
 
             intent = intent_result['intent']
             confidence = intent_result['confidence']
 
-            if intent == "database_query" and confidence > 0.7:
-                query_result = self.query_processor.secure_process_query(user_input)
+            # Check if this is a database query intent
+            if intent.startswith("database_query") and confidence > 0.6:
+                query_result = self.query_processor.process_query(user_input, intent_result)
                 return self.generate_response(intent, query_result)
             elif intent == "help":
                 return {
-                    "response": "I can help you query the financial database securely. Try asking questions like:\n- What markets are available?\n- Show me all traders\n- Which assets are stocks?\n- Find completed orders\n- Show recent trades"}
+                    "response": "I can help you query the financial database securely. Try asking questions like:\n" +
+                                "- What markets are available?\n" +
+                                "- Show me all traders\n" +
+                                "- Which assets are stocks?\n" +
+                                "- Find completed orders\n" +
+                                "- Show recent trades\n" +
+                                "- List assets with highest price\n" +
+                                "- Sort trades by date descending\n" +
+                                "- Show me the average price of assets"
+                }
             elif intent == "greeting":
                 return {"response": "Hello! I'm your secure financial database assistant. How can I help you today?"}
             elif intent == "goodbye":
                 return {"response": "Goodbye! Feel free to come back if you have more questions."}
             else:
-                return {"response": "I'm not sure I understand. Could you rephrase your question?"}
+                # Fallback to direct query for any unrecognized intent
+                query_result = self.query_processor.secure_process_query(user_input)
+
+                if query_result:
+                    return self.generate_response("database_query_list", query_result)
+                else:
+                    return {"response": "I'm not sure I understand. Could you rephrase your question?"}
         except Exception as e:
             self.logger.error(f"Error processing user input: {e}")
             return {"response": "An error occurred while processing your request."}
@@ -58,91 +75,128 @@ class ChatbotEngine:
         if isinstance(query_result, dict) and "message" in query_result:
             return {"response": query_result["message"]}
 
-        if intent == "database_query":
-            if isinstance(query_result, list):
-                if len(query_result) == 0:
-                    return {"response": "I found no matching records."}
+        if isinstance(query_result, list):
+            if len(query_result) == 0:
+                return {"response": "I found no matching records."}
 
-                primary_table = self._determine_primary_table(query_result[0])
-                self.logger.info(f"Determined primary table: {primary_table}")
+            table_detected = self._determine_primary_table(query_result[0])
+            intent_parts = intent.split('_')
+            intent_table = None
+            for part in intent_parts:
+                if part in ["assets", "traders", "trades", "markets", "accounts", "orders"]:
+                    intent_table = part
+                    break
 
-                detailed_view = self._is_detailed_request()
-                self.logger.info(f"Detailed view requested: {detailed_view}")
+            primary_table = intent_table or table_detected or "records"
 
-                contains_encrypted = False
-                has_sensitive_fields = False
+            detailed_view = "detailed" in intent or self._is_detailed_request()
 
-                processed_results = []
-                for item in query_result:
-                    processed_item = {}
+            comparative_query = any(comp in intent for comp in ["highest", "lowest", "middle"])
 
-                    for key, value in item.items():
-                        if key.endswith('_id') and not detailed_view:
-                            continue
+            contains_encrypted = False
+            has_sensitive_fields = False
 
-                        if isinstance(value, str) and value.startswith("[ENCRYPTED:"):
-                            contains_encrypted = True
-                            has_sensitive_fields = True
-                            continue
+            processed_results = []
+            for item in query_result:
+                processed_item = {}
 
-                        if self._is_sensitive_field(key) and not detailed_view:
-                            has_sensitive_fields = True
-                            continue
+                for key, value in item.items():
+                    if key.endswith('_id') and not detailed_view:
+                        continue
 
-                        processed_item[key] = value
+                    if isinstance(value, str) and value.startswith("[ENCRYPTED:"):
+                        contains_encrypted = True
+                        has_sensitive_fields = True
+                        continue
 
-                    processed_results.append(processed_item)
+                    if self._is_sensitive_field(key) and not detailed_view:
+                        has_sensitive_fields = True
+                        continue
 
-                if len(query_result) == 1:
-                    response_text = "Here's what I found:"
-                    data_to_return = processed_results[0]
+                    processed_item[key] = value
+
+                processed_results.append(processed_item)
+
+            if intent == "database_query_count":
+                if "count" in query_result[0]:
+                    count = query_result[0]["count"]
+                    return {
+                        "response": f"I found {count} {primary_table}.",
+                        "data": query_result[0]
+                    }
+
+            if len(query_result) == 1:
+                if comparative_query:
+                    if "highest" in intent:
+                        response_text = f"Here's the {primary_table} with the highest value:"
+                    elif "lowest" in intent:
+                        response_text = f"Here's the {primary_table} with the lowest value:"
+                    elif "middle" in intent:
+                        response_text = f"Here's the {primary_table} with the median value:"
                 else:
-                    response_text = f"I found {len(query_result)} matching records."
-
-                    if len(query_result) <= 10:
-                        sample = query_result[0]
-
-                        if "name" in sample:
-                            try:
-                                names = [r["name"] for r in query_result if "name" in r]
-                                response_text += f" Names include: {', '.join(names[:5])}"
-                                if len(names) > 5:
-                                    response_text += " and others."
-                            except:
-                                pass
-                        elif primary_table == "traders":
-                            response_text += " These are trader records."
-                        elif primary_table == "assets":
-                            response_text += " These are asset records."
-                        elif primary_table == "markets":
-                            response_text += " These are market records."
-                        elif primary_table == "trades":
-                            response_text += " These are trading transactions."
-                        elif primary_table == "orders":
-                            response_text += " These are orders."
-                        elif primary_table == "accounts":
-                            response_text += " These are account records."
-                        elif primary_table == "transactions":
-                            response_text += " These are financial transactions."
-
-                    data_to_return = processed_results
-
-                if has_sensitive_fields:
-                    encryption_message = "\n\nSome fields contain sensitive information that is encrypted with Homomorphic Encryption. This advanced encryption allows computations on encrypted data without decrypting it first, providing enhanced security for sensitive information like email addresses, license numbers, and other personal details."
-                    response_text += encryption_message
-
-                if self._is_requesting_sensitive_data():
-                    response_text += "\n\nI'm sorry, but I cannot display the actual values of sensitive fields such as contact emails, license numbers, and phone numbers. These fields are protected with Homomorphic Encryption, a privacy-preserving technology that allows us to perform operations on encrypted data without exposing the actual values."
-
-                return {
-                    "response": response_text,
-                    "data": data_to_return
-                }
+                    response_text = "Here's what I found:"
+                data_to_return = processed_results[0]
             else:
-                affected_rows = query_result.get("affected_rows", 0) if isinstance(query_result, dict) else 0
-                return {"response": f"Operation completed successfully. {affected_rows} rows affected."}
+                if comparative_query:
+                    if "highest" in intent:
+                        response_text = f"Here are the {primary_table} with the highest values:"
+                    elif "lowest" in intent:
+                        response_text = f"Here are the {primary_table} with the lowest values:"
+                    elif "middle" in intent:
+                        response_text = f"Here are the {primary_table} with the middle values:"
+                else:
+                    response_text = f"I found {len(query_result)} matching {primary_table}."
 
-        return {"response": "Request processed successfully."}
+                if len(query_result) <= 10:
+                    sample = query_result[0]
+
+                    if "name" in sample:
+                        try:
+                            names = [r["name"] for r in query_result if "name" in r]
+                            response_text += f" Names include: {', '.join(names[:5])}"
+                            if len(names) > 5:
+                                response_text += " and others."
+                        except:
+                            pass
+                    elif "asset_name" in sample:
+                        try:
+                            names = [r["asset_name"] for r in query_result if "asset_name" in r]
+                            response_text += f" Assets include: {', '.join(names[:5])}"
+                            if len(names) > 5:
+                                response_text += " and others."
+                        except:
+                            pass
+                    elif primary_table == "traders":
+                        response_text += " These are trader records."
+                    elif primary_table == "assets":
+                        response_text += " These are asset records."
+                    elif primary_table == "markets":
+                        response_text += " These are market records."
+                    elif primary_table == "trades":
+                        response_text += " These are trading transactions."
+                    elif primary_table == "orders":
+                        response_text += " These are orders."
+                    elif primary_table == "accounts":
+                        response_text += " These are account records."
+                    elif primary_table == "transactions":
+                        response_text += " These are financial transactions."
+
+                data_to_return = processed_results
+
+            if has_sensitive_fields:
+                encryption_message = "\n\nSome fields contain sensitive information that is encrypted with Homomorphic Encryption. This advanced encryption allows computations on encrypted data without decrypting it first, providing enhanced security for sensitive information like email addresses, license numbers, and other personal details."
+                response_text += encryption_message
+
+            if self._is_requesting_sensitive_data():
+                response_text += "\n\nI'm sorry, but I cannot display the actual values of sensitive fields such as contact emails, license numbers, and phone numbers. These fields are protected with Homomorphic Encryption, a privacy-preserving technology that allows us to perform operations on encrypted data without exposing the actual values."
+
+            return {
+                "response": response_text,
+                "data": data_to_return
+            }
+        else:
+            affected_rows = query_result.get("affected_rows", 0) if isinstance(query_result, dict) else 0
+            return {"response": f"Operation completed successfully. {affected_rows} rows affected."}
 
     def _is_sensitive_field(self, field_name):
         sensitive_patterns = [
@@ -154,17 +208,16 @@ class ChatbotEngine:
         return any(pattern in field_name.lower() for pattern in sensitive_patterns)
 
     def _determine_primary_table(self, result_item):
-
         if not result_item:
             return None
 
-        if "market_id" in result_item:
+        if "market_id" in result_item or "market_name" in result_item:
             return "markets"
-        elif "broker_id" in result_item:
+        elif "broker_id" in result_item or "broker_name" in result_item:
             return "brokers"
-        elif "trader_id" in result_item:
+        elif "trader_id" in result_item or "trader_name" in result_item:
             return "traders"
-        elif "asset_id" in result_item:
+        elif "asset_id" in result_item or "asset_name" in result_item:
             return "assets"
         elif "trade_id" in result_item:
             return "trades"
@@ -176,7 +229,7 @@ class ChatbotEngine:
             return "orders"
         elif "status_id" in result_item:
             return "order_status"
-        elif "price_id" in result_item:
+        elif "price_id" in result_item or "price_date" in result_item:
             return "price_history"
 
         for key in result_item.keys():
@@ -185,10 +238,9 @@ class ChatbotEngine:
             elif key == "license_number":
                 return "brokers"
 
-        return None
+        return "records"
 
     def _is_requesting_sensitive_data(self):
-
         if not hasattr(self, "current_query") or not self.current_query:
             return False
 
@@ -206,21 +258,13 @@ class ChatbotEngine:
 
         query = self.current_query.lower()
 
-        self.logger.info(f"Checking if detailed view is requested: '{query}'")
-
         detail_indicators = [
             "all details", "more details", "detailed", "complete", "all information",
             "everything about", "all data", "show all", "all fields", "full record",
-            "details about", "details", "detail"  # Added these patterns
+            "details about", "details", "detail"
         ]
 
-        for indicator in detail_indicators:
-            if indicator in query:
-                self.logger.info(f"Detailed view requested - found indicator: '{indicator}'")
-                return True
-
-        self.logger.info("No detailed view requested")
-        return False
+        return any(indicator in query for indicator in detail_indicators)
 
     def handle_error(self, error_type, error_message=None):
         error_responses = {
