@@ -40,7 +40,7 @@ class SecureChatbotApplication:
         self.config = self._load_config(config_path)
         self.logger = self._setup_logging()
         self.components = {}
-        self.model_last_loaded = 0  # Track when model was last loaded
+        self.model_last_loaded = 0
 
     def _setup_logging(self):
         log_config = self.config.get("logging", {}) if hasattr(self, "config") else {}
@@ -147,9 +147,17 @@ class SecureChatbotApplication:
             self.components["intent_classifier"] = IntentClassifier(
                 vocab_size=model_params.get("vocab_size", 5000),
                 embedding_dim=model_params.get("embedding_dim", 128),
-                max_sequence_length=model_params.get("max_sequence_length", 50),
-                model_path=model_config.get("path")
+                max_sequence_length=model_params.get("max_sequence_length", 50)
             )
+
+            # Load the model after initializing the classifier
+            model_path = model_config.get("path")
+            if model_path and os.path.exists(f"{model_path}/model.h5"):
+                self.logger.info(f"Loading intent classifier model from {model_path}")
+                self.components["intent_classifier"].load_model(model_path)
+                self.model_last_loaded = os.path.getmtime(f"{model_path}/model.h5")
+            else:
+                self.logger.warning(f"Model not found at {model_path}. Using uninitialized classifier.")
 
             security_config = self.config.get("security", {})
             self.components["query_processor"] = QueryProcessor(
@@ -203,38 +211,52 @@ class SecureChatbotApplication:
             return False
 
         try:
-            training_config = self.config.get("training", {})
-            model_config = self.config.get("model", {})
+            original_argv = sys.argv.copy()
+            argv = [sys.argv[0]]
 
-            args_dict = {
-                "config": kwargs.get("config", self.config),
-                "generate_only": kwargs.get("generate_only", False),
-                "enrich": kwargs.get("enrich", training_config.get("enrich_existing", False)),
-                "augment": kwargs.get("augment", training_config.get("use_augmentation", False)),
-                "output": kwargs.get("output",
-                                     training_config.get("data_path", "training/generated_training_data.json")),
-                "model_output": kwargs.get("model_output", model_config.get("path", "models/intent_classifier")),
-                "cross_validation": kwargs.get("cross_validation", 0),
-                "early_stopping": kwargs.get("early_stopping", training_config.get("early_stopping", False)),
-                "patience": kwargs.get("patience", 5),
-                "debug": kwargs.get("debug", False),
-                "reduce_complexity": kwargs.get("reduce_complexity", training_config.get("reduce_complexity", False))
-            }
+            if "config" in kwargs and kwargs["config"]:
+                config_path = kwargs["config"]
+                if isinstance(config_path, dict):
+                    import tempfile
+                    with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as f:
+                        json.dump(config_path, f)
+                        config_path = f.name
+                argv.extend(["--config", config_path])
+            elif self.config:
+                argv.extend(["--config", "config.json"])
+            if kwargs.get("generate_only"):
+                argv.append("--generate-only")
+            if kwargs.get("enrich"):
+                argv.append("--enrich")
+            if kwargs.get("augment"):
+                argv.append("--augment")
+            if kwargs.get("output"):
+                argv.extend(["--output", kwargs["output"]])
+            if kwargs.get("model_output"):
+                argv.extend(["--model-output", kwargs["model_output"]])
+            if kwargs.get("cross_validation", 0) > 0:
+                argv.extend(["--cross-validation", str(kwargs["cross_validation"])])
+            if kwargs.get("early_stopping"):
+                argv.append("--early-stopping")
+            if kwargs.get("patience", 0) > 0:
+                argv.extend(["--patience", str(kwargs["patience"])])
+            if kwargs.get("debug"):
+                argv.append("--debug")
+            if kwargs.get("reduce_complexity"):
+                argv.append("--reduce-complexity")
 
-            class Args:
-                def __init__(self, **kwargs):
-                    for key, value in kwargs.items():
-                        setattr(self, key, value)
+            sys.argv = argv
 
-            args = Args(**args_dict)
-
-            self.logger.info("Running train_model.py...")
+            self.logger.info(f"Running train_model.py with args: {' '.join(argv[1:])}")
             success = train_module.main()
+
+            sys.argv = original_argv
 
             if success:
                 self.logger.info("Training completed successfully")
 
-                model_path = args.model_output
+                model_path = kwargs.get("model_output",
+                                        self.config.get("model", {}).get("path", "models/intent_classifier"))
                 model_file = f"{model_path}/model.h5"
                 if os.path.exists(model_file):
                     self.model_last_loaded = os.path.getmtime(model_file)
@@ -267,9 +289,24 @@ class SecureChatbotApplication:
             self.components["intent_classifier"] = IntentClassifier(
                 vocab_size=model_params.get("vocab_size", 5000),
                 embedding_dim=model_params.get("embedding_dim", 128),
-                max_sequence_length=model_params.get("max_sequence_length", 50),
-                model_path=model_path
+                max_sequence_length=model_params.get("max_sequence_length", 50)
             )
+
+            if model_path and os.path.exists(f"{model_path}/model.h5"):
+                self.logger.info(f"Loading intent classifier model from {model_path}")
+                success = self.components["intent_classifier"].load_model(model_path)
+                if success:
+                    self.model_last_loaded = os.path.getmtime(f"{model_path}/model.h5")
+                else:
+                    self.logger.error(f"Failed to load model from {model_path}")
+            else:
+                model_path_str = model_path if model_path else "undefined path"
+                self.logger.warning(f"Model not found at {model_path_str}. Using uninitialized classifier.")
+
+                self.components["intent_classifier"].model = None
+                self.components["intent_classifier"].tokenizer = None
+                self.components["intent_classifier"].intent_classes = ["database_query_list", "greeting", "help",
+                                                                       "goodbye"]
 
             self.components["chatbot_engine"] = ChatbotEngine(
                 intent_classifier=self.components["intent_classifier"],
@@ -392,53 +429,10 @@ def parse_arguments():
 
     subparsers = parser.add_subparsers(dest='command', help='Command to execute')
 
-    server_parser = subparsers.add_parser('server', help='Run the chatbot server')
+    subparsers.add_parser('server', help='Run the chatbot server')
 
     if TRAINING_AVAILABLE:
-        train_parser = subparsers.add_parser('train', help='Train the intent classifier model')
-        train_parser.add_argument(
-            "--generate-only",
-            action="store_true",
-            help="Only generate training data without training"
-        )
-        train_parser.add_argument(
-            "--enrich",
-            action="store_true",
-            help="Enrich existing training data instead of replacing it"
-        )
-        train_parser.add_argument(
-            "--augment",
-            action="store_true",
-            help="Apply data augmentation techniques"
-        )
-        train_parser.add_argument(
-            "--output",
-            type=str,
-            default="training/generated_training_data.json",
-            help="Output path for generated training data"
-        )
-        train_parser.add_argument(
-            "--model-output",
-            type=str,
-            default="models/intent_classifier",
-            help="Output directory for trained model"
-        )
-        train_parser.add_argument(
-            "--early-stopping",
-            action="store_true",
-            help="Enable early stopping based on validation loss"
-        )
-        train_parser.add_argument(
-            "--reduce-complexity",
-            action="store_true",
-            help="Use a simpler model architecture"
-        )
-        train_parser.add_argument(
-            "--cross-validation",
-            type=int,
-            default=0,
-            help="Number of cross-validation folds (0 to disable)"
-        )
+        subparsers.add_parser('train', help='Train the intent classifier model')
 
     return parser.parse_args()
 
@@ -456,6 +450,7 @@ if __name__ == "__main__":
             print("Application terminated.")
     elif args.command == 'train' and TRAINING_AVAILABLE:
         sys.argv = [sys.argv[0]] + sys.argv[2:]
+        train_module.main()
     else:
         print(f"Unknown command: {args.command}")
         sys.exit(1)

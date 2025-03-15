@@ -31,25 +31,77 @@ class QueryProcessor:
             "market": "markets",
             "markets": "markets",
             "stock exchange": "markets",
+            "trading venues": "markets",
+            "exchanges": "markets",
+
             "trader": "traders",
             "traders": "traders",
+            "trading users": "traders",
+            "trade accounts": "traders",
+            "trader profiles": "traders",
+            "customers": "traders",
+            "clients": "traders",
+
             "broker": "brokers",
             "brokers": "brokers",
+            "broker accounts": "brokers",
+            "broker profiles": "brokers",
+            "intermediaries": "brokers",
+            "broker companies": "brokers",
+
             "asset": "assets",
             "assets": "assets",
             "stock": "assets",
+            "stocks": "assets",
             "bond": "assets",
+            "bonds": "assets",
+            "securities": "assets",
+            "financial instruments": "assets",
+            "investment options": "assets",
+
             "trade": "trades",
             "trades": "trades",
+            "trading": "trades",
+            "trading activity": "trades",
+            "market activity": "trades",
+            "trade records": "trades",
+            "deals": "trades",
+
             "transaction": "transactions",
             "transactions": "transactions",
+            "account activity": "transactions",
+            "money transfers": "transactions",
+            "payments": "transactions",
+            "financial transactions": "transactions",
+
             "account": "accounts",
             "accounts": "accounts",
+            "financial accounts": "accounts",
+            "trading accounts": "accounts",
+            "user accounts": "accounts",
+
             "order": "orders",
             "orders": "orders",
+            "trade orders": "orders",
+            "market orders": "orders",
+            "order records": "orders",
+            "buy orders": "orders",
+            "sell orders": "orders",
+
+            "status": "order_status",
+            "order status": "order_status",
+            "order statuses": "order_status",
+            "status of orders": "order_status",
+            "order states": "order_status",
+            "statuses": "order_status",
+
             "price": "price_history",
             "price history": "price_history",
-            "prices": "price_history"
+            "prices": "price_history",
+            "historical prices": "price_history",
+            "price records": "price_history",
+            "past prices": "price_history",
+            "historical pricing": "price_history"
         }
 
     def get_essential_fields(self, table_name):
@@ -99,7 +151,6 @@ class QueryProcessor:
         return value
 
     def process_query(self, nl_query, intent_data):
-        """Process queries based on the classified intent"""
         intent = intent_data.get('intent', 'database_query_list')
         confidence = intent_data.get('confidence', 0.0)
 
@@ -130,7 +181,6 @@ class QueryProcessor:
         return handler(nl_query)
 
     def _extract_tables(self, nl_query):
-        """Extract table names from the query using entity mapping"""
         tables = []
         nl_query = nl_query.lower()
 
@@ -820,3 +870,283 @@ class QueryProcessor:
         sql_parts.append(limit_clause)
 
         sql = " ".join(sql_parts)
+
+    def secure_process_query(self, nl_query):
+        try:
+            self.logger.info(f"Direct query processing for: {nl_query}")
+            tables = self._extract_tables(nl_query)
+
+            if not tables:
+                self.logger.warning("No tables identified in the query")
+                return None
+
+            fields = self._extract_fields(nl_query, tables)
+
+            select_clause = f"SELECT {', '.join(fields)}"
+            from_clause = f"FROM {', '.join(tables)}"
+
+            conditions = []
+            if len(tables) > 1:
+                for i, table1 in enumerate(tables):
+                    for table2 in tables[i + 1:]:
+                        join_condition = self._get_join_condition(table1, table2)
+                        if join_condition:
+                            conditions.append(join_condition)
+
+            where_clause = ""
+            if conditions:
+                where_clause = f"WHERE {' AND '.join(conditions)}"
+
+            limit_clause = "LIMIT 100"
+
+            sql_parts = [select_clause, from_clause]
+            if where_clause:
+                sql_parts.append(where_clause)
+            sql_parts.append(limit_clause)
+
+            sql = " ".join(sql_parts)
+            self.logger.info(f"Generated SQL from natural language: {sql}")
+
+            return self._execute_and_process_query(sql)
+        except Exception as e:
+            self.logger.error(f"Error in secure_process_query: {e}")
+            return None
+
+    def _get_join_condition(self, table1, table2):
+        join_mappings = {
+            ("traders", "trades"): "traders.trader_id = trades.trader_id",
+            ("trades", "traders"): "trades.trader_id = traders.trader_id",
+
+            ("assets", "trades"): "assets.asset_id = trades.asset_id",
+            ("trades", "assets"): "trades.asset_id = assets.asset_id",
+
+            ("markets", "trades"): "markets.market_id = trades.market_id",
+            ("trades", "markets"): "trades.market_id = markets.market_id",
+
+            ("brokers", "assets"): "brokers.broker_id = assets.broker_id",
+            ("assets", "brokers"): "assets.broker_id = brokers.broker_id",
+
+            ("traders", "accounts"): "traders.trader_id = accounts.trader_id",
+            ("accounts", "traders"): "accounts.trader_id = traders.trader_id",
+
+            ("accounts", "transactions"): "accounts.account_id = transactions.account_id",
+            ("transactions", "accounts"): "transactions.account_id = accounts.account_id",
+
+            ("trades", "orders"): "trades.trade_id = orders.trade_id",
+            ("orders", "trades"): "orders.trade_id = trades.trade_id",
+
+            ("orders", "order_status"): "orders.order_id = order_status.order_id",
+            ("order_status", "orders"): "order_status.order_id = orders.order_id",
+
+            ("assets", "price_history"): "assets.asset_id = price_history.asset_id",
+            ("price_history", "assets"): "price_history.asset_id = assets.asset_id"
+        }
+
+        table_pair = (table1, table2)
+        return join_mappings.get(table_pair)
+
+    def _execute_and_process_query(self, sql):
+        try:
+            result = self.db_connector.execute_query(sql)
+
+            if not result:
+                self.logger.info("No results returned from database")
+                return []
+
+            processed_result = []
+            for item in result:
+                processed_item = {}
+                for key, value in item.items():
+                    if self._should_encrypt_field(key):
+                        processed_item[key] = f"[ENCRYPTED: {key}]"
+                    else:
+                        processed_item[key] = value
+                processed_result.append(processed_item)
+
+            return processed_result
+        except Exception as e:
+            self.logger.error(f"Error executing query: {e}")
+            return None
+
+    def _extract_sort_field(self, nl_query, tables):
+        nl_query = nl_query.lower()
+
+        sort_indicators = ["sort by", "ordered by", "arranged by", "in order of"]
+        sort_field = None
+
+        for indicator in sort_indicators:
+            if indicator in nl_query:
+                parts = nl_query.split(indicator)
+                if len(parts) > 1:
+                    field_text = parts[1].strip().split()[0]
+
+                    field_mappings = {
+                        "price": "price",
+                        "cost": "price",
+                        "value": "price",
+                        "date": "trade_date",
+                        "time": "trade_date",
+                        "name": "name",
+                        "type": "asset_type",
+                        "quantity": "quantity",
+                        "amount": "amount",
+                        "volume": "quantity"
+                    }
+
+                    field = field_mappings.get(field_text)
+
+                    if field:
+                        for table in tables:
+                            table_fields = self.table_info.get(table, [])
+                            for table_field in table_fields:
+                                if field in table_field:
+                                    return f"{table}.{table_field}"
+
+        default_sort_fields = {
+            "trades": "trades.trade_date",
+            "orders": "orders.order_date",
+            "assets": "assets.name",
+            "traders": "traders.name",
+            "markets": "markets.name",
+            "transactions": "transactions.transaction_date",
+            "accounts": "accounts.balance",
+            "price_history": "price_history.price_date"
+        }
+
+        for table in tables:
+            if table in default_sort_fields:
+                return default_sort_fields[table]
+
+        return None
+
+    def _extract_superlative_field(self, nl_query, tables, superlative_type):
+        nl_query = nl_query.lower()
+
+        superlative_indicators = {
+            "highest": ["highest", "most", "maximum", "largest", "greatest", "biggest", "top"],
+            "lowest": ["lowest", "least", "minimum", "smallest", "least", "bottom"],
+            "middle": ["middle", "median", "average", "mid-range", "center"]
+        }
+
+        indicators = superlative_indicators.get(superlative_type, [])
+
+        for indicator in indicators:
+            if indicator in nl_query:
+                parts = nl_query.split(indicator)
+                if len(parts) > 1:
+                    field_text = parts[1].strip().split()[0]
+
+                    field_mappings = {
+                        "price": "price",
+                        "cost": "price",
+                        "value": "price",
+                        "date": "trade_date",
+                        "time": "trade_date",
+                        "amount": "amount",
+                        "quantity": "quantity",
+                        "volume": "quantity",
+                        "balance": "balance"
+                    }
+
+                    field = field_mappings.get(field_text)
+
+                    if field:
+                        for table in tables:
+                            table_fields = self.table_info.get(table, [])
+                            for table_field in table_fields:
+                                if field in table_field:
+                                    return f"{table}.{table_field}"
+
+        default_fields = {
+            "trades": "trades.price",
+            "assets": "assets.price",
+            "accounts": "accounts.balance",
+            "transactions": "transactions.amount",
+            "price_history": "price_history.close_price"
+        }
+
+        for table in tables:
+            if table in default_fields:
+                return default_fields[table]
+
+        return None
+
+    def _extract_filter_conditions(self, nl_query, tables):
+        nl_query = nl_query.lower()
+        conditions = []
+
+        equality_patterns = [
+            (r"where (\w+) is (\w+)", "{}.{} = '{}'"),
+            (r"with (\w+) (\w+)", "{}.{} = '{}'"),
+            (r"(\w+) equal to (\w+)", "{}.{} = '{}'"),
+            (r"(\w+) equals (\w+)", "{}.{} = '{}'"),
+            (r"(\w+) = (\w+)", "{}.{} = '{}'")
+        ]
+
+        for pattern, template in equality_patterns:
+            matches = re.findall(pattern, nl_query)
+            for match in matches:
+                field, value = match
+
+                for table in tables:
+                    table_fields = self.table_info.get(table, [])
+                    for table_field in table_fields:
+                        if field in table_field:
+                            conditions.append(template.format(table, table_field, value))
+                            break
+
+        asset_types = ["stock", "bond", "etf", "option", "future", "forex"]
+        for asset_type in asset_types:
+            if asset_type in nl_query and "assets" in tables:
+                conditions.append(f"assets.asset_type = '{asset_type}'")
+
+        if "orders" in tables:
+            status_terms = {
+                "completed": "completed",
+                "pending": "pending",
+                "cancelled": "cancelled",
+                "open": "open",
+                "closed": "closed"
+            }
+
+            for term, status in status_terms.items():
+                if term in nl_query:
+                    conditions.append(f"order_status.status = '{status}'")
+
+        return conditions
+
+    def natural_language_to_sql(self, nl_query):
+        tables = self._extract_tables(nl_query)
+
+        if not tables:
+            self.logger.warning("No tables identified in the query")
+            return None
+
+        fields = self._extract_fields(nl_query, tables)
+
+        select_clause = f"SELECT {', '.join(fields)}"
+        from_clause = f"FROM {', '.join(tables)}"
+
+        conditions = []
+        if len(tables) > 1:
+            for i, table1 in enumerate(tables):
+                for table2 in tables[i + 1:]:
+                    join_condition = self._get_join_condition(table1, table2)
+                    if join_condition:
+                        conditions.append(join_condition)
+
+        where_clause = ""
+        if conditions:
+            where_clause = f"WHERE {' AND '.join(conditions)}"
+
+        limit_clause = "LIMIT 100"
+
+        sql_parts = [select_clause, from_clause]
+        if where_clause:
+            sql_parts.append(where_clause)
+        sql_parts.append(limit_clause)
+
+        sql = " ".join(sql_parts)
+        self.logger.info(f"Generated SQL from natural language: {sql}")
+
+        return sql
