@@ -1,6 +1,7 @@
 import logging
 import json
 import re
+from quick_intent_merger import QuickIntentMerger
 
 
 class ChatbotEngine:
@@ -10,17 +11,26 @@ class ChatbotEngine:
         self.query_processor = query_processor
         self.current_query = None
 
+        # Initialize the intent merger
+        self.intent_merger = QuickIntentMerger(self.intent_classifier)
+        self.logger.info("Intent merger initialized")
+
     def process_user_input(self, user_input):
+        """
+        Process user input and generate a response
+        """
         try:
             self.current_query = user_input
 
+            # Classify the intent using the merger
             intent_result = None
             try:
-                intent_result = self.intent_classifier.classify_intent(user_input)
+                intent_result = self.intent_merger.classify_intent(user_input)
                 self.logger.info(f"Classified intent: {intent_result}")
             except Exception as e:
                 self.logger.error(f"Error classifying intent: {e}")
 
+            # If intent classification failed, use direct query processing
             if not intent_result:
                 self.logger.info("Using direct query mode (intent classification unavailable)")
                 query_result = self.query_processor.secure_process_query(user_input)
@@ -30,13 +40,27 @@ class ChatbotEngine:
                 else:
                     return {"response": "I couldn't find any information for your query."}
 
+            # Get the main intent, confidence, and any sub-intent
             intent = intent_result['intent']
             confidence = intent_result['confidence']
+            sub_intent = intent_result.get('sub_intent')
 
-            # Check if this is a database query intent
+            if sub_intent:
+                self.logger.info(f"Sub-intent: {sub_intent}, Parent intent: {intent}")
+
+            # For database queries with good confidence, use the semantic processor
             if intent.startswith("database_query") and confidence > 0.6:
+                # Analyze query semantics
+                semantics = self.query_processor._analyze_query_semantics(user_input)
+                self.logger.info(f"Query semantics: {semantics}")
+
+                # Process the query using the enhanced query processor
                 query_result = self.query_processor.process_query(user_input, intent_result)
-                return self.generate_response(intent, query_result)
+
+                # Generate a response from the query result
+                return self.generate_response(intent, query_result, sub_intent)
+
+            # Handle special intents
             elif intent == "help":
                 return {
                     "response": "I can help you query the financial database securely. Try asking questions like:\n" +
@@ -53,19 +77,24 @@ class ChatbotEngine:
                 return {"response": "Hello! I'm your secure financial database assistant. How can I help you today?"}
             elif intent == "goodbye":
                 return {"response": "Goodbye! Feel free to come back if you have more questions."}
+
+            # Fall back to direct query processing if intent doesn't match known types
             else:
-                # Fallback to direct query for any unrecognized intent
                 query_result = self.query_processor.secure_process_query(user_input)
 
                 if query_result:
                     return self.generate_response("database_query_list", query_result)
                 else:
                     return {"response": "I'm not sure I understand. Could you rephrase your question?"}
+
         except Exception as e:
             self.logger.error(f"Error processing user input: {e}")
             return {"response": "An error occurred while processing your request."}
 
-    def generate_response(self, intent, query_result):
+    def generate_response(self, intent, query_result, sub_intent=None):
+        """
+        Generate a human-friendly response from query results
+        """
         if not query_result:
             return {"response": "I couldn't find any information for your query."}
 
@@ -91,7 +120,34 @@ class ChatbotEngine:
 
             detailed_view = "detailed" in intent or self._is_detailed_request()
 
-            comparative_query = any(comp in intent for comp in ["highest", "lowest", "middle"])
+            comparative_query = False
+            sort_direction = None
+            comparative_type = None
+
+            if intent == "database_query_comparative":
+                comparative_query = True
+                if sub_intent:
+                    if "highest" in sub_intent:
+                        comparative_type = "highest"
+                    elif "lowest" in sub_intent:
+                        comparative_type = "lowest"
+                    elif "middle" in sub_intent:
+                        comparative_type = "middle"
+                else:
+                    comparative_type = "highest"
+
+            if intent == "database_query_sort":
+                if sub_intent:
+                    if "ascending" in sub_intent:
+                        sort_direction = "ascending"
+                    elif "descending" in sub_intent:
+                        sort_direction = "descending"
+                else:
+                    if any(term in self.current_query.lower() for term in
+                           ["desc", "decreasing", "high to low", "largest to smallest"]):
+                        sort_direction = "descending"
+                    else:
+                        sort_direction = "ascending"
 
             contains_encrypted = False
             has_sensitive_fields = False
@@ -127,22 +183,22 @@ class ChatbotEngine:
 
             if len(query_result) == 1:
                 if comparative_query:
-                    if "highest" in intent:
+                    if comparative_type == "highest":
                         response_text = f"Here's the {primary_table} with the highest value:"
-                    elif "lowest" in intent:
+                    elif comparative_type == "lowest":
                         response_text = f"Here's the {primary_table} with the lowest value:"
-                    elif "middle" in intent:
+                    elif comparative_type == "middle":
                         response_text = f"Here's the {primary_table} with the median value:"
                 else:
                     response_text = "Here's what I found:"
                 data_to_return = processed_results[0]
             else:
                 if comparative_query:
-                    if "highest" in intent:
+                    if comparative_type == "highest":
                         response_text = f"Here are the {primary_table} with the highest values:"
-                    elif "lowest" in intent:
+                    elif comparative_type == "lowest":
                         response_text = f"Here are the {primary_table} with the lowest values:"
-                    elif "middle" in intent:
+                    elif comparative_type == "middle":
                         response_text = f"Here are the {primary_table} with the middle values:"
                 else:
                     response_text = f"I found {len(query_result)} matching {primary_table}."
@@ -182,6 +238,12 @@ class ChatbotEngine:
                         response_text += " These are financial transactions."
 
                 data_to_return = processed_results
+
+                if intent == "database_query_sort" and sort_direction:
+                    if sort_direction == "ascending":
+                        response_text += " Results are sorted in ascending order."
+                    else:
+                        response_text += " Results are sorted in descending order."
 
             if has_sensitive_fields:
                 encryption_message = "\n\nSome fields contain sensitive information that is encrypted with Homomorphic Encryption. This advanced encryption allows computations on encrypted data without decrypting it first, providing enhanced security for sensitive information like email addresses, license numbers, and other personal details."

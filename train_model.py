@@ -4,12 +4,11 @@ import os
 import json
 import logging
 import argparse
-import random
+import random as rnd
+from random import choice, shuffle
 
-import numpy as np
 import tensorflow as tf
 from datetime import datetime
-from sklearn.model_selection import KFold
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.utils import to_categorical
@@ -17,9 +16,9 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLRO
 
 from database_connector import DatabaseConnector
 from training.query_generator import DatabaseQueryGenerator
-from model.intent_classifier import IntentClassifier
+from model.intent_classifier import EnhancedIntentClassifier
 
-print("Starting train_model.py")
+print("Starting enhanced training script with intent merging")
 sys.stdout.flush()
 
 logging.basicConfig(
@@ -33,18 +32,190 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-def augment_text_data_simple(texts, labels, augmentation_factor=0.3):
-    from random import choice, random, shuffle, randint
+MERGE_MAPPINGS = {
+    "database_query_comparative_highest": "database_query_comparative",
+    "database_query_comparative_lowest": "database_query_comparative",
+    "database_query_comparative_middle": "database_query_comparative",
+
+    "database_query_sort_ascending": "database_query_sort",
+    "database_query_sort_descending": "database_query_sort",
+}
+
+ORIGINAL_INTENTS = {}
+
+
+def merge_intent_classes(texts, labels):
+    global ORIGINAL_INTENTS
+
+    ORIGINAL_INTENTS = {}
+
+    merged_labels = []
+    for i, label in enumerate(labels):
+        if label in MERGE_MAPPINGS:
+            merged_label = MERGE_MAPPINGS[label]
+            if merged_label not in ORIGINAL_INTENTS:
+                ORIGINAL_INTENTS[merged_label] = {}
+
+            if label not in ORIGINAL_INTENTS[merged_label]:
+                ORIGINAL_INTENTS[merged_label][label] = []
+            ORIGINAL_INTENTS[merged_label][label].append(texts[i])
+
+            merged_labels.append(merged_label)
+        else:
+            merged_labels.append(label)
+
+    with open("original_intents.json", "w") as f:
+        json.dump(ORIGINAL_INTENTS, f, indent=2)
+
+    original_classes = set(labels)
+    merged_classes = set(merged_labels)
+
+    logger.info(f"Merged {len(original_classes)} intent classes into {len(merged_classes)} classes")
+    logger.info(f"Original classes: {sorted(list(original_classes))}")
+    logger.info(f"Merged classes: {sorted(list(merged_classes))}")
+
+    merged_counts = {}
+    for label in merged_labels:
+        if label not in merged_counts:
+            merged_counts[label] = 0
+        merged_counts[label] += 1
+
+    logger.info(f"Merged class counts: {merged_counts}")
+
+    return texts, merged_labels
+
+
+def create_additional_examples(merged_class, original_examples):
+    additional_texts = []
+    additional_labels = []
+
+    if merged_class == "database_query_comparative":
+        templates = [
+            "Show me the {position} {entity} by {attribute}",
+            "Find the {position} {attribute} {entity}",
+            "Which {entity} {verb} the {position} {attribute}",
+            "Sort {entity} and show me the {position} ones",
+            "List {entity} with {position} {attribute} values",
+            "{position} {attribute} {entity} please",
+            "What {entity} has the {position} {attribute}",
+            "Give me {entity} ranked by {position} {attribute}",
+        ]
+
+        entities = ["assets", "trades", "traders", "markets", "accounts", "stocks", "prices"]
+        attributes = ["price", "value", "cost", "amount", "balance", "volume", "quantity", "date"]
+
+        position_highest = ["highest", "greatest", "maximum", "largest", "biggest", "top"]
+        verbs_highest = ["have", "has", "showing", "with", "containing"]
+
+        for template in templates:
+            for entity in entities:
+                for attribute in attributes:
+                    for position in position_highest:
+                        for _ in range(2):
+                            verb = choice(verbs_highest)
+                            text = template.format(
+                                position=position,
+                                entity=entity,
+                                attribute=attribute,
+                                verb=verb
+                            )
+                            additional_texts.append(text)
+                            additional_labels.append("database_query_comparative")
+
+        position_lowest = ["lowest", "least", "minimum", "smallest", "bottom"]
+        verbs_lowest = ["have", "has", "showing", "with", "containing"]
+
+        for template in templates:
+            for entity in entities:
+                for attribute in attributes:
+                    for position in position_lowest:
+                        for _ in range(2):
+                            verb = choice(verbs_lowest)
+                            text = template.format(
+                                position=position,
+                                entity=entity,
+                                attribute=attribute,
+                                verb=verb
+                            )
+                            additional_texts.append(text)
+                            additional_labels.append("database_query_comparative")
+
+    elif merged_class == "database_query_sort":
+        templates = [
+            "Sort {entity} by {attribute} in {direction} order",
+            "Show {entity} sorted by {attribute} {direction}",
+            "List {entity} {direction} by {attribute}",
+            "Order {entity} by {attribute} {direction}",
+            "Display {entity} in {direction} order of {attribute}",
+            "{entity} ordered by {attribute} {direction}",
+            "Arrange {entity} by {attribute} from {from_to}",
+            "Show me {entity} with {attribute} arranged {direction}",
+        ]
+
+        entities = ["assets", "trades", "traders", "markets", "accounts", "stocks", "prices"]
+        attributes = ["price", "value", "cost", "amount", "balance", "volume", "quantity", "date"]
+
+        direction_asc = ["ascending", "increasing", "rising", "upward"]
+        from_to_asc = ["low to high", "smallest to largest", "least to most"]
+
+        for template in templates:
+            for entity in entities:
+                for attribute in attributes:
+                    for direction in direction_asc:
+                        for _ in range(2):
+                            from_to = choice(from_to_asc) if "{from_to}" in template else ""
+                            text = template.format(
+                                entity=entity,
+                                attribute=attribute,
+                                direction=direction,
+                                from_to=from_to
+                            )
+                            additional_texts.append(text)
+                            additional_labels.append("database_query_sort")
+
+        direction_desc = ["descending", "decreasing", "falling", "downward"]
+        from_to_desc = ["high to low", "largest to smallest", "most to least"]
+
+        for template in templates:
+            for entity in entities:
+                for attribute in attributes:
+                    for direction in direction_desc:
+                        for _ in range(2):
+                            from_to = choice(from_to_desc) if "{from_to}" in template else ""
+                            text = template.format(
+                                entity=entity,
+                                attribute=attribute,
+                                direction=direction,
+                                from_to=from_to
+                            )
+                            additional_texts.append(text)
+                            additional_labels.append("database_query_sort")
+
+    unique_examples = {}
+    for text, label in zip(additional_texts, additional_labels):
+        unique_examples[text.lower()] = label
+
+    shuffled_texts = list(unique_examples.keys())
+    shuffle(shuffled_texts)
+
+    logger.info(f"Created {len(shuffled_texts)} additional examples for {merged_class}")
+
+    return shuffled_texts, [unique_examples[text.lower()] for text in shuffled_texts]
+
+
+def augment_text_data(texts, labels, augmentation_factor=0.3):
 
     augmented_texts = texts.copy()
     augmented_labels = labels.copy()
 
-    num_to_augment = int(len(texts) * augmentation_factor)
-    indices_to_augment = list(range(len(texts)))
-    shuffle(indices_to_augment)
-    indices_to_augment = indices_to_augment[:num_to_augment]
+    texts_by_label = {}
+    for text, label in zip(texts, labels):
+        if label not in texts_by_label:
+            texts_by_label[label] = []
+        texts_by_label[label].append(text)
 
-    logger.info(f"Augmenting {num_to_augment} examples with simple methods")
+    label_counts = {label: len(examples) for label, examples in texts_by_label.items()}
+    logger.info(f"Original class distribution: {label_counts}")
 
     replacements = {
         "show": ["display", "list", "get", "find", "retrieve"],
@@ -58,8 +229,8 @@ def augment_text_data_simple(texts, labels, augmentation_factor=0.3):
         "sorted by": ["ordered by", "arranged by", "in order of"],
         "recent": ["latest", "newest", "current", "fresh"],
         "markets": ["exchanges", "trading venues", "market places"],
-        "traders": ["users", "trading accounts", "people trading"],
-        "trades": ["transactions", "exchanges", "deals"],
+        "traders": ["users", "trading accounts", "people trading", "clients"],
+        "trades": ["transactions", "exchanges", "deals", "trading activity"],
         "brokers": ["agents", "intermediaries", "broker firms"],
         "assets": ["securities", "instruments", "holdings", "investments"],
         "highest": ["maximum", "top", "greatest", "largest", "biggest"],
@@ -69,59 +240,55 @@ def augment_text_data_simple(texts, labels, augmentation_factor=0.3):
         "descending": ["decreasing", "high to low", "largest to smallest"]
     }
 
-    for idx in indices_to_augment:
-        text = texts[idx]
-        label = labels[idx]
+    problem_classes = ["database_query_comparative", "database_query_sort"]
 
-        transform_method = choice(["replace_word", "word_order", "word_removal"])
+    for label in problem_classes:
+        if label in texts_by_label:
+            source_texts = texts_by_label[label]
+            logger.info(f"Applying enhanced augmentation for {label} with {len(source_texts)} examples")
 
-        if transform_method == "replace_word":
+            for text in source_texts:
+                for _ in range(3):
+                    augmented = False
+
+                    for original, alternatives in replacements.items():
+                        if original in text.lower():
+                            alternative = choice(alternatives)
+                            augmented_text = text.replace(original, alternative)
+                            if augmented_text != text:
+                                augmented_texts.append(augmented_text)
+                                augmented_labels.append(label)
+                                augmented = True
+                                break
+
+                    if not augmented and " " in text:
+                        words = text.split()
+                        if len(words) > 4:
+                            idx1 = rnd.randint(1, len(words) - 2)
+                            words[idx1], words[idx1 + 1] = words[idx1 + 1], words[idx1]
+                            augmented_text = " ".join(words)
+                            augmented_texts.append(augmented_text)
+                            augmented_labels.append(label)
+
+    if augmentation_factor > 0:
+        num_to_augment = int(len(texts) * augmentation_factor)
+        indices_to_augment = list(range(len(texts)))
+        shuffle(indices_to_augment)
+        indices_to_augment = indices_to_augment[:num_to_augment]
+
+        for idx in indices_to_augment:
+            text = texts[idx]
+            label = labels[idx]
+
             for original, alternatives in replacements.items():
                 if original in text.lower():
                     alternative = choice(alternatives)
-                    if text.find(original) >= 0:
-                        augmented_text = text.replace(original, alternative)
-                    elif text.find(original.capitalize()) >= 0:
-                        augmented_text = text.replace(original.capitalize(), alternative.capitalize())
-                    else:
-                        augmented_text = text.lower().replace(original, alternative)
-                    break
-            else:
-                continue
+                    augmented_text = text.replace(original, alternative)
+                    if augmented_text != text:
+                        augmented_texts.append(augmented_text)
+                        augmented_labels.append(label)
+                        break
 
-        elif transform_method == "word_order" and " " in text:
-            words = text.split()
-            if len(words) > 3:
-                idx1 = randint(1, len(words) - 2)
-                words[idx1], words[idx1 + 1] = words[idx1 + 1], words[idx1]
-                augmented_text = " ".join(words)
-            else:
-                continue
-
-        elif transform_method == "word_removal" and " " in text:
-            words = text.split()
-            if len(words) > 4:
-                skip_words = ["a", "the", "and", "or", "for", "with", "me", "to"]
-                remove_candidates = []
-                for i, word in enumerate(words):
-                    if word.lower() in skip_words:
-                        remove_candidates.append(i)
-
-                if remove_candidates:
-                    remove_idx = choice(remove_candidates)
-                    words.pop(remove_idx)
-                    augmented_text = " ".join(words)
-                else:
-                    continue
-            else:
-                continue
-        else:
-            continue
-
-        augmented_texts.append(augmented_text)
-        augmented_labels.append(label)
-
-    logger.info(f"Data augmentation complete. Original size: {len(texts)}, New size: {len(augmented_texts)}")
     unique_texts = []
     unique_labels = []
     seen = set()
@@ -132,96 +299,131 @@ def augment_text_data_simple(texts, labels, augmentation_factor=0.3):
             unique_texts.append(text)
             unique_labels.append(label)
 
-    logger.info(f"Comparative augmentation complete. Original size: {len(texts)}, New size: {len(unique_texts)}")
+    for problem_class in problem_classes:
+        original_examples = []
+        if problem_class in texts_by_label:
+            original_examples = texts_by_label[problem_class]
+
+        additional_texts, additional_labels = create_additional_examples(
+            problem_class, original_examples
+        )
+
+        unique_texts.extend(additional_texts)
+        unique_labels.extend(additional_labels)
+
+    final_counts = {}
+    for label in unique_labels:
+        if label not in final_counts:
+            final_counts[label] = 0
+        final_counts[label] += 1
+
+    logger.info(f"After augmentation: {len(unique_texts)} examples")
+    logger.info(f"Final class distribution: {final_counts}")
+
     return unique_texts, unique_labels
 
 
-def augment_comparative_queries(texts, labels):
-    from random import choice, shuffle
+def balance_classes(texts, labels, min_per_class=40, max_per_class=800):
+    classes = {}
+    for text, label in zip(texts, labels):
+        if label not in classes:
+            classes[label] = []
+        classes[label].append(text)
 
-    augmented_texts = texts.copy()
-    augmented_labels = labels.copy()
+    balanced_texts = []
+    balanced_labels = []
 
-    comparative_types = ["comparative_highest", "comparative_lowest", "comparative_middle",
-                         "sort_ascending", "sort_descending"]
+    problem_classes = ["database_query_comparative", "database_query_sort"]
+    normal_max = max_per_class
+    problem_max = max_per_class * 2
 
-    comparative_indices = [
-        i for i, label in enumerate(labels)
-        if any(comp_type in label for comp_type in comparative_types)
-    ]
+    for label, examples in classes.items():
+        if len(examples) < min_per_class:
+            multiplier = min_per_class // len(examples) + 1
+            examples_to_use = examples * multiplier
+            logger.info(f"Class {label}: Duplicated from {len(examples)} to {len(examples_to_use)} examples")
+        else:
+            examples_to_use = examples
 
-    shuffle(comparative_indices)
+        this_max = problem_max if label in problem_classes else normal_max
 
-    comparative_indices = comparative_indices[:int(len(comparative_indices) * 0.3)]
+        examples_to_use = examples_to_use[:this_max]
 
-    logger.info(f"Augmenting {len(comparative_indices)} comparative queries")
+        balanced_texts.extend(examples_to_use)
+        balanced_labels.extend([label] * len(examples_to_use))
 
-    superlative_replacements = {
-        "highest": ["maximum", "greatest", "largest", "top", "best"],
-        "lowest": ["minimum", "smallest", "least", "bottom", "worst"],
-        "middle": ["median", "average", "mid-range", "center"],
-        "ascending": ["increasing", "growing", "rising", "upward"],
-        "descending": ["decreasing", "falling", "downward", "reducing"]
-    }
+    combined = list(zip(balanced_texts, balanced_labels))
+    shuffle(combined)
+    balanced_texts, balanced_labels = zip(*combined)
 
-    entity_replacements = {
-        "price": ["cost", "value", "worth", "rate"],
-        "value": ["amount", "total", "sum", "worth"],
-        "trades": ["transactions", "deals", "exchanges"],
-        "assets": ["stocks", "securities", "instruments", "investments"],
-        "traders": ["users", "clients", "customers", "accounts"]
-    }
+    balanced_texts = list(balanced_texts)
+    balanced_labels = list(balanced_labels)
 
-    for idx in comparative_indices:
-        text = texts[idx]
-        label = labels[idx]
+    logger.info(f"After balancing: {len(balanced_texts)} total examples")
 
-        replace_type = choice(["superlative", "entity", "attribute"])
+    final_counts = {}
+    for label in balanced_labels:
+        final_counts[label] = final_counts.get(label, 0) + 1
 
-        augmented = False
-        if replace_type == "superlative":
-            for term, alternatives in superlative_replacements.items():
-                if term in text.lower():
-                    alternative = choice(alternatives)
-                    augmented_text = text.replace(term, alternative)
-                    if term.capitalize() in text:
-                        augmented_text = text.replace(term.capitalize(), alternative.capitalize())
-                    augmented_texts.append(augmented_text)
-                    augmented_labels.append(label)
-                    augmented = True
-                    break
+    logger.info(f"Final class distribution: {final_counts}")
 
-        elif replace_type == "entity" and not augmented:
-            for entity, alternatives in entity_replacements.items():
-                if entity in text.lower():
-                    alternative = choice(alternatives)
-                    augmented_text = text.replace(entity, alternative)
-                    if entity.capitalize() in text:
-                        augmented_text = text.replace(entity.capitalize(), alternative.capitalize())
-                    augmented_texts.append(augmented_text)
-                    augmented_labels.append(label)
-                    augmented = True
-                    break
+    return balanced_texts, balanced_labels
 
-        elif replace_type == "attribute" and not augmented:
-            words = text.split()
-            for i, word in enumerate(words):
-                if word.lower() in entity_replacements:
-                    alternatives = entity_replacements[word.lower()]
-                    alternative = choice(alternatives)
-                    if word[0].isupper():
-                        alternative = alternative.capitalize()
-                    words[i] = alternative
-                    augmented_text = " ".join(words)
-                    augmented_texts.append(augmented_text)
-                    augmented_labels.append(label)
-                    augmented = True
-                    break
 
-    return augmented_texts, augmented_labels
+def build_multi_filter_model(vocab_size, embedding_dim, max_sequence_length, num_classes):
+
+    inputs = tf.keras.layers.Input(shape=(max_sequence_length,))
+    embedding = tf.keras.layers.Embedding(
+        vocab_size, embedding_dim, input_length=max_sequence_length
+    )(inputs)
+
+    conv3 = tf.keras.layers.Conv1D(128, 3, padding='same', activation='relu')(embedding)
+    conv4 = tf.keras.layers.Conv1D(128, 4, padding='same', activation='relu')(embedding)
+    conv5 = tf.keras.layers.Conv1D(128, 5, padding='same', activation='relu')(embedding)
+
+    pool3 = tf.keras.layers.GlobalMaxPooling1D()(conv3)
+    pool4 = tf.keras.layers.GlobalMaxPooling1D()(conv4)
+    pool5 = tf.keras.layers.GlobalMaxPooling1D()(conv5)
+
+    concat = tf.keras.layers.Concatenate()([pool3, pool4, pool5])
+
+    dropout = tf.keras.layers.Dropout(0.5)(concat)
+
+    dense1 = tf.keras.layers.Dense(256, activation='relu')(dropout)
+    dropout2 = tf.keras.layers.Dropout(0.5)(dense1)
+
+    outputs = tf.keras.layers.Dense(num_classes, activation='softmax')(dropout2)
+
+    model = tf.keras.Model(inputs=inputs, outputs=outputs)
+
+    model.compile(
+        loss='categorical_crossentropy',
+        optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+        metrics=['accuracy']
+    )
+
+    return model
+
 
 def prepare_training_data(args):
     try:
+        if args.use_existing_data and os.path.exists(args.output):
+            try:
+                logger.info(f"Loading existing training data from {args.output}")
+                with open(args.output, 'r') as f:
+                    training_data = json.load(f)
+
+                texts = training_data.get("texts", [])
+                labels = training_data.get("labels", [])
+
+                if texts and labels and len(texts) == len(labels):
+                    logger.info(f"Loaded {len(texts)} examples from existing file")
+                    return {"texts": texts, "labels": labels}
+                else:
+                    logger.warning("Existing data file is invalid. Will generate new data.")
+            except Exception as e:
+                logger.warning(f"Error loading existing data: {e}")
+
         logger.info("Loading database configuration...")
 
         config_path = args.config
@@ -300,67 +502,37 @@ def prepare_training_data(args):
         return False
 
 
-def balance_intent_classes(texts, labels, max_per_class=300, min_per_class=50):
-    classes = {}
-    for text, label in zip(texts, labels):
-        if label not in classes:
-            classes[label] = []
-        classes[label].append(text)
-
-    balanced_texts = []
-    balanced_labels = []
-
-    for label, examples in classes.items():
-        if len(examples) < min_per_class:
-            multiplier = min_per_class // len(examples) + 1
-            examples = examples * multiplier
-        examples = examples[:max_per_class]
-
-        balanced_texts.extend(examples)
-        balanced_labels.extend([label] * len(examples))
-
-    indices = list(range(len(balanced_texts)))
-    random.shuffle(indices)
-
-    shuffled_texts = [balanced_texts[i] for i in indices]
-    shuffled_labels = [balanced_labels[i] for i in indices]
-
-    return shuffled_texts, shuffled_labels
-
 def train_model_with_data(training_data, args):
     try:
-        logger.info("Starting model training...")
+        logger.info("Starting model training process...")
 
         texts = training_data["texts"]
         labels = training_data["labels"]
 
-        simplified_labels = []
-        for label in labels:
-            if "sort" in label:
-                simplified_labels.append("database_query_sort")
-            elif "comparative" in label:
-                simplified_labels.append("database_query_comparative")
-            else:
-                simplified_labels.append(label)
+        if args.merge_classes:
+            texts, labels = merge_intent_classes(texts, labels)
 
-        logger.info(f"Simplified intent classes from {len(set(labels))} to {len(set(simplified_labels))}")
-
-        balanced_texts, balanced_labels = balance_intent_classes(texts, simplified_labels)
-        logger.info(f"Balanced dataset from {len(texts)} to {len(balanced_texts)} examples")
-
+        balanced_texts, balanced_labels = balance_classes(
+            texts,
+            labels,
+            min_per_class=args.min_per_class,
+            max_per_class=args.max_per_class
+        )
         texts, labels = balanced_texts, balanced_labels
 
         if args.augment:
-            logger.info("Applying data augmentation...")
-            texts, labels = augment_text_data_simple(texts, labels, augmentation_factor=0.2)
-            logger.info(f"After augmentation: {len(texts)} examples")
+            texts, labels = augment_text_data(
+                texts,
+                labels,
+                augmentation_factor=args.augmentation_factor
+            )
 
-        logger.info("Tokenizing text data...")
-        tokenizer = Tokenizer(num_words=10000)
+        logger.info("Tokenizing and preparing sequences...")
+        tokenizer = Tokenizer(num_words=args.vocab_size)
         tokenizer.fit_on_texts(texts)
 
         sequences = tokenizer.texts_to_sequences(texts)
-        padded_sequences = pad_sequences(sequences, maxlen=50)
+        padded_sequences = pad_sequences(sequences, maxlen=args.max_sequence_length)
 
         unique_labels = sorted(set(labels))
         logger.info(f"Training with {len(unique_labels)} intent classes: {unique_labels}")
@@ -370,50 +542,59 @@ def train_model_with_data(training_data, args):
         one_hot_labels = to_categorical(label_indices)
 
         model_path = args.model_output
-        logger.info(f"Creating intent classifier with output to {model_path}")
+        logger.info(f"Will save model to {model_path}")
+        os.makedirs(model_path, exist_ok=True)
 
-        classifier = IntentClassifier(vocab_size=10000)
+        classifier = EnhancedIntentClassifier(
+            vocab_size=args.vocab_size,
+            embedding_dim=args.embedding_dim,
+            max_sequence_length=args.max_sequence_length
+        )
 
-        logger.info("Using simplified CNN model architecture")
-        model = classifier.build_model(len(unique_labels))
+        model = build_multi_filter_model(
+            args.vocab_size,
+            args.embedding_dim,
+            args.max_sequence_length,
+            len(unique_labels)
+        )
+
+        logger.info("Model architecture:")
+        model.summary(print_fn=logger.info)
 
         callbacks = []
 
         if args.early_stopping:
-            logger.info("Adding early stopping callback with increased patience")
             early_stopping = EarlyStopping(
                 monitor='val_accuracy',
-                patience=8,
+                patience=args.patience,
                 restore_best_weights=True
             )
             callbacks.append(early_stopping)
-
-        os.makedirs(model_path, exist_ok=True)
+            logger.info(f"Added early stopping with patience={args.patience}")
 
         checkpoint_path = os.path.join(model_path, "checkpoint.h5")
         checkpoint = ModelCheckpoint(
             checkpoint_path,
             monitor='val_accuracy',
-            save_best_weights_only=True
+            save_best_only=True
         )
         callbacks.append(checkpoint)
 
         reduce_lr = ReduceLROnPlateau(
             monitor='val_loss',
             factor=0.2,
-            patience=5,
+            patience=args.patience // 2,
             min_lr=0.0001
         )
         callbacks.append(reduce_lr)
 
-        logger.info("Beginning model training with increased epochs...")
-
+        logger.info(f"Starting training with {args.epochs} epochs...")
         history = model.fit(
             padded_sequences,
             one_hot_labels,
-            epochs=40,
-            batch_size=32,
-            validation_split=0.25,
+            epochs=args.epochs,
+            batch_size=args.batch_size,
+            validation_split=args.validation_split,
             callbacks=callbacks,
             verbose=1
         )
@@ -430,21 +611,33 @@ def train_model_with_data(training_data, args):
         save_result = classifier.save_model(model_path)
         if save_result:
             logger.info("Model saved successfully")
+
+            model_h5_path = os.path.join(model_path, "model.h5")
+            model.save(model_h5_path)
+            logger.info(f"Additional model file saved to {model_h5_path}")
+
+            mappings_path = os.path.join(model_path, "intent_mappings.json")
+            with open(mappings_path, 'w') as f:
+                json.dump({
+                    "merge_mappings": MERGE_MAPPINGS,
+                }, f, indent=2)
+            logger.info(f"Intent mappings saved to {mappings_path}")
+
+            return True
         else:
             logger.error("Failed to save model")
             return False
-
-        return True
 
     except Exception as e:
         logger.error(f"Error in model training: {e}")
         traceback.print_exc()
         return False
 
+
 def main():
     logger.info("Parsing command line arguments...")
 
-    parser = argparse.ArgumentParser(description="Train intent classifier model")
+    parser = argparse.ArgumentParser(description="Train intent classifier with merged classes")
 
     parser.add_argument("--config", type=str, default="config.json", help="Path to configuration file")
     parser.add_argument("--generate-only", action="store_true", help="Only generate training data without training")
@@ -452,11 +645,22 @@ def main():
     parser.add_argument("--augment", action="store_true", help="Apply data augmentation techniques")
     parser.add_argument("--output", type=str, default="training/generated_training_data.json",
                         help="Output path for generated training data")
-    parser.add_argument("--model-output", type=str, default="models/intent_classifier",
+    parser.add_argument("--model-output", type=str, default="models/intent_classifier_merged",
                         help="Output directory for trained model")
-    parser.add_argument("--early-stopping", action="store_true", help="Enable early stopping based on validation accuracy")
-    parser.add_argument("--reduce-complexity", action="store_true", help="Use a simpler model architecture")
-    parser.add_argument("--epochs", type=int, default=40, help="Number of training epochs")
+    parser.add_argument("--early-stopping", action="store_true",
+                        help="Enable early stopping based on validation accuracy")
+    parser.add_argument("--epochs", type=int, default=30, help="Number of training epochs")
+    parser.add_argument("--batch-size", type=int, default=32, help="Batch size for training")
+    parser.add_argument("--vocab-size", type=int, default=10000, help="Vocabulary size for tokenizer")
+    parser.add_argument("--embedding-dim", type=int, default=150, help="Embedding dimension")
+    parser.add_argument("--max-sequence-length", type=int, default=50, help="Maximum sequence length")
+    parser.add_argument("--patience", type=int, default=8, help="Patience for early stopping")
+    parser.add_argument("--validation-split", type=float, default=0.2, help="Validation split ratio")
+    parser.add_argument("--min-per-class", type=int, default=50, help="Minimum samples per class")
+    parser.add_argument("--max-per-class", type=int, default=800, help="Maximum samples per class")
+    parser.add_argument("--merge-classes", action="store_true", help="Merge similar intent classes")
+    parser.add_argument("--augmentation-factor", type=float, default=0.3, help="Data augmentation factor")
+    parser.add_argument("--use-existing-data", action="store_true", help="Use existing training data file if available")
     parser.add_argument("--debug", action="store_true", help="Enable debug output")
 
     args = parser.parse_args()
@@ -493,8 +697,9 @@ def main():
         logger.error("Model training failed")
         return False
 
+
 if __name__ == "__main__":
-    logger.info("=== Starting intent classifier training ===")
+    logger.info("=== Starting intent merger training ===")
     success = main()
     logger.info(f"=== Training {'completed successfully' if success else 'failed'} ===")
     sys.exit(0 if success else 1)

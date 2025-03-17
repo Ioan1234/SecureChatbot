@@ -9,7 +9,7 @@ import importlib.util
 
 from database_connector import DatabaseConnector
 from encryption_manager import HomomorphicEncryptionManager
-from model.intent_classifier import IntentClassifier
+from model.intent_classifier import EnhancedIntentClassifier
 from query_processor import QueryProcessor
 from model.chatbot_engine import ChatbotEngine
 from api.flask_api import FlaskAPI
@@ -144,13 +144,12 @@ class SecureChatbotApplication:
 
             model_config = self.config.get("model", {})
             model_params = model_config.get("parameters", {})
-            self.components["intent_classifier"] = IntentClassifier(
+            self.components["intent_classifier"] = EnhancedIntentClassifier(
                 vocab_size=model_params.get("vocab_size", 5000),
                 embedding_dim=model_params.get("embedding_dim", 128),
                 max_sequence_length=model_params.get("max_sequence_length", 50)
             )
 
-            # Load the model after initializing the classifier
             model_path = model_config.get("path")
             if model_path and os.path.exists(f"{model_path}/model.h5"):
                 self.logger.info(f"Loading intent classifier model from {model_path}")
@@ -286,7 +285,7 @@ class SecureChatbotApplication:
             self.logger.info(f"Reloading model from {model_path}")
 
             model_params = model_config.get("parameters", {})
-            self.components["intent_classifier"] = IntentClassifier(
+            self.components["intent_classifier"] = EnhancedIntentClassifier(
                 vocab_size=model_params.get("vocab_size", 5000),
                 embedding_dim=model_params.get("embedding_dim", 128),
                 max_sequence_length=model_params.get("max_sequence_length", 50)
