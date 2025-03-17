@@ -1,0 +1,9 @@
+{
+  "merge_mappings": {
+    "database_query_comparative_highest": "database_query_comparative",
+    "database_query_comparative_lowest": "database_query_comparative",
+    "database_query_comparative_middle": "database_query_comparative",
+    "database_query_sort_ascending": "database_query_sort",
+    "database_query_sort_descending": "database_query_sort"
+  }
+}

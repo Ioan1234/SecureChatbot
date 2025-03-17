@@ -1,0 +1,1 @@
+{"vocab_size": 10000, "embedding_dim": 150, "max_sequence_length": 50, "use_post_processor": true}

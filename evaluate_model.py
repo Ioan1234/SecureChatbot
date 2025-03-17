@@ -1,4 +1,3 @@
-
 import json
 import argparse
 import logging
@@ -7,11 +6,14 @@ import numpy as np
 from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
+import sys
 
 from database_connector import DatabaseConnector
-from model.intent_classifier import IntentClassifier
+from model.intent_classifier import EnhancedIntentClassifier
 from query_processor import QueryProcessor
 from training.query_generator import DatabaseQueryGenerator
+from quick_intent_merger import QuickIntentMerger
 
 logging.basicConfig(
     level=logging.INFO,
@@ -25,47 +27,120 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def evaluate_model(model, test_texts, test_labels):
+def merge_test_data(test_texts, test_labels):
+
+    merge_mappings = {
+        "database_query_comparative_highest": "database_query_comparative",
+        "database_query_comparative_lowest": "database_query_comparative",
+        "database_query_comparative_middle": "database_query_comparative",
+
+        "database_query_sort_ascending": "database_query_sort",
+        "database_query_sort_descending": "database_query_sort",
+    }
+
+    merged_labels = []
+    for label in test_labels:
+        if label in merge_mappings:
+            merged_labels.append(merge_mappings[label])
+        else:
+            merged_labels.append(label)
+
+    return test_texts, merged_labels
+
+
+def evaluate_model(model, test_texts, test_labels, use_merger=False, merge_test_data_labels=False):
+
     predictions = []
     confidences = []
 
-    for text in test_texts:
-        result = model.classify_intent(text)
-        if result:
-            predictions.append(result['intent'])
-            confidences.append(result['confidence'])
-        else:
+    if merge_test_data_labels:
+        test_texts, test_labels = merge_test_data(test_texts, test_labels)
+
+    if model.model is None:
+        logger.error("Model not properly initialized for evaluation")
+        return {
+            'accuracy': 0.0,
+            'avg_confidence': 0.0,
+            'classification_report': "Model not initialized",
+            'confusion_matrix': [[0]]
+        }
+
+    merger = None
+    if use_merger:
+        merger = QuickIntentMerger(model)
+
+    logger.info(f"Evaluating on {len(test_texts)} texts with {len(test_labels)} labels")
+    logger.info(f"Available intent classes: {model.intent_classes}")
+    logger.info(f"Example test texts: {test_texts[:5]}")
+    logger.info(f"Using intent merging: {use_merger}")
+
+    for i, text in enumerate(test_texts):
+        try:
+            if use_merger:
+                result = merger.classify_intent(text)
+            else:
+                result = model.classify_intent(text)
+
+            if result:
+                predictions.append(result['intent'])
+                confidences.append(result['confidence'])
+
+                if 'sub_intent' in result:
+                    logger.debug(f"Query: '{text}', Intent: {result['intent']}, Sub-intent: {result['sub_intent']}")
+            else:
+                predictions.append("unknown")
+                confidences.append(0.0)
+
+            if i % 100 == 0:
+                logger.info(f"Sample prediction {i}: '{text}' -> {predictions[-1]} ({confidences[-1]:.4f})")
+
+        except Exception as e:
+            logger.error(f"Error predicting intent for text '{text}': {e}")
             predictions.append("unknown")
             confidences.append(0.0)
+
+    unknown_count = predictions.count("unknown")
+    if unknown_count > 0:
+        logger.warning(f"{unknown_count} out of {len(predictions)} predictions were 'unknown'")
 
     correct = sum(1 for p, t in zip(predictions, test_labels) if p == t)
     accuracy = correct / len(test_labels)
 
-    unique_labels = sorted(set(test_labels))
-    report = classification_report(test_labels, predictions, labels=unique_labels)
+    try:
+        unique_labels = sorted(set(test_labels))
+        report = classification_report(test_labels, predictions, labels=unique_labels)
 
-    cm = confusion_matrix(test_labels, predictions, labels=unique_labels)
+        cm = confusion_matrix(test_labels, predictions, labels=unique_labels)
 
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=unique_labels, yticklabels=unique_labels)
-    plt.xlabel('Predicted')
-    plt.ylabel('True')
-    plt.title('Confusion Matrix')
-    plt.tight_layout()
-    plt.savefig('confusion_matrix.png')
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=unique_labels, yticklabels=unique_labels)
+        plt.xlabel('Predicted')
+        plt.ylabel('True')
+        plt.title('Confusion Matrix')
+        plt.tight_layout()
 
-    avg_confidence = sum(confidences) / len(confidences)
+        output_file = 'confusion_matrix.png'
+        if use_merger:
+            output_file = 'confusion_matrix_merged.png'
+
+        plt.savefig(output_file)
+
+        avg_confidence = sum(confidences) / len(confidences)
+    except Exception as e:
+        logger.error(f"Error generating classification report: {e}")
+        report = f"Error: {str(e)}"
+        cm = [[0]]
+        avg_confidence = 0.0
 
     return {
         'accuracy': accuracy,
         'avg_confidence': avg_confidence,
         'classification_report': report,
-        'confusion_matrix': cm.tolist()
+        'confusion_matrix': cm.tolist() if isinstance(cm, np.ndarray) else cm
     }
 
 
 def test_query_generation(db_connector, num_samples=10):
-
     generator = DatabaseQueryGenerator(db_connector)
 
     queries, labels = generator.generate_queries()
@@ -98,6 +173,40 @@ def test_query_processing(query_processor, samples):
     return results
 
 
+def load_intent_classifier(model_path):
+    logger.info(f"Loading intent classifier from {model_path}")
+
+    if not os.path.exists(model_path):
+        logger.error(f"Model path does not exist: {model_path}")
+        return None
+
+    intent_classifier = EnhancedIntentClassifier(
+        vocab_size=10000,
+        embedding_dim=128,
+        max_sequence_length=50
+    )
+
+    success = intent_classifier.load_model(model_path)
+    if not success:
+        logger.error(f"Failed to load model from {model_path}")
+        return None
+
+    if intent_classifier.model is None:
+        logger.error("Model object is None after loading")
+        return None
+
+    if intent_classifier.tokenizer is None:
+        logger.error("Tokenizer is None after loading")
+        return None
+
+    if not intent_classifier.intent_classes:
+        logger.error("No intent classes loaded")
+        return None
+
+    logger.info(f"Successfully loaded model with {len(intent_classifier.intent_classes)} intent classes")
+    return intent_classifier
+
+
 def main():
     parser = argparse.ArgumentParser(description="Evaluate intent classifier and query generator")
     parser.add_argument("--config", type=str, default="config.json", help="Path to configuration file")
@@ -109,7 +218,16 @@ def main():
                         help="Number of sample queries to test")
     parser.add_argument("--test-split", type=float, default=0.2,
                         help="Fraction of data to use for testing if no test data provided")
+    parser.add_argument("--use-merger", action="store_true",
+                        help="Use intent merging for evaluation")
+    parser.add_argument("--merge-test-data", action="store_true",
+                        help="Merge the test data labels")
+    parser.add_argument("--debug", action="store_true",
+                        help="Enable debug output")
     args = parser.parse_args()
+
+    if args.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
 
     try:
         with open(args.config, 'r') as f:
@@ -139,8 +257,11 @@ def main():
         )
 
         logger.info(f"Loading intent classifier from {args.model_path}...")
-        intent_classifier = IntentClassifier()
-        intent_classifier.load_model(args.model_path)
+        intent_classifier = load_intent_classifier(args.model_path)
+
+        if intent_classifier is None:
+            logger.error("Failed to load intent classifier. Exiting.")
+            return False
 
         logger.info("Testing query generation...")
         generated_samples = test_query_generation(db_connector, args.num_samples)
@@ -202,22 +323,56 @@ def main():
 
         if test_texts and test_labels:
             logger.info(f"Evaluating model on {len(test_texts)} test examples...")
-            evaluation_results = evaluate_model(intent_classifier, test_texts, test_labels)
 
-            logger.info(f"Accuracy: {evaluation_results['accuracy']:.4f}")
-            logger.info(f"Average confidence: {evaluation_results['avg_confidence']:.4f}")
+            standard_results = evaluate_model(
+                intent_classifier,
+                test_texts,
+                test_labels,
+                use_merger=False,
+                merge_test_data_labels=False
+            )
+
+            logger.info("=== Standard Evaluation Results ===")
+            logger.info(f"Accuracy: {standard_results['accuracy']:.4f}")
+            logger.info(f"Average confidence: {standard_results['avg_confidence']:.4f}")
             logger.info("Classification report:")
-            logger.info(evaluation_results['classification_report'])
+            logger.info(standard_results['classification_report'])
 
-            with open("evaluation_results.json", 'w') as f:
+            with open("standard_evaluation_results.json", 'w') as f:
                 json.dump({
-                    'accuracy': evaluation_results['accuracy'],
-                    'avg_confidence': evaluation_results['avg_confidence'],
-                    'confusion_matrix': evaluation_results['confusion_matrix']
+                    'accuracy': standard_results['accuracy'],
+                    'avg_confidence': standard_results['avg_confidence'],
+                    'confusion_matrix': standard_results['confusion_matrix']
                 }, f, indent=2)
 
-            logger.info("Confusion matrix saved to confusion_matrix.png")
-            logger.info("Evaluation results saved to evaluation_results.json")
+            if args.use_merger:
+                logger.info("Running evaluation with intent merging...")
+                merger_results = evaluate_model(
+                    intent_classifier,
+                    test_texts,
+                    test_labels,
+                    use_merger=True,
+                    merge_test_data_labels=args.merge_test_data
+                )
+
+                logger.info("=== Merged Intent Evaluation Results ===")
+                logger.info(f"Accuracy: {merger_results['accuracy']:.4f}")
+                logger.info(f"Average confidence: {merger_results['avg_confidence']:.4f}")
+                logger.info("Classification report:")
+                logger.info(merger_results['classification_report'])
+
+                with open("merged_evaluation_results.json", 'w') as f:
+                    json.dump({
+                        'accuracy': merger_results['accuracy'],
+                        'avg_confidence': merger_results['avg_confidence'],
+                        'confusion_matrix': merger_results['confusion_matrix']
+                    }, f, indent=2)
+
+                logger.info("Confusion matrix saved to confusion_matrix_merged.png")
+                logger.info("Merged evaluation results saved to merged_evaluation_results.json")
+
+            logger.info("Standard confusion matrix saved to confusion_matrix.png")
+            logger.info("Standard evaluation results saved to standard_evaluation_results.json")
         else:
             logger.warning("No test data available for model evaluation")
 

@@ -4,12 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4b6cf9e0-ce6e-4996-8246-8aa85486ce61" name="Changes" comment="simplified query_processor.py class">
+    <list default="true" id="4b6cf9e0-ce6e-4996-8246-8aa85486ce61" name="Changes" comment="Merge branch 'master' of https://github.com/Ioan1234/SecureChatbot&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;confusion_matrix.png&#10;#&#9;evaluation.log&#10;#&#9;evaluation_results.json&#10;#&#9;models/intent_classifier/checkpoint.h5&#10;#&#9;models/intent_classifier/intent_classes.json&#10;#&#9;models/intent_classifier/intent_model.h5&#10;#&#9;models/intent_classifier/model_config.json&#10;#&#9;models/intent_classifier/tokenizer.json&#10;#&#9;train_model.py&#10;#&#9;training.log">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/confusion_matrix.png" beforeDir="false" afterPath="$PROJECT_DIR$/confusion_matrix.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluate_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/evaluate_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation.log" beforeDir="false" afterPath="$PROJECT_DIR$/evaluation.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation_results.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/chatbot_engine.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/chatbot_engine.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/model/intent_classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/intent_classifier.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/query_processor.py" beforeDir="false" afterPath="$PROJECT_DIR$/query_processor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/intent_classifier/checkpoint.h5" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/intent_classifier/intent_classes.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/intent_classifier/intent_model.h5" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/intent_classifier/model_config.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/intent_classifier/tokenizer.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/train_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/query_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/query_generator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training.log" beforeDir="false" afterPath="$PROJECT_DIR$/training.log" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -131,7 +141,10 @@
       <workItem from="1741948042227" duration="124000" />
       <workItem from="1741948178291" duration="515000" />
       <workItem from="1741961848524" duration="3030000" />
-      <workItem from="1742028987612" duration="15462000" />
+      <workItem from="1742028987612" duration="20754000" />
+      <workItem from="1742115390117" duration="4886000" />
+      <workItem from="1742130031675" duration="918000" />
+      <workItem from="1742199777923" duration="13939000" />
     </task>
     <task id="LOCAL-00001" summary="final version - test only">
       <option name="closed" value="true" />
@@ -285,7 +298,23 @@
       <option name="project" value="LOCAL" />
       <updated>1742049990419</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="using evaluate_model accuracy of 42%">
+      <option name="closed" value="true" />
+      <created>1742050857539</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1742050857539</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Merge branch 'master' of https://github.com/Ioan1234/SecureChatbot&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;confusion_matrix.png&#10;#&#9;evaluation.log&#10;#&#9;evaluation_results.json&#10;#&#9;models/intent_classifier/checkpoint.h5&#10;#&#9;models/intent_classifier/intent_classes.json&#10;#&#9;models/intent_classifier/intent_model.h5&#10;#&#9;models/intent_classifier/model_config.json&#10;#&#9;models/intent_classifier/tokenizer.json&#10;#&#9;train_model.py&#10;#&#9;training.log">
+      <option name="closed" value="true" />
+      <created>1742050886214</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1742050886214</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -319,12 +348,14 @@
     <MESSAGE value="Updated training algorithm to simplify query_processor.py class" />
     <MESSAGE value="Merge branch 'master' of https://github.com/Ioan1234/SecureChatbot&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml" />
     <MESSAGE value="simplified query_processor.py class" />
-    <option name="LAST_COMMIT_MESSAGE" value="simplified query_processor.py class" />
+    <MESSAGE value="using evaluate_model accuracy of 42%" />
+    <MESSAGE value="Merge branch 'master' of https://github.com/Ioan1234/SecureChatbot&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;confusion_matrix.png&#10;#&#9;evaluation.log&#10;#&#9;evaluation_results.json&#10;#&#9;models/intent_classifier/checkpoint.h5&#10;#&#9;models/intent_classifier/intent_classes.json&#10;#&#9;models/intent_classifier/intent_model.h5&#10;#&#9;models/intent_classifier/model_config.json&#10;#&#9;models/intent_classifier/tokenizer.json&#10;#&#9;train_model.py&#10;#&#9;training.log" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'master' of https://github.com/Ioan1234/SecureChatbot&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;confusion_matrix.png&#10;#&#9;evaluation.log&#10;#&#9;evaluation_results.json&#10;#&#9;models/intent_classifier/checkpoint.h5&#10;#&#9;models/intent_classifier/intent_classes.json&#10;#&#9;models/intent_classifier/intent_model.h5&#10;#&#9;models/intent_classifier/model_config.json&#10;#&#9;models/intent_classifier/tokenizer.json&#10;#&#9;train_model.py&#10;#&#9;training.log" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ChatBot$test_tf_gpu.coverage" NAME="test_tf_gpu Coverage Results" MODIFIED="1741350134702" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ChatBot$tests.coverage" NAME="tests Coverage Results" MODIFIED="1741446356105" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/ChatBot$app.coverage" NAME="app Coverage Results" MODIFIED="1742041865224" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ChatBot$app.coverage" NAME="app Coverage Results" MODIFIED="1742216788009" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ChatBot$train_model.coverage" NAME="train_model Coverage Results" MODIFIED="1741601029931" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ChatBot$intent_classifier.coverage" NAME="intent_classifier Coverage Results" MODIFIED="1740928701613" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />
     <SUITE FILE_PATH="coverage/ChatBot$setup_env.coverage" NAME="setup_env Coverage Results" MODIFIED="1741342513801" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
