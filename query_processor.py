@@ -1070,3 +1070,278 @@ class QueryProcessor:
         except Exception as e:
             self.logger.error(f"Error in secure_process_query: {e}")
             return None
+
+
+    def _extract_entity_name(self, nl_query):
+        original_query = nl_query
+        nl_query = nl_query.lower()
+
+        entity_type_mappings = {
+            "broker": "brokers",
+            "trader": "traders",
+            "asset": "assets",
+            "stock": "assets",
+            "bond": "assets",
+            "etf": "assets",
+            "market": "markets",
+            "exchange": "markets",
+            "order": "orders",
+            "transaction": "transactions",
+            "account": "accounts"
+        }
+
+        entity_extraction_patterns = [
+            r'(?:about|on|for)\s+((?:[A-Za-z0-9]+(?:\s+[A-Za-z0-9]+)*)+)',
+
+            r'(?:details\s+(?:of|about|for)|information\s+(?:on|about))\s+((?:[A-Za-z0-9]+(?:\s+[A-Za-z0-9]+)*)+)',
+
+            r'(?:show\s+me|tell\s+me\s+about)\s+((?:[A-Za-z0-9]+(?:\s+[A-Za-z0-9]+)*)+)',
+
+            r'(?:find|lookup|get)\s+(?:details\s+(?:about|of|for)|information\s+(?:about|on))?\s+((?:[A-Za-z0-9]+(?:\s+[A-Za-z0-9]+)*)+)',
+
+            r'(?:give\s+me|what\s+is|who\s+is)\s+(?:all\s+information\s+about|details\s+about|information\s+about)?\s+((?:[A-Za-z0-9]+(?:\s+[A-Za-z0-9]+)*)+)'
+        ]
+
+        entity_candidates = []
+
+        for pattern in entity_extraction_patterns:
+            matches = re.search(pattern, nl_query)
+            if matches:
+                raw_entity = matches.group(1).strip()
+
+                cleanup_words = ['details', 'info', 'information', 'please', 'the']
+                for word in cleanup_words:
+                    if raw_entity.endswith(' ' + word):
+                        raw_entity = raw_entity.replace(' ' + word, '')
+                    if raw_entity.startswith(word + ' '):
+                        raw_entity = raw_entity.replace(word + ' ', '')
+
+                for entity_type in entity_type_mappings.keys():
+                    if raw_entity.startswith(entity_type + ' '):
+                        candidate = raw_entity[len(entity_type) + 1:].strip()
+                        entity_candidates.append((candidate, entity_type_mappings[entity_type]))
+
+                entity_candidates.append((raw_entity, None))
+
+        if entity_candidates:
+            entity_candidates.sort(key=lambda x: len(x[0]), reverse=True)
+
+            for candidate, table_hint in entity_candidates:
+                if table_hint:
+                    start_pos = nl_query.find(candidate.lower())
+                    if start_pos != -1:
+                        extracted_name = original_query[start_pos:start_pos + len(candidate)]
+
+                        result = self._check_entity_exists(extracted_name, table_hint)
+                        if result:
+                            self.logger.info(f"Found entity '{extracted_name}' in table '{table_hint}'")
+                            return extracted_name, table_hint
+
+                possible_tables = ['brokers', 'traders', 'assets', 'markets', 'accounts', 'orders', 'transactions']
+
+                for entity_type, table in entity_type_mappings.items():
+                    if entity_type in nl_query:
+                        if table in possible_tables:
+                            possible_tables.remove(table)
+                            possible_tables.insert(0, table)
+
+                start_pos = nl_query.find(candidate.lower())
+                if start_pos != -1:
+                    extracted_name = original_query[start_pos:start_pos + len(candidate)]
+
+                    for table in possible_tables:
+                        result = self._check_entity_exists(extracted_name, table)
+                        if result:
+                            self.logger.info(f"Found entity '{extracted_name}' in table '{table}'")
+                            return extracted_name, table
+
+        self.logger.warning(f"Could not extract entity name from query: {nl_query}")
+        return None, None
+
+    def _check_entity_exists(self, entity_name, table_name):
+        if not entity_name or not table_name:
+            return False
+
+        try:
+            sql = f"SELECT * FROM {table_name} WHERE LOWER(name) = LOWER(%s) LIMIT 1"
+            params = (entity_name,)
+            result = self.db_connector.execute_query(sql, params)
+
+            if result and len(result) > 0:
+                return True
+
+            sql = f"SELECT * FROM {table_name} WHERE LOWER(name) LIKE LOWER(%s) LIMIT 1"
+            params = (f"%{entity_name}%",)
+            result = self.db_connector.execute_query(sql, params)
+
+            return result and len(result) > 0
+
+        except Exception as e:
+            self.logger.error(f"Error checking if entity exists: {e}")
+            return False
+
+    def _get_entity_by_name(self, entity_name, table_name):
+        if not entity_name or not table_name:
+            return None
+
+        entity_name_lower = entity_name.lower()
+        name_field = "name"
+
+        sql = f"SELECT * FROM {table_name} WHERE LOWER({name_field}) LIKE %s"
+        params = (f"%{entity_name_lower}%",)
+
+        self.logger.info(f"Executing entity query: {sql} with params {params}")
+        result = self.db_connector.execute_query(sql, params)
+
+        if not result:
+            sql = f"SELECT * FROM {table_name} WHERE LOWER({name_field}) LIKE %s"
+            params = (f"%{entity_name_lower.split()[0]}%",)
+            self.logger.info(f"Trying more general entity query: {sql} with params {params}")
+            result = self.db_connector.execute_query(sql, params)
+
+        return result
+
+    def _get_related_entities(self, entity_id, table_name):
+        if not entity_id or not table_name:
+            self.logger.warning("Missing entity_id or table_name for related entity lookup")
+            return {}
+
+        self.logger.info(f"Getting related entities for {table_name} with ID {entity_id}")
+        related_data = {}
+
+        id_field = f"{table_name[:-1]}_id"
+
+        for related_table in self.table_info.keys():
+            if related_table != table_name:
+                if id_field in self.table_info.get(related_table, []):
+                    query = f"SELECT * FROM {related_table} WHERE {id_field} = {entity_id} LIMIT 10"
+                    self.logger.info(f"Checking for references in {related_table}: {query}")
+
+                    try:
+                        result = self.db_connector.execute_query(query)
+                        if result and len(result) > 0:
+                            related_data[related_table] = result
+                            self.logger.info(f"Found {len(result)} related records in {related_table}")
+                    except Exception as e:
+                        self.logger.error(f"Error checking for references in {related_table}: {e}")
+
+        entity_fields = self.table_info.get(table_name, [])
+        for field in entity_fields:
+            if field.endswith('_id') and field != id_field:
+                referenced_table = field[:-3] + 's'
+
+                try:
+                    ref_id_query = f"SELECT {field} FROM {table_name} WHERE {id_field} = {entity_id}"
+                    ref_id_result = self.db_connector.execute_query(ref_id_query)
+
+                    if ref_id_result and len(ref_id_result) > 0 and ref_id_result[0].get(field):
+                        referenced_id = ref_id_result[0][field]
+
+                        ref_query = f"SELECT * FROM {referenced_table} WHERE {referenced_table[:-1]}_id = {referenced_id}"
+                        self.logger.info(f"Looking up reference: {ref_query}")
+
+                        ref_result = self.db_connector.execute_query(ref_query)
+                        if ref_result and len(ref_result) > 0:
+                            related_data[referenced_table[:-1]] = ref_result
+                            self.logger.info(f"Found referenced {referenced_table} record")
+                except Exception as e:
+                    self.logger.error(f"Error retrieving reference for {field}: {e}")
+
+        return related_data
+
+    def process_entity_query(self, nl_query):
+        entity_name, table_name = self._extract_entity_name(nl_query)
+
+        self.logger.info(f"Extracted entity: '{entity_name}' from table: '{table_name}'")
+
+        if not entity_name:
+            self.logger.warning(f"Could not extract entity name from query: {nl_query}")
+            return None
+
+        if entity_name and not table_name:
+            possible_tables = ['brokers', 'traders', 'assets', 'markets', 'accounts', 'orders', 'transactions']
+            for table in possible_tables:
+                entity_info = self._get_entity_by_name(entity_name, table)
+                if entity_info and len(entity_info) > 0:
+                    table_name = table
+                    self.logger.info(f"Found entity '{entity_name}' in table '{table_name}'")
+                    break
+
+            if not table_name:
+                self.logger.warning(f"Could not determine table for entity: {entity_name}")
+                return None
+
+        entity_info = self._get_entity_by_name(entity_name, table_name)
+
+        if not entity_info or len(entity_info) == 0:
+            self.logger.warning(f"No entity found for {entity_name} in {table_name}")
+
+            alternative_tables = [t for t in ['brokers', 'traders', 'assets', 'markets', 'accounts'] if t != table_name]
+
+            for alt_table in alternative_tables:
+                self.logger.info(f"Trying alternative table: {alt_table}")
+                alt_info = self._get_entity_by_name(entity_name, alt_table)
+                if alt_info and len(alt_info) > 0:
+                    self.logger.info(f"Found entity in alternative table: {alt_table}")
+                    entity_info = alt_info
+                    table_name = alt_table
+                    break
+
+        if not entity_info or len(entity_info) == 0:
+            self.logger.warning(f"No entity found for {entity_name} after all fallbacks")
+            return None
+
+        id_field = f"{table_name[:-1]}_id"
+        entity_id = entity_info[0].get(id_field)
+
+        if not entity_id:
+            self.logger.warning(f"No ID field {id_field} found in entity")
+            return {
+                "entity_type": table_name,
+                "entity_info": entity_info,
+                "related_info": {}
+            }
+
+        related_info = self._get_related_entities(entity_id, table_name)
+
+        result = {
+            "entity_type": table_name,
+            "entity_info": entity_info,
+            "related_info": related_info
+        }
+
+        return self._process_entity_result(result, nl_query)
+
+    def _process_entity_result(self, result, nl_query):
+        if not result:
+            return None
+
+        processed_result = {
+            "entity_type": result["entity_type"],
+            "entity_info": []
+        }
+
+        for item in result["entity_info"]:
+            processed_item = {}
+            for key, value in item.items():
+                if self._should_encrypt_field(key):
+                    processed_item[key] = f"[ENCRYPTED: {key}]"
+                else:
+                    processed_item[key] = value
+            processed_result["entity_info"].append(processed_item)
+
+        processed_related = {}
+        for relation_name, relation_items in result["related_info"].items():
+            processed_items = []
+            for item in relation_items:
+                processed_item = {}
+                for key, value in item.items():
+                    if self._should_encrypt_field(key):
+                        processed_item[key] = f"[ENCRYPTED: {key}]"
+                    else:
+                        processed_item[key] = value
+                processed_items.append(processed_item)
+            processed_related[relation_name] = processed_items
+
+        processed_result["related_info"] = processed_related
+        return processed_result

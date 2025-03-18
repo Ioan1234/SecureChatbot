@@ -1710,3 +1710,627 @@
 2025-03-18 18:05:32,120 - query_processor - INFO - Processing query with intent: database_query_comparative, confidence: 1.0
 2025-03-18 18:05:32,122 - query_processor - INFO - Generated middle value SQL: SELECT price_history.price_date, price_history.close_price, price_history.asset_id, assets.asset_id, assets.asset_type, assets.name, assets.broker_id, price_history.price_id, price_history.open_price FROM assets JOIN price_history ON assets.asset_id = price_history.asset_id ORDER BY price_history.price_id LIMIT 4, 3
 2025-03-18 18:05:32,124 - werkzeug - INFO - 127.0.0.1 - - [18/Mar/2025 18:05:32] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 10:55:26,396 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-21 10:55:26,406 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-21 10:55:26,407 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-21 10:55:26,408 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-21 10:55:26,408 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-21 10:55:26,408 - model.intent_classifier - INFO - Loaded 12 intent classes from models/intent_classifier\intent_classes.json
+2025-03-21 10:55:26,408 - model.intent_classifier - INFO - Using intent classes: ['database_query_comparative', 'database_query_count', 'database_query_detailed', 'database_query_filter', 'database_query_list', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-21 10:55:26,410 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-21 10:55:29,903 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-21 10:55:29,905 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-21 10:55:29,907 - intent_processor - INFO - Loaded original intent examples
+2025-03-21 10:55:29,907 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-21 10:55:29,907 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-21 10:55:29,910 - model.chatbot_engine - INFO - Intent merger initialized
+2025-03-21 10:55:29,910 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-21 10:55:29,910 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-21 10:55:29,912 - __main__ - INFO - All components initialized successfully
+2025-03-21 10:55:31,992 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-21 10:55:31,992 - __main__ - INFO - Initializing speech recognition routes
+2025-03-21 10:55:31,994 - __main__ - INFO - Training API routes added successfully
+2025-03-21 10:55:31,994 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-21 10:55:32,021 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-21 10:55:32,022 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-21 10:55:32,026 - werkzeug - INFO -  * Restarting with stat
+2025-03-21 10:55:38,396 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-21 10:55:38,396 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-21 10:55:38,396 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-21 10:55:38,397 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-21 10:55:38,397 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-21 10:55:38,399 - model.intent_classifier - INFO - Loaded 12 intent classes from models/intent_classifier\intent_classes.json
+2025-03-21 10:55:38,399 - model.intent_classifier - INFO - Using intent classes: ['database_query_comparative', 'database_query_count', 'database_query_detailed', 'database_query_filter', 'database_query_list', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-21 10:55:38,400 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-21 10:55:43,765 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-21 10:55:43,767 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-21 10:55:43,769 - intent_processor - INFO - Loaded original intent examples
+2025-03-21 10:55:43,769 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-21 10:55:43,769 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-21 10:55:43,773 - model.chatbot_engine - INFO - Intent merger initialized
+2025-03-21 10:55:43,773 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-21 10:55:43,773 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-21 10:55:43,777 - __main__ - INFO - All components initialized successfully
+2025-03-21 10:55:45,819 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-21 10:55:45,819 - __main__ - INFO - Initializing speech recognition routes
+2025-03-21 10:55:45,827 - __main__ - INFO - Training API routes added successfully
+2025-03-21 10:55:45,827 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-21 10:55:45,837 - werkzeug - WARNING -  * Debugger is active!
+2025-03-21 10:55:45,844 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-21 10:55:45,906 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 10:55:45] "GET / HTTP/1.1" 200 -
+2025-03-21 10:55:46,129 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 10:55:46] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-21 10:55:46,129 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 10:55:46] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-21 10:55:46,132 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 10:55:46] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-21 10:55:46,319 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 10:55:46] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-03-21 10:56:09,663 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 1.0
+2025-03-21 10:56:09,663 - quick_intent_merger - INFO - Pattern matches: ['\\b(all details|more details|detailed|complete|all information|everything about|all data|show all|all fields|full record)']
+2025-03-21 10:56:09,663 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 1.0}
+2025-03-21 10:56:09,663 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 1.0}
+2025-03-21 10:56:09,663 - query_processor - INFO - Processing query with intent: database_query_detailed, confidence: 1.0
+2025-03-21 10:56:09,671 - query_processor - WARNING - No tables identified in query
+2025-03-21 10:56:09,671 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 10:56:09] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 10:57:17,403 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-21 10:57:17,403 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-21 10:57:17,403 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-21 10:57:17,403 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-21 10:57:17,403 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-21 10:57:17,404 - model.intent_classifier - INFO - Loaded 12 intent classes from models/intent_classifier\intent_classes.json
+2025-03-21 10:57:17,404 - model.intent_classifier - INFO - Using intent classes: ['database_query_comparative', 'database_query_count', 'database_query_detailed', 'database_query_filter', 'database_query_list', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-21 10:57:17,405 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-21 10:57:18,437 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-21 10:57:18,438 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-21 10:57:18,439 - intent_processor - INFO - Loaded original intent examples
+2025-03-21 10:57:18,439 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-21 10:57:18,439 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-21 10:57:18,441 - model.chatbot_engine - INFO - Intent merger initialized
+2025-03-21 10:57:18,441 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-21 10:57:18,441 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-21 10:57:18,444 - __main__ - INFO - All components initialized successfully
+2025-03-21 10:57:20,511 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-21 10:57:20,511 - __main__ - INFO - Initializing speech recognition routes
+2025-03-21 10:57:20,515 - __main__ - INFO - Training API routes added successfully
+2025-03-21 10:57:20,515 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-21 10:57:20,540 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-21 10:57:20,540 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-21 10:57:20,545 - werkzeug - INFO -  * Restarting with stat
+2025-03-21 10:57:26,785 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-21 10:57:26,786 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-21 10:57:26,786 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-21 10:57:26,786 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-21 10:57:26,786 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-21 10:57:26,787 - model.intent_classifier - INFO - Loaded 12 intent classes from models/intent_classifier\intent_classes.json
+2025-03-21 10:57:26,787 - model.intent_classifier - INFO - Using intent classes: ['database_query_comparative', 'database_query_count', 'database_query_detailed', 'database_query_filter', 'database_query_list', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-21 10:57:26,787 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-21 10:57:28,917 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-21 10:57:28,926 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-21 10:57:28,926 - intent_processor - INFO - Loaded original intent examples
+2025-03-21 10:57:28,926 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-21 10:57:28,926 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-21 10:57:28,926 - model.chatbot_engine - INFO - Intent merger initialized
+2025-03-21 10:57:28,926 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-21 10:57:28,926 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-21 10:57:28,934 - __main__ - INFO - All components initialized successfully
+2025-03-21 10:57:30,985 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-21 10:57:30,985 - __main__ - INFO - Initializing speech recognition routes
+2025-03-21 10:57:30,988 - __main__ - INFO - Training API routes added successfully
+2025-03-21 10:57:30,988 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-21 10:57:31,001 - werkzeug - WARNING -  * Debugger is active!
+2025-03-21 10:57:31,013 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-21 10:57:31,053 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 10:57:31] "GET / HTTP/1.1" 200 -
+2025-03-21 10:57:31,211 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 10:57:31] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-21 10:57:31,225 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 10:57:31] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-21 10:57:31,233 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 10:57:31] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-21 10:58:34,208 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 1.0
+2025-03-21 10:58:34,208 - quick_intent_merger - INFO - Pattern matches: ['\\b(all details|more details|detailed|complete|all information|everything about|all data|show all|all fields|full record)']
+2025-03-21 10:58:34,208 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 1.0}
+2025-03-21 10:58:34,208 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 1.0}
+2025-03-21 10:58:34,208 - query_processor - INFO - Processing query with intent: database_query_detailed, confidence: 1.0
+2025-03-21 10:58:34,211 - query_processor - WARNING - No tables identified in query
+2025-03-21 10:58:34,211 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 10:58:34] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 10:58:37,559 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 1.0
+2025-03-21 10:58:37,559 - quick_intent_merger - INFO - Pattern matches: ['\\b(all details|more details|detailed|complete|all information|everything about|all data|show all|all fields|full record)']
+2025-03-21 10:58:37,559 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 1.0}
+2025-03-21 10:58:37,559 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 1.0}
+2025-03-21 10:58:37,559 - query_processor - INFO - Processing query with intent: database_query_detailed, confidence: 1.0
+2025-03-21 10:58:37,559 - query_processor - WARNING - No tables identified in query
+2025-03-21 10:58:37,559 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 10:58:37] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 11:10:42,714 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-21 11:10:42,715 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-21 11:10:42,715 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-21 11:10:42,715 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-21 11:10:42,715 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-21 11:10:42,716 - model.intent_classifier - INFO - Loaded 12 intent classes from models/intent_classifier\intent_classes.json
+2025-03-21 11:10:42,716 - model.intent_classifier - INFO - Using intent classes: ['database_query_comparative', 'database_query_count', 'database_query_detailed', 'database_query_filter', 'database_query_list', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-21 11:10:42,718 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-21 11:10:43,728 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-21 11:10:43,729 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-21 11:10:43,730 - intent_processor - INFO - Loaded original intent examples
+2025-03-21 11:10:43,730 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-21 11:10:43,730 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-21 11:10:43,732 - model.chatbot_engine - INFO - Intent merger initialized
+2025-03-21 11:10:43,733 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-21 11:10:43,733 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-21 11:10:43,735 - __main__ - INFO - All components initialized successfully
+2025-03-21 11:10:45,800 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-21 11:10:45,800 - __main__ - INFO - Initializing speech recognition routes
+2025-03-21 11:10:45,803 - __main__ - INFO - Training API routes added successfully
+2025-03-21 11:10:45,803 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-21 11:10:45,819 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-21 11:10:45,819 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-21 11:10:45,824 - werkzeug - INFO -  * Restarting with stat
+2025-03-21 11:10:52,136 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-21 11:10:52,136 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-21 11:10:52,137 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-21 11:10:52,137 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-21 11:10:52,137 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-21 11:10:52,137 - model.intent_classifier - INFO - Loaded 12 intent classes from models/intent_classifier\intent_classes.json
+2025-03-21 11:10:52,137 - model.intent_classifier - INFO - Using intent classes: ['database_query_comparative', 'database_query_count', 'database_query_detailed', 'database_query_filter', 'database_query_list', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-21 11:10:52,139 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-21 11:10:54,022 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-21 11:10:54,023 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-21 11:10:54,024 - intent_processor - INFO - Loaded original intent examples
+2025-03-21 11:10:54,024 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-21 11:10:54,024 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-21 11:10:54,027 - model.chatbot_engine - INFO - Intent merger initialized
+2025-03-21 11:10:54,027 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-21 11:10:54,027 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-21 11:10:54,031 - __main__ - INFO - All components initialized successfully
+2025-03-21 11:10:56,091 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-21 11:10:56,091 - __main__ - INFO - Initializing speech recognition routes
+2025-03-21 11:10:56,093 - __main__ - INFO - Training API routes added successfully
+2025-03-21 11:10:56,093 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-21 11:10:56,101 - werkzeug - WARNING -  * Debugger is active!
+2025-03-21 11:10:56,105 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-21 11:10:56,132 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:10:56] "GET / HTTP/1.1" 200 -
+2025-03-21 11:10:56,229 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:10:56] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-21 11:10:56,239 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:10:56] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-21 11:10:56,244 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:10:56] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-21 11:11:13,394 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 0.6984145045280457
+2025-03-21 11:11:13,394 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 0.6984145045280457}
+2025-03-21 11:11:13,394 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 0.6984145045280457}
+2025-03-21 11:11:13,394 - query_processor - INFO - Extracted entity: 'brokerone' from table: 'brokers'
+2025-03-21 11:11:13,394 - query_processor - INFO - Executing entity query: SELECT * FROM brokers WHERE LOWER(name) LIKE %s with params ('%brokerone%',)
+2025-03-21 11:11:13,427 - query_processor - INFO - Executing related query: SELECT * FROM assets WHERE broker_id = 1
+2025-03-21 11:11:13,430 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:11:13] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 11:13:24,631 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 0.9560556411743164
+2025-03-21 11:13:24,631 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 0.9560556411743164}
+2025-03-21 11:13:24,631 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 0.9560556411743164}
+2025-03-21 11:13:24,634 - query_processor - INFO - Extracted entity: 'stock a' from table: 'assets'
+2025-03-21 11:13:24,634 - query_processor - INFO - Executing entity query: SELECT * FROM assets WHERE LOWER(name) LIKE %s with params ('%stock a%',)
+2025-03-21 11:13:24,634 - query_processor - INFO - Executing related query: SELECT * FROM price_history WHERE asset_id = 1
+2025-03-21 11:13:24,645 - query_processor - INFO - Executing related query: SELECT * FROM trades WHERE asset_id = 1
+2025-03-21 11:13:24,647 - query_processor - INFO - Executing related query: SELECT b.* FROM brokers b JOIN assets a ON b.broker_id = a.broker_id WHERE a.asset_id = 1
+2025-03-21 11:13:24,651 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:13:24] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 11:13:40,656 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 0.9999940395355225
+2025-03-21 11:13:40,656 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 0.9999940395355225}
+2025-03-21 11:13:40,656 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 0.9999940395355225}
+2025-03-21 11:13:40,656 - query_processor - INFO - Extracted entity: 'on alice' from table: 'None'
+2025-03-21 11:13:40,656 - query_processor - WARNING - Could not extract entity info from query: Show me information on Alice Smith
+2025-03-21 11:13:40,656 - query_processor - INFO - Processing query with intent: database_query_detailed, confidence: 0.9999940395355225
+2025-03-21 11:13:40,664 - query_processor - WARNING - No tables identified in query
+2025-03-21 11:13:40,664 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:13:40] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 11:13:53,058 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 0.9957422614097595
+2025-03-21 11:13:53,058 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 0.9957422614097595}
+2025-03-21 11:13:53,058 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 0.9957422614097595}
+2025-03-21 11:13:53,058 - query_processor - INFO - Extracted entity: 'nasdaq' from table: 'None'
+2025-03-21 11:13:53,059 - query_processor - WARNING - Could not extract entity info from query: Find details about NASDAQ
+2025-03-21 11:13:53,059 - query_processor - INFO - Processing query with intent: database_query_detailed, confidence: 0.9957422614097595
+2025-03-21 11:13:53,060 - query_processor - WARNING - No tables identified in query
+2025-03-21 11:13:53,060 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:13:53] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 11:14:00,671 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 0.9788636565208435
+2025-03-21 11:14:00,673 - quick_intent_merger - INFO - Pattern matches: ['\\b(all details|more details|detailed|complete|all information|everything about|all data|show all|all fields|full record)']
+2025-03-21 11:14:00,673 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 0.9788636565208435}
+2025-03-21 11:14:00,673 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 0.9788636565208435}
+2025-03-21 11:14:00,673 - query_processor - INFO - Extracted entity: 'about bond' from table: 'assets'
+2025-03-21 11:14:00,673 - query_processor - INFO - Executing entity query: SELECT * FROM assets WHERE LOWER(name) LIKE %s with params ('%about bond%',)
+2025-03-21 11:14:00,673 - query_processor - INFO - Trying more general entity query: SELECT * FROM assets WHERE LOWER(name) LIKE %s with params ('%about%',)
+2025-03-21 11:14:00,673 - query_processor - WARNING - No entity found for about bond in assets
+2025-03-21 11:14:00,673 - query_processor - INFO - Processing query with intent: database_query_detailed, confidence: 0.9788636565208435
+2025-03-21 11:14:00,673 - query_processor - INFO - Generated generic SQL: SELECT assets.asset_id, assets.broker_id, assets.name, assets.asset_type FROM assets LIMIT 100
+2025-03-21 11:14:00,678 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:14:00] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 11:31:53,734 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-21 11:31:53,734 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-21 11:31:53,734 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-21 11:31:53,735 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-21 11:31:53,735 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-21 11:31:53,735 - model.intent_classifier - INFO - Loaded 12 intent classes from models/intent_classifier\intent_classes.json
+2025-03-21 11:31:53,735 - model.intent_classifier - INFO - Using intent classes: ['database_query_comparative', 'database_query_count', 'database_query_detailed', 'database_query_filter', 'database_query_list', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-21 11:31:53,736 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-21 11:31:54,790 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-21 11:31:54,791 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-21 11:31:54,793 - intent_processor - INFO - Loaded original intent examples
+2025-03-21 11:31:54,793 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-21 11:31:54,793 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-21 11:31:54,797 - model.chatbot_engine - INFO - Intent merger initialized
+2025-03-21 11:31:54,797 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-21 11:31:54,797 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-21 11:31:54,799 - __main__ - INFO - All components initialized successfully
+2025-03-21 11:31:56,856 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-21 11:31:56,856 - __main__ - INFO - Initializing speech recognition routes
+2025-03-21 11:31:56,858 - __main__ - INFO - Training API routes added successfully
+2025-03-21 11:31:56,858 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-21 11:31:56,874 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-21 11:31:56,875 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-21 11:31:56,878 - werkzeug - INFO -  * Restarting with stat
+2025-03-21 11:32:03,037 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-21 11:32:03,037 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-21 11:32:03,038 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-21 11:32:03,038 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-21 11:32:03,038 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-21 11:32:03,038 - model.intent_classifier - INFO - Loaded 12 intent classes from models/intent_classifier\intent_classes.json
+2025-03-21 11:32:03,038 - model.intent_classifier - INFO - Using intent classes: ['database_query_comparative', 'database_query_count', 'database_query_detailed', 'database_query_filter', 'database_query_list', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-21 11:32:03,039 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-21 11:32:04,960 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-21 11:32:04,962 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-21 11:32:04,964 - intent_processor - INFO - Loaded original intent examples
+2025-03-21 11:32:04,964 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-21 11:32:04,964 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-21 11:32:04,968 - model.chatbot_engine - INFO - Intent merger initialized
+2025-03-21 11:32:04,968 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-21 11:32:04,968 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-21 11:32:04,968 - __main__ - INFO - All components initialized successfully
+2025-03-21 11:32:07,019 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-21 11:32:07,019 - __main__ - INFO - Initializing speech recognition routes
+2025-03-21 11:32:07,027 - __main__ - INFO - Training API routes added successfully
+2025-03-21 11:32:07,027 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-21 11:32:07,035 - werkzeug - WARNING -  * Debugger is active!
+2025-03-21 11:32:07,049 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-21 11:32:07,100 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:32:07] "GET / HTTP/1.1" 200 -
+2025-03-21 11:32:07,256 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:32:07] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-21 11:32:07,276 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:32:07] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-21 11:32:07,282 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:32:07] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-21 11:32:44,256 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 0.6984145045280457
+2025-03-21 11:32:44,256 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 0.6984145045280457}
+2025-03-21 11:32:44,256 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 0.6984145045280457}
+2025-03-21 11:32:44,274 - query_processor - INFO - Found entity 'BrokerOne' in table 'brokers'
+2025-03-21 11:32:44,274 - query_processor - INFO - Extracted entity: 'BrokerOne' from table: 'brokers'
+2025-03-21 11:32:44,274 - query_processor - INFO - Executing entity query: SELECT * FROM brokers WHERE LOWER(name) LIKE %s with params ('%brokerone%',)
+2025-03-21 11:32:44,274 - query_processor - INFO - Getting related entities for brokers with ID 1
+2025-03-21 11:32:44,274 - query_processor - INFO - Checking for references in assets: SELECT * FROM assets WHERE broker_id = 1 LIMIT 10
+2025-03-21 11:32:44,274 - query_processor - INFO - Found 1 related records in assets
+2025-03-21 11:32:44,274 - model.chatbot_engine - ERROR - Error processing entity query: 'QueryProcessor' object has no attribute '_process_entity_result'
+2025-03-21 11:32:44,274 - query_processor - INFO - Processing query with intent: database_query_detailed, confidence: 0.6984145045280457
+2025-03-21 11:32:44,281 - query_processor - WARNING - No tables identified in the query
+2025-03-21 11:32:44,281 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:32:44] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 11:34:01,863 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-21 11:34:01,864 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-21 11:34:01,864 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-21 11:34:01,864 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-21 11:34:01,864 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-21 11:34:01,864 - model.intent_classifier - INFO - Loaded 12 intent classes from models/intent_classifier\intent_classes.json
+2025-03-21 11:34:01,864 - model.intent_classifier - INFO - Using intent classes: ['database_query_comparative', 'database_query_count', 'database_query_detailed', 'database_query_filter', 'database_query_list', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-21 11:34:01,865 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-21 11:34:02,971 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-21 11:34:02,972 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-21 11:34:02,973 - intent_processor - INFO - Loaded original intent examples
+2025-03-21 11:34:02,973 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-21 11:34:02,973 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-21 11:34:02,975 - model.chatbot_engine - INFO - Intent merger initialized
+2025-03-21 11:34:02,975 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-21 11:34:02,975 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-21 11:34:02,978 - __main__ - INFO - All components initialized successfully
+2025-03-21 11:34:05,043 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-21 11:34:05,043 - __main__ - INFO - Initializing speech recognition routes
+2025-03-21 11:34:05,047 - __main__ - INFO - Training API routes added successfully
+2025-03-21 11:34:05,047 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-21 11:34:05,062 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-21 11:34:05,062 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-21 11:34:05,066 - werkzeug - INFO -  * Restarting with stat
+2025-03-21 11:34:11,424 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-21 11:34:11,424 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-21 11:34:11,424 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-21 11:34:11,425 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-21 11:34:11,425 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-21 11:34:11,425 - model.intent_classifier - INFO - Loaded 12 intent classes from models/intent_classifier\intent_classes.json
+2025-03-21 11:34:11,425 - model.intent_classifier - INFO - Using intent classes: ['database_query_comparative', 'database_query_count', 'database_query_detailed', 'database_query_filter', 'database_query_list', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-21 11:34:11,426 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-21 11:34:13,363 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-21 11:34:13,364 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-21 11:34:13,366 - intent_processor - INFO - Loaded original intent examples
+2025-03-21 11:34:13,366 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-21 11:34:13,366 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-21 11:34:13,371 - model.chatbot_engine - INFO - Intent merger initialized
+2025-03-21 11:34:13,371 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-21 11:34:13,372 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-21 11:34:13,376 - __main__ - INFO - All components initialized successfully
+2025-03-21 11:34:15,410 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-21 11:34:15,410 - __main__ - INFO - Initializing speech recognition routes
+2025-03-21 11:34:15,412 - __main__ - INFO - Training API routes added successfully
+2025-03-21 11:34:15,412 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-21 11:34:15,421 - werkzeug - WARNING -  * Debugger is active!
+2025-03-21 11:34:15,425 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-21 11:34:15,450 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:34:15] "GET / HTTP/1.1" 200 -
+2025-03-21 11:34:15,539 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:34:15] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-21 11:34:15,546 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:34:15] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-21 11:34:15,548 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:34:15] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-21 11:34:35,676 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 0.6984145045280457
+2025-03-21 11:34:35,676 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 0.6984145045280457}
+2025-03-21 11:34:35,676 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 0.6984145045280457}
+2025-03-21 11:34:35,679 - query_processor - INFO - Found entity 'BrokerOne' in table 'brokers'
+2025-03-21 11:34:35,679 - query_processor - INFO - Extracted entity: 'BrokerOne' from table: 'brokers'
+2025-03-21 11:34:35,679 - query_processor - INFO - Executing entity query: SELECT * FROM brokers WHERE LOWER(name) LIKE %s with params ('%brokerone%',)
+2025-03-21 11:34:35,679 - query_processor - INFO - Getting related entities for brokers with ID 1
+2025-03-21 11:34:35,679 - query_processor - INFO - Checking for references in assets: SELECT * FROM assets WHERE broker_id = 1 LIMIT 10
+2025-03-21 11:34:35,679 - query_processor - INFO - Found 1 related records in assets
+2025-03-21 11:34:35,679 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:34:35] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 11:34:47,748 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 0.9560556411743164
+2025-03-21 11:34:47,748 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 0.9560556411743164}
+2025-03-21 11:34:47,748 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 0.9560556411743164}
+2025-03-21 11:34:47,749 - query_processor - INFO - Found entity 'Stock A' in table 'assets'
+2025-03-21 11:34:47,749 - query_processor - INFO - Extracted entity: 'Stock A' from table: 'assets'
+2025-03-21 11:34:47,749 - query_processor - INFO - Executing entity query: SELECT * FROM assets WHERE LOWER(name) LIKE %s with params ('%stock a%',)
+2025-03-21 11:34:47,750 - query_processor - INFO - Getting related entities for assets with ID 1
+2025-03-21 11:34:47,750 - query_processor - INFO - Checking for references in trades: SELECT * FROM trades WHERE asset_id = 1 LIMIT 10
+2025-03-21 11:34:47,751 - query_processor - INFO - Found 1 related records in trades
+2025-03-21 11:34:47,752 - query_processor - INFO - Checking for references in price_history: SELECT * FROM price_history WHERE asset_id = 1 LIMIT 10
+2025-03-21 11:34:47,753 - query_processor - INFO - Found 1 related records in price_history
+2025-03-21 11:34:47,754 - query_processor - INFO - Looking up reference: SELECT * FROM brokers WHERE broker_id = 1
+2025-03-21 11:34:47,755 - query_processor - INFO - Found referenced brokers record
+2025-03-21 11:34:47,756 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:34:47] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 11:34:53,988 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 0.9999940395355225
+2025-03-21 11:34:53,988 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 0.9999940395355225}
+2025-03-21 11:34:53,988 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 0.9999940395355225}
+2025-03-21 11:34:54,032 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 11:34:54,035 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 11:34:54,037 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 11:34:54,037 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 11:34:54,038 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 11:34:54,038 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 11:34:54,038 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 11:34:54,038 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 11:34:54,038 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 11:34:54,047 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 11:34:54,048 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 11:34:54,048 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 11:34:54,053 - query_processor - INFO - Found entity 'Alice Smith' in table 'traders'
+2025-03-21 11:34:54,054 - query_processor - INFO - Extracted entity: 'Alice Smith' from table: 'traders'
+2025-03-21 11:34:54,054 - query_processor - INFO - Executing entity query: SELECT * FROM traders WHERE LOWER(name) LIKE %s with params ('%alice smith%',)
+2025-03-21 11:34:54,055 - query_processor - INFO - Getting related entities for traders with ID 1
+2025-03-21 11:34:54,055 - query_processor - INFO - Checking for references in trades: SELECT * FROM trades WHERE trader_id = 1 LIMIT 10
+2025-03-21 11:34:54,055 - query_processor - INFO - Found 1 related records in trades
+2025-03-21 11:34:54,055 - query_processor - INFO - Checking for references in accounts: SELECT * FROM accounts WHERE trader_id = 1 LIMIT 10
+2025-03-21 11:34:54,055 - query_processor - INFO - Found 1 related records in accounts
+2025-03-21 11:34:54,055 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:34:54] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 11:35:02,362 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 0.9957422614097595
+2025-03-21 11:35:02,362 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 0.9957422614097595}
+2025-03-21 11:35:02,362 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 0.9957422614097595}
+2025-03-21 11:35:02,373 - query_processor - INFO - Found entity 'NASDAQ' in table 'markets'
+2025-03-21 11:35:02,373 - query_processor - INFO - Extracted entity: 'NASDAQ' from table: 'markets'
+2025-03-21 11:35:02,373 - query_processor - INFO - Executing entity query: SELECT * FROM markets WHERE LOWER(name) LIKE %s with params ('%nasdaq%',)
+2025-03-21 11:35:02,373 - query_processor - INFO - Getting related entities for markets with ID 2
+2025-03-21 11:35:02,373 - query_processor - INFO - Checking for references in trades: SELECT * FROM trades WHERE market_id = 2 LIMIT 10
+2025-03-21 11:35:02,384 - query_processor - INFO - Found 1 related records in trades
+2025-03-21 11:35:02,384 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:35:02] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 11:35:07,946 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 0.9788636565208435
+2025-03-21 11:35:07,946 - quick_intent_merger - INFO - Pattern matches: ['\\b(all details|more details|detailed|complete|all information|everything about|all data|show all|all fields|full record)']
+2025-03-21 11:35:07,946 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 0.9788636565208435}
+2025-03-21 11:35:07,946 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 0.9788636565208435}
+2025-03-21 11:35:07,958 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 11:35:07,958 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 11:35:07,958 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 11:35:07,958 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 11:35:07,958 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 11:35:07,958 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 11:35:07,958 - query_processor - INFO - Found entity 'Bond X' in table 'assets'
+2025-03-21 11:35:07,958 - query_processor - INFO - Extracted entity: 'Bond X' from table: 'assets'
+2025-03-21 11:35:07,958 - query_processor - INFO - Executing entity query: SELECT * FROM assets WHERE LOWER(name) LIKE %s with params ('%bond x%',)
+2025-03-21 11:35:07,958 - query_processor - INFO - Getting related entities for assets with ID 3
+2025-03-21 11:35:07,958 - query_processor - INFO - Checking for references in trades: SELECT * FROM trades WHERE asset_id = 3 LIMIT 10
+2025-03-21 11:35:07,958 - query_processor - INFO - Found 1 related records in trades
+2025-03-21 11:35:07,958 - query_processor - INFO - Checking for references in price_history: SELECT * FROM price_history WHERE asset_id = 3 LIMIT 10
+2025-03-21 11:35:07,966 - query_processor - INFO - Found 1 related records in price_history
+2025-03-21 11:35:07,966 - query_processor - INFO - Looking up reference: SELECT * FROM brokers WHERE broker_id = 3
+2025-03-21 11:35:07,969 - query_processor - INFO - Found referenced brokers record
+2025-03-21 11:35:07,969 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 11:35:07] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 12:34:06,775 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-21 12:34:06,775 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-21 12:34:06,775 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-21 12:34:06,776 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-21 12:34:06,776 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-21 12:34:06,776 - model.intent_classifier - INFO - Loaded 12 intent classes from models/intent_classifier\intent_classes.json
+2025-03-21 12:34:06,776 - model.intent_classifier - INFO - Using intent classes: ['database_query_comparative', 'database_query_count', 'database_query_detailed', 'database_query_filter', 'database_query_list', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-21 12:34:06,778 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-21 12:34:07,761 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-21 12:34:07,762 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-21 12:34:07,763 - intent_processor - INFO - Loaded original intent examples
+2025-03-21 12:34:07,763 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-21 12:34:07,764 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-21 12:34:07,766 - model.chatbot_engine - INFO - Intent merger initialized
+2025-03-21 12:34:07,766 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-21 12:34:07,766 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-21 12:34:07,768 - __main__ - INFO - All components initialized successfully
+2025-03-21 12:34:09,833 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-21 12:34:09,833 - __main__ - INFO - Initializing speech recognition routes
+2025-03-21 12:34:09,836 - __main__ - INFO - Training API routes added successfully
+2025-03-21 12:34:09,836 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-21 12:34:09,848 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-21 12:34:09,848 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-21 12:34:09,851 - werkzeug - INFO -  * Restarting with stat
+2025-03-21 12:34:14,377 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-21 12:34:14,378 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-21 12:34:14,378 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-21 12:34:14,379 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-21 12:34:14,379 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-21 12:34:14,379 - model.intent_classifier - INFO - Loaded 12 intent classes from models/intent_classifier\intent_classes.json
+2025-03-21 12:34:14,379 - model.intent_classifier - INFO - Using intent classes: ['database_query_comparative', 'database_query_count', 'database_query_detailed', 'database_query_filter', 'database_query_list', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-21 12:34:14,380 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-21 12:34:15,977 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-21 12:34:15,978 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-21 12:34:15,980 - intent_processor - INFO - Loaded original intent examples
+2025-03-21 12:34:15,980 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-21 12:34:15,980 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-21 12:34:15,982 - model.chatbot_engine - INFO - Intent merger initialized
+2025-03-21 12:34:15,982 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-21 12:34:15,982 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-21 12:34:15,984 - __main__ - INFO - All components initialized successfully
+2025-03-21 12:34:18,034 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-21 12:34:18,034 - __main__ - INFO - Initializing speech recognition routes
+2025-03-21 12:34:18,037 - __main__ - INFO - Training API routes added successfully
+2025-03-21 12:34:18,037 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-21 12:34:18,048 - werkzeug - WARNING -  * Debugger is active!
+2025-03-21 12:34:18,053 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-21 12:34:18,091 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 12:34:18] "GET / HTTP/1.1" 200 -
+2025-03-21 12:34:18,242 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 12:34:18] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-21 12:34:18,255 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 12:34:18] "GET /static/js/script.js HTTP/1.1" 200 -
+2025-03-21 12:34:18,268 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 12:34:18] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-21 12:34:26,283 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 0.6984145045280457
+2025-03-21 12:34:26,284 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 0.6984145045280457}
+2025-03-21 12:34:26,284 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 0.6984145045280457}
+2025-03-21 12:34:26,290 - query_processor - INFO - Found entity 'BrokerOne' in table 'brokers'
+2025-03-21 12:34:26,291 - query_processor - INFO - Extracted entity: 'BrokerOne' from table: 'brokers'
+2025-03-21 12:34:26,291 - query_processor - INFO - Executing entity query: SELECT * FROM brokers WHERE LOWER(name) LIKE %s with params ('%brokerone%',)
+2025-03-21 12:34:26,292 - query_processor - INFO - Getting related entities for brokers with ID 1
+2025-03-21 12:34:26,292 - query_processor - INFO - Checking for references in assets: SELECT * FROM assets WHERE broker_id = 1 LIMIT 10
+2025-03-21 12:34:26,293 - query_processor - INFO - Found 1 related records in assets
+2025-03-21 12:34:26,294 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 12:34:26] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 12:39:29,142 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-21 12:39:29,142 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-21 12:39:29,143 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-21 12:39:29,143 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-21 12:39:29,143 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-21 12:39:29,144 - model.intent_classifier - INFO - Loaded 12 intent classes from models/intent_classifier\intent_classes.json
+2025-03-21 12:39:29,144 - model.intent_classifier - INFO - Using intent classes: ['database_query_comparative', 'database_query_count', 'database_query_detailed', 'database_query_filter', 'database_query_list', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-21 12:39:29,145 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-21 12:39:31,822 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-21 12:39:31,823 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-21 12:39:31,824 - intent_processor - INFO - Loaded original intent examples
+2025-03-21 12:39:31,824 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-21 12:39:31,824 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-21 12:39:31,826 - model.chatbot_engine - INFO - Intent merger initialized
+2025-03-21 12:39:31,827 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-21 12:39:31,827 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-21 12:39:31,829 - __main__ - INFO - All components initialized successfully
+2025-03-21 12:39:33,889 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-21 12:39:33,889 - __main__ - INFO - Initializing speech recognition routes
+2025-03-21 12:39:33,891 - __main__ - INFO - Training API routes added successfully
+2025-03-21 12:39:33,891 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-21 12:39:33,923 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-21 12:39:33,924 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-21 12:39:33,926 - werkzeug - INFO -  * Restarting with stat
+2025-03-21 12:39:38,394 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-21 12:39:38,395 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-21 12:39:38,395 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-21 12:39:38,396 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-21 12:39:38,396 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-21 12:39:38,396 - model.intent_classifier - INFO - Loaded 12 intent classes from models/intent_classifier\intent_classes.json
+2025-03-21 12:39:38,396 - model.intent_classifier - INFO - Using intent classes: ['database_query_comparative', 'database_query_count', 'database_query_detailed', 'database_query_filter', 'database_query_list', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-21 12:39:38,397 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-21 12:39:40,046 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-21 12:39:40,047 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-21 12:39:40,048 - intent_processor - INFO - Loaded original intent examples
+2025-03-21 12:39:40,048 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-21 12:39:40,048 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-21 12:39:40,050 - model.chatbot_engine - INFO - Intent merger initialized
+2025-03-21 12:39:40,050 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-21 12:39:40,050 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-21 12:39:40,052 - __main__ - INFO - All components initialized successfully
+2025-03-21 12:39:42,114 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-21 12:39:42,114 - __main__ - INFO - Initializing speech recognition routes
+2025-03-21 12:39:42,117 - __main__ - INFO - Training API routes added successfully
+2025-03-21 12:39:42,117 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-21 12:39:42,130 - werkzeug - WARNING -  * Debugger is active!
+2025-03-21 12:39:42,136 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-21 12:39:42,172 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 12:39:42] "GET / HTTP/1.1" 200 -
+2025-03-21 12:39:42,316 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 12:39:42] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-21 12:39:42,357 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 12:39:42] "GET /static/js/script.js HTTP/1.1" 200 -
+2025-03-21 12:39:42,357 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 12:39:42] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-21 12:39:50,679 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 0.6984145045280457
+2025-03-21 12:39:50,679 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 0.6984145045280457}
+2025-03-21 12:39:50,680 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 0.6984145045280457}
+2025-03-21 12:39:50,685 - query_processor - INFO - Found entity 'BrokerOne' in table 'brokers'
+2025-03-21 12:39:50,685 - query_processor - INFO - Extracted entity: 'BrokerOne' from table: 'brokers'
+2025-03-21 12:39:50,685 - query_processor - INFO - Executing entity query: SELECT * FROM brokers WHERE LOWER(name) LIKE %s with params ('%brokerone%',)
+2025-03-21 12:39:50,686 - query_processor - INFO - Getting related entities for brokers with ID 1
+2025-03-21 12:39:50,686 - query_processor - INFO - Checking for references in assets: SELECT * FROM assets WHERE broker_id = 1 LIMIT 10
+2025-03-21 12:39:50,687 - query_processor - INFO - Found 1 related records in assets
+2025-03-21 12:39:50,688 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 12:39:50] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 12:40:04,220 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 0.9560556411743164
+2025-03-21 12:40:04,220 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 0.9560556411743164}
+2025-03-21 12:40:04,220 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 0.9560556411743164}
+2025-03-21 12:40:04,221 - query_processor - INFO - Found entity 'Stock A' in table 'assets'
+2025-03-21 12:40:04,222 - query_processor - INFO - Extracted entity: 'Stock A' from table: 'assets'
+2025-03-21 12:40:04,222 - query_processor - INFO - Executing entity query: SELECT * FROM assets WHERE LOWER(name) LIKE %s with params ('%stock a%',)
+2025-03-21 12:40:04,222 - query_processor - INFO - Getting related entities for assets with ID 1
+2025-03-21 12:40:04,222 - query_processor - INFO - Checking for references in trades: SELECT * FROM trades WHERE asset_id = 1 LIMIT 10
+2025-03-21 12:40:04,224 - query_processor - INFO - Found 1 related records in trades
+2025-03-21 12:40:04,224 - query_processor - INFO - Checking for references in price_history: SELECT * FROM price_history WHERE asset_id = 1 LIMIT 10
+2025-03-21 12:40:04,225 - query_processor - INFO - Found 1 related records in price_history
+2025-03-21 12:40:04,225 - query_processor - INFO - Looking up reference: SELECT * FROM brokers WHERE broker_id = 1
+2025-03-21 12:40:04,226 - query_processor - INFO - Found referenced brokers record
+2025-03-21 12:40:04,227 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 12:40:04] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 12:40:13,459 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 0.9999940395355225
+2025-03-21 12:40:13,459 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 0.9999940395355225}
+2025-03-21 12:40:13,459 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 0.9999940395355225}
+2025-03-21 12:40:13,465 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 12:40:13,466 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 12:40:13,466 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 12:40:13,467 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 12:40:13,468 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 12:40:13,469 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 12:40:13,475 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 12:40:13,476 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 12:40:13,476 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 12:40:13,477 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 12:40:13,478 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 12:40:13,478 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 12:40:13,480 - query_processor - INFO - Found entity 'Alice Smith' in table 'traders'
+2025-03-21 12:40:13,481 - query_processor - INFO - Extracted entity: 'Alice Smith' from table: 'traders'
+2025-03-21 12:40:13,481 - query_processor - INFO - Executing entity query: SELECT * FROM traders WHERE LOWER(name) LIKE %s with params ('%alice smith%',)
+2025-03-21 12:40:13,481 - query_processor - INFO - Getting related entities for traders with ID 1
+2025-03-21 12:40:13,482 - query_processor - INFO - Checking for references in trades: SELECT * FROM trades WHERE trader_id = 1 LIMIT 10
+2025-03-21 12:40:13,482 - query_processor - INFO - Found 1 related records in trades
+2025-03-21 12:40:13,482 - query_processor - INFO - Checking for references in accounts: SELECT * FROM accounts WHERE trader_id = 1 LIMIT 10
+2025-03-21 12:40:13,483 - query_processor - INFO - Found 1 related records in accounts
+2025-03-21 12:40:13,484 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 12:40:13] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 12:40:21,426 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 0.9957422614097595
+2025-03-21 12:40:21,426 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 0.9957422614097595}
+2025-03-21 12:40:21,426 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 0.9957422614097595}
+2025-03-21 12:40:21,431 - query_processor - INFO - Found entity 'NASDAQ' in table 'markets'
+2025-03-21 12:40:21,431 - query_processor - INFO - Extracted entity: 'NASDAQ' from table: 'markets'
+2025-03-21 12:40:21,431 - query_processor - INFO - Executing entity query: SELECT * FROM markets WHERE LOWER(name) LIKE %s with params ('%nasdaq%',)
+2025-03-21 12:40:21,432 - query_processor - INFO - Getting related entities for markets with ID 2
+2025-03-21 12:40:21,432 - query_processor - INFO - Checking for references in trades: SELECT * FROM trades WHERE market_id = 2 LIMIT 10
+2025-03-21 12:40:21,433 - query_processor - INFO - Found 1 related records in trades
+2025-03-21 12:40:21,435 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 12:40:21] "POST /api/chat HTTP/1.1" 200 -
+2025-03-21 12:40:28,189 - quick_intent_merger - INFO - Original ML classification: database_query_detailed with confidence 0.9788636565208435
+2025-03-21 12:40:28,189 - quick_intent_merger - INFO - Pattern matches: ['\\b(all details|more details|detailed|complete|all information|everything about|all data|show all|all fields|full record)']
+2025-03-21 12:40:28,189 - quick_intent_merger - INFO - Final intent classification: {'intent': 'database_query_detailed', 'confidence': 0.9788636565208435}
+2025-03-21 12:40:28,189 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 0.9788636565208435}
+2025-03-21 12:40:28,196 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 12:40:28,196 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 12:40:28,197 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 12:40:28,198 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 12:40:28,198 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 12:40:28,199 - database_connector - ERROR - Error executing query: 1054 (42S22): Unknown column 'name' in 'where clause'
+2025-03-21 12:40:28,200 - query_processor - INFO - Found entity 'Bond X' in table 'assets'
+2025-03-21 12:40:28,200 - query_processor - INFO - Extracted entity: 'Bond X' from table: 'assets'
+2025-03-21 12:40:28,200 - query_processor - INFO - Executing entity query: SELECT * FROM assets WHERE LOWER(name) LIKE %s with params ('%bond x%',)
+2025-03-21 12:40:28,201 - query_processor - INFO - Getting related entities for assets with ID 3
+2025-03-21 12:40:28,201 - query_processor - INFO - Checking for references in trades: SELECT * FROM trades WHERE asset_id = 3 LIMIT 10
+2025-03-21 12:40:28,202 - query_processor - INFO - Found 1 related records in trades
+2025-03-21 12:40:28,202 - query_processor - INFO - Checking for references in price_history: SELECT * FROM price_history WHERE asset_id = 3 LIMIT 10
+2025-03-21 12:40:28,202 - query_processor - INFO - Found 1 related records in price_history
+2025-03-21 12:40:28,203 - query_processor - INFO - Looking up reference: SELECT * FROM brokers WHERE broker_id = 3
+2025-03-21 12:40:28,203 - query_processor - INFO - Found referenced brokers record
+2025-03-21 12:40:28,204 - werkzeug - INFO - 127.0.0.1 - - [21/Mar/2025 12:40:28] "POST /api/chat HTTP/1.1" 200 -

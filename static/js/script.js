@@ -51,26 +51,41 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function addBotResponse(data) {
-        const messageElement = botMessageTemplate.content.cloneNode(true);
-        const messageContent = messageElement.querySelector('.message-content');
+    const messageElement = botMessageTemplate.content.cloneNode(true);
+    const messageContent = messageElement.querySelector('.message-content');
 
-        if (data.response) {
-            messageContent.textContent = data.response;
-        }
-
-        if (data.data) {
-            if (Array.isArray(data.data)) {
-                addDataTable(messageContent, data.data);
-            } else {
-                addDataTable(messageContent, [data.data]);
-            }
-        }
-
-        messageElement.querySelector('.message-time').textContent = getCurrentTime();
-
-        chatMessages.appendChild(messageElement);
-        scrollToBottom();
+    if (data.response) {
+        const responseText = document.createElement('p');
+        responseText.textContent = data.response;
+        messageContent.appendChild(responseText);
     }
+
+    if (data.entity_data && Array.isArray(data.entity_data)) {
+        data.entity_data.forEach(tableInfo => {
+            if (tableInfo.table_name) {
+                const tableHeader = document.createElement('h4');
+                tableHeader.textContent = tableInfo.table_name;
+                messageContent.appendChild(tableHeader);
+            }
+
+            if (tableInfo.rows && tableInfo.rows.length > 0) {
+                addDataTable(messageContent, tableInfo.rows);
+            }
+        });
+    }
+    else if (data.data) {
+        if (Array.isArray(data.data)) {
+            addDataTable(messageContent, data.data);
+        } else {
+            addDataTable(messageContent, [data.data]);
+        }
+    }
+
+    messageElement.querySelector('.message-time').textContent = getCurrentTime();
+
+    chatMessages.appendChild(messageElement);
+    scrollToBottom();
+}
 
     function addBotErrorMessage(errorMessage) {
         const messageElement = botMessageTemplate.content.cloneNode(true);

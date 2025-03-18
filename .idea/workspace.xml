@@ -4,9 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4b6cf9e0-ce6e-4996-8246-8aa85486ce61" name="Changes" comment="Rethought the query processing ability with better segregation between commands.">
+    <list default="true" id="4b6cf9e0-ce6e-4996-8246-8aa85486ce61" name="Changes" comment="Merge branch 'master' of https://github.com/Ioan1234/SecureChatbot&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;query_processor.py&#10;#&#9;training.log">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/chatbot_engine.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/chatbot_engine.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/query_processor.py" beforeDir="false" afterPath="$PROJECT_DIR$/query_processor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/script.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/script.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/training.log" beforeDir="false" afterPath="$PROJECT_DIR$/training.log" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -93,8 +95,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-PY-243.25659.43" />
-        <option value="bundled-python-sdk-181015f7ab06-4df51de95216-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-243.25659.43" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-PY-243.26053.29" />
+        <option value="bundled-python-sdk-b1dbf8ef85a6-4df51de95216-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-243.26053.29" />
       </set>
     </attachedChunks>
   </component>
@@ -133,7 +135,9 @@
       <workItem from="1742115390117" duration="4886000" />
       <workItem from="1742130031675" duration="918000" />
       <workItem from="1742199777923" duration="18979000" />
-      <workItem from="1742291681572" duration="15390000" />
+      <workItem from="1742291681572" duration="15617000" />
+      <workItem from="1742546494252" duration="30000" />
+      <workItem from="1742546586132" duration="5310000" />
     </task>
     <task id="LOCAL-00001" summary="final version - test only">
       <option name="closed" value="true" />
@@ -327,7 +331,23 @@
       <option name="project" value="LOCAL" />
       <updated>1742303447313</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="Rethought the query processing ability with better segregation between commands.">
+      <option name="closed" value="true" />
+      <created>1742313973831</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1742313973831</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Merge branch 'master' of https://github.com/Ioan1234/SecureChatbot&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;query_processor.py&#10;#&#9;training.log">
+      <option name="closed" value="true" />
+      <created>1742313996675</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1742313996675</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -366,13 +386,15 @@
     <MESSAGE value="Modified model, but still having bugs with certain queries." />
     <MESSAGE value="Added intent merger class which helps with 99% accuracy on the eval model class." />
     <MESSAGE value="Merge branch 'master' of https://github.com/Ioan1234/SecureChatbot&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;model/chatbot_engine.py&#10;#&#9;models/intent_classifier/model_config.json&#10;#&#9;models/intent_classifier/tokenizer.json&#10;#&#9;models/intent_classifier_merged/intent_mappings.json&#10;#&#9;models/intent_classifier_merged/model.h5&#10;#&#9;quick_intent_merger.py&#10;#&#9;training.log" />
+    <MESSAGE value="Structured a more streamlined approach for query processor" />
     <MESSAGE value="Rethought the query processing ability with better segregation between commands." />
-    <option name="LAST_COMMIT_MESSAGE" value="Rethought the query processing ability with better segregation between commands." />
+    <MESSAGE value="Merge branch 'master' of https://github.com/Ioan1234/SecureChatbot&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;query_processor.py&#10;#&#9;training.log" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'master' of https://github.com/Ioan1234/SecureChatbot&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;query_processor.py&#10;#&#9;training.log" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ChatBot$test_tf_gpu.coverage" NAME="test_tf_gpu Coverage Results" MODIFIED="1741350134702" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ChatBot$tests.coverage" NAME="tests Coverage Results" MODIFIED="1741446356105" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/ChatBot$app.coverage" NAME="app Coverage Results" MODIFIED="1742313346937" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ChatBot$app.coverage" NAME="app Coverage Results" MODIFIED="1742553555237" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ChatBot$train_model.coverage" NAME="train_model Coverage Results" MODIFIED="1741601029931" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ChatBot$intent_classifier.coverage" NAME="intent_classifier Coverage Results" MODIFIED="1740928701613" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />
     <SUITE FILE_PATH="coverage/ChatBot$setup_env.coverage" NAME="setup_env Coverage Results" MODIFIED="1741342513801" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

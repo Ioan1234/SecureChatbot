@@ -11,7 +11,6 @@ class ChatbotEngine:
         self.query_processor = query_processor
         self.current_query = None
 
-        # Initialize the intent merger
         self.intent_merger = QuickIntentMerger(self.intent_classifier)
         self.logger.info("Intent merger initialized")
 
@@ -25,6 +24,18 @@ class ChatbotEngine:
                 self.logger.info(f"Classified intent: {intent_result}")
             except Exception as e:
                 self.logger.error(f"Error classifying intent: {e}")
+
+            entity_detection_keywords = ["about", "details", "information on", "tell me about",
+                                         "show me", "what is", "who is", "find", "lookup"]
+            is_entity_query = any(keyword in user_input.lower() for keyword in entity_detection_keywords)
+
+            if is_entity_query:
+                try:
+                    entity_result = self.query_processor.process_entity_query(user_input)
+                    if entity_result:
+                        return self.generate_entity_response(entity_result)
+                except Exception as e:
+                    self.logger.error(f"Error processing entity query: {e}")
 
             if not intent_result:
                 self.logger.info("Using direct query mode (intent classification unavailable)")
@@ -43,16 +54,15 @@ class ChatbotEngine:
                 self.logger.info(f"Sub-intent: {sub_intent}, Parent intent: {intent}")
 
             if intent.startswith("database_query") and confidence > 0.6:
-
                 query_result = self.query_processor.process_query(user_input, intent_result)
-
                 return self.generate_response(intent, query_result, sub_intent)
-
             elif intent == "help":
                 return {
                     "response": "I can help you query the financial database securely. Try asking questions like:\n" +
                                 "- What markets are available?\n" +
                                 "- Show me all traders\n" +
+                                "- Tell me about BrokerOne\n" +
+                                "- Find details about Stock A\n" +
                                 "- Which assets are stocks?\n" +
                                 "- Find completed orders\n" +
                                 "- Show recent trades\n" +
@@ -64,7 +74,6 @@ class ChatbotEngine:
                 return {"response": "Hello! I'm your secure financial database assistant. How can I help you today?"}
             elif intent == "goodbye":
                 return {"response": "Goodbye! Feel free to come back if you have more questions."}
-
             else:
                 query_result = self.query_processor.secure_process_query(user_input)
 
@@ -328,3 +337,70 @@ class ChatbotEngine:
             response += f" Details: {safe_message}"
 
         return {"response": response, "error": True}
+
+    def generate_entity_response(self, entity_result):
+
+        if not entity_result:
+            return {"response": "I couldn't find details about that entity."}
+
+        entity_type = entity_result.get("entity_type")
+        entity_info = entity_result.get("entity_info", [])
+        related_info = entity_result.get("related_info", {})
+
+        if not entity_info:
+            return {"response": f"I couldn't find any {entity_type} matching your query."}
+
+        entity = entity_info[0]
+
+        entity_name = entity.get("name", "this entity")
+
+        displayable_data = []
+
+        main_entity_rows = []
+        for key, value in entity.items():
+
+            if key == entity_type[:-1] + '_id':
+                continue
+
+            prop_name = key.replace('_', ' ').title()
+
+            if isinstance(value, str) and value.startswith("[ENCRYPTED"):
+                display_value = "[ENCRYPTED]"
+            elif key.endswith('_date'):
+                display_value = str(value)
+            elif key == 'price' or key == 'balance' or key == 'amount' or key.endswith('_price'):
+                if isinstance(value, (int, float)):
+                    display_value = f"${value:,.2f}"
+                else:
+                    display_value = f"${value}"
+            else:
+                display_value = str(value)
+
+            main_entity_rows.append({
+                "Property": prop_name,
+                "Value": display_value
+            })
+
+        displayable_data.append({
+            "table_name": f"{entity_name} Details",
+            "rows": main_entity_rows
+        })
+
+        for relation_name, items in related_info.items():
+            if items and len(items) > 0:
+                display_name = relation_name.replace('_', ' ').title()
+                if len(items) > 1 and not display_name.endswith('s'):
+                    display_name += 's'
+
+                displayable_data.append({
+                    "table_name": f"Related {display_name}",
+                    "rows": items
+                })
+
+        friendly_type = entity_type[:-1] if entity_type.endswith('s') else entity_type
+        response_text = f"Here are the details about {entity_name} ({friendly_type})."
+
+        return {
+            "response": response_text,
+            "entity_data": displayable_data
+        }
