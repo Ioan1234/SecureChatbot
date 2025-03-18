@@ -14,7 +14,6 @@ class QueryProcessor:
 
         self.dev_mode = True
 
-        # Initialize table information
         self.table_info = {
             "traders": ["trader_id", "name", "email", "phone", "registration_date"],
             "brokers": ["broker_id", "name", "license_number", "contact_email"],
@@ -28,7 +27,6 @@ class QueryProcessor:
             "price_history": ["price_id", "asset_id", "price_date", "open_price", "close_price"]
         }
 
-        # Entity mapping (for natural language to table name mapping)
         self.entity_mapping = {
             "market": "markets",
             "markets": "markets",
@@ -106,7 +104,6 @@ class QueryProcessor:
             "historical pricing": "price_history"
         }
 
-        # Initialize essential fields for each table
         self.essential_fields = {
             "markets": ["name", "location"],
             "brokers": ["name"],
@@ -120,9 +117,7 @@ class QueryProcessor:
             "price_history": ["price_date", "open_price", "close_price"]
         }
 
-        # Initialize attribute mapping
         self.attribute_mapping = {
-            # General attributes
             "price": {"tables": ["trades", "price_history"], "fields": ["trades.price", "price_history.close_price"]},
             "cost": {"tables": ["trades", "price_history"], "fields": ["trades.price", "price_history.close_price"]},
             "value": {"tables": ["trades", "price_history"], "fields": ["trades.price", "price_history.close_price"]},
@@ -144,7 +139,6 @@ class QueryProcessor:
             "balance": {"tables": ["accounts"], "fields": ["accounts.balance"]},
             "status": {"tables": ["order_status"], "fields": ["order_status.status"]},
 
-            # Special aggregate attributes
             "transaction_count": {"aggregate": True, "function": "COUNT", "tables": ["transactions"],
                                   "fields": ["transactions.transaction_id"]},
             "trade_count": {"aggregate": True, "function": "COUNT", "tables": ["trades"],
@@ -157,21 +151,76 @@ class QueryProcessor:
             "total_quantity": {"aggregate": True, "function": "SUM", "tables": ["trades"],
                                "fields": ["trades.quantity"]}
         }
-
-        # Initialize table relationships
+        self.table_graph = {
+            "traders": {"trades": "trader_id", "accounts": "trader_id"},
+            "trades": {"traders": "trader_id", "assets": "asset_id", "markets": "market_id", "orders": "trade_id"},
+            "assets": {"trades": "asset_id", "brokers": "broker_id", "price_history": "asset_id"},
+            "markets": {"trades": "market_id"},
+            "accounts": {"traders": "trader_id", "transactions": "account_id"},
+            "transactions": {"accounts": "account_id"},
+            "orders": {"trades": "trade_id", "order_status": "order_id"},
+            "order_status": {"orders": "order_id"},
+            "brokers": {"assets": "broker_id"},
+            "price_history": {"assets": "asset_id"}
+        }
         self._initialize_table_relationships()
 
-    def _handle_generic_query(self, nl_query, semantics=None, sub_intent=None):
-        """
-        Handle generic queries without specific intent classification
-        """
-        # Try to use the semantics-based query builder first
-        if semantics:
-            sql = self._build_sql_query(semantics)
-            if sql:
-                return self._execute_and_process_query(sql)
+    def _find_join_path(self, from_table, to_table, visited=None):
+        if visited is None:
+            visited = set()
 
-        # If semantics-based query fails, fall back to the old method
+        if from_table == to_table:
+            return []
+
+        if from_table in visited:
+            return None
+
+        visited.add(from_table)
+
+        if to_table in self.table_graph.get(from_table, {}):
+            return [{"from": from_table, "to": to_table, "key": self.table_graph[from_table][to_table]}]
+
+        for neighbor, key in self.table_graph.get(from_table, {}).items():
+            path = self._find_join_path(neighbor, to_table, visited.copy())
+            if path:
+                return [{"from": from_table, "to": neighbor, "key": key}] + path
+
+        return None
+
+    def _generate_joins_for_tables(self, tables):
+        if not tables or len(tables) <= 1:
+            return []
+
+        join_clauses = []
+        already_joined = {tables[0]}
+
+        for target_table in tables[1:]:
+            if target_table in already_joined:
+                continue
+
+            best_path = None
+            start_table = None
+
+            for joined_table in already_joined:
+                path = self._find_join_path(joined_table, target_table)
+                if path and (best_path is None or len(path) < len(best_path)):
+                    best_path = path
+                    start_table = joined_table
+
+            if best_path:
+                for step in best_path:
+                    from_table = step["from"]
+                    to_table = step["to"]
+                    key = step["key"]
+
+                    if to_table not in already_joined:
+                        join_clause = f"{to_table} ON {from_table}.{key} = {to_table}.{key}"
+                        join_clauses.append(join_clause)
+                        already_joined.add(to_table)
+
+        return join_clauses
+
+    def _handle_generic_query(self, nl_query):
         tables = self._extract_tables(nl_query)
 
         if not tables:
@@ -181,41 +230,23 @@ class QueryProcessor:
         fields = self._extract_fields(nl_query, tables)
 
         select_clause = f"SELECT {', '.join(fields)}"
-        from_clause = f"FROM {', '.join(tables)}"
+        from_clause = f"FROM {tables[0]}"
 
-        conditions = []
-        if len(tables) > 1:
-            for i, table1 in enumerate(tables):
-                for table2 in tables[i + 1:]:
-                    join_condition = self._get_join_condition(table1, table2)
-                    if join_condition:
-                        conditions.append(join_condition)
-
-        where_clause = ""
-        if conditions:
-            where_clause = f"WHERE {' AND '.join(conditions)}"
+        join_clauses = self._generate_joins_for_tables(tables)
+        join_clause = " JOIN ".join(join_clauses)
+        if join_clause:
+            from_clause = f"{from_clause} JOIN {join_clause}"
 
         limit_clause = "LIMIT 100"
 
-        sql_parts = [select_clause, from_clause]
-        if where_clause:
-            sql_parts.append(where_clause)
-        sql_parts.append(limit_clause)
+        sql_parts = [select_clause, from_clause, limit_clause]
 
         sql = " ".join(sql_parts)
         self.logger.info(f"Generated generic SQL: {sql}")
 
         return self._execute_and_process_query(sql)
 
-    def _handle_list_query(self, nl_query, semantics=None, sub_intent=None):
-        """Handle list queries with the new semantic approach"""
-        # Try the semantic builder first
-        if semantics:
-            sql = self._build_sql_query(semantics, "database_query_list")
-            if sql:
-                return self._execute_and_process_query(sql)
-
-        # Fall back to the legacy approach
+    def _handle_list_query(self, nl_query):
         tables = self._extract_tables(nl_query)
 
         if not tables:
@@ -228,43 +259,23 @@ class QueryProcessor:
             all_fields.extend([f"{table}.{field}" for field in essential_fields])
 
         select_clause = f"SELECT {', '.join(all_fields)}"
-        from_clause = f"FROM {', '.join(tables)}"
+        from_clause = f"FROM {tables[0]}"
 
-        conditions = []
-        if len(tables) > 1:
-            for i, table1 in enumerate(tables):
-                for table2 in tables[i + 1:]:
-                    join_condition = self._get_join_condition(table1, table2)
-                    if join_condition:
-                        conditions.append(join_condition)
-
-        where_clause = ""
-        if conditions:
-            where_clause = f"WHERE {' AND '.join(conditions)}"
+        join_clauses = self._generate_joins_for_tables(tables)
+        join_clause = " JOIN ".join(join_clauses)
+        if join_clause:
+            from_clause = f"{from_clause} JOIN {join_clause}"
 
         limit_clause = "LIMIT 100"
 
-        sql_parts = [select_clause, from_clause]
-        if where_clause:
-            sql_parts.append(where_clause)
-        sql_parts.append(limit_clause)
+        sql_parts = [select_clause, from_clause, limit_clause]
 
         sql = " ".join(sql_parts)
         self.logger.info(f"Generated listing SQL: {sql}")
 
         return self._execute_and_process_query(sql)
 
-    def _handle_detailed_query(self, nl_query, semantics=None, sub_intent=None):
-        """Handle detailed query with new semantic approach"""
-        # Try semantic builder first
-        if semantics:
-            # Modify semantics to include more fields
-            semantics["detailed"] = True
-            sql = self._build_sql_query(semantics, "database_query_detailed")
-            if sql:
-                return self._execute_and_process_query(sql)
-
-        # Fall back to legacy approach
+    def _handle_detailed_query(self, nl_query):
         tables = self._extract_tables(nl_query)
 
         if not tables:
@@ -277,84 +288,44 @@ class QueryProcessor:
                                if not self._should_encrypt_field(field)])
 
         select_clause = f"SELECT {', '.join(all_fields)}" if all_fields else "SELECT *"
-        from_clause = f"FROM {', '.join(tables)}"
+        from_clause = f"FROM {tables[0]}"
 
-        conditions = []
-        if len(tables) > 1:
-            for i, table1 in enumerate(tables):
-                for table2 in tables[i + 1:]:
-                    join_condition = self._get_join_condition(table1, table2)
-                    if join_condition:
-                        conditions.append(join_condition)
-
-        where_clause = ""
-        if conditions:
-            where_clause = f"WHERE {' AND '.join(conditions)}"
+        join_clauses = self._generate_joins_for_tables(tables)
+        join_clause = " JOIN ".join(join_clauses)
+        if join_clause:
+            from_clause = f"{from_clause} JOIN {join_clause}"
 
         limit_clause = "LIMIT 100"
 
-        sql_parts = [select_clause, from_clause]
-        if where_clause:
-            sql_parts.append(where_clause)
-        sql_parts.append(limit_clause)
+        sql_parts = [select_clause, from_clause, limit_clause]
 
         sql = " ".join(sql_parts)
         self.logger.info(f"Generated detailed SQL: {sql}")
 
         return self._execute_and_process_query(sql)
 
-    def _handle_count_query(self, nl_query, semantics=None, sub_intent=None):
-        """Handle count queries with the new semantic approach"""
-        # Try semantic builder first
-        if semantics:
-            # Force aggregation to count
-            semantics["aggregation"] = "count"
-            sql = self._build_sql_query(semantics, "database_query_count")
-            if sql:
-                return self._execute_and_process_query(sql)
-
-        # Fall back to legacy approach
+    def _handle_count_query(self, nl_query):
         tables = self._extract_tables(nl_query)
 
         if not tables:
             return None
 
         select_clause = "SELECT COUNT(*) as count"
-        from_clause = f"FROM {', '.join(tables)}"
+        from_clause = f"FROM {tables[0]}"
 
-        conditions = []
-        if len(tables) > 1:
-            for i, table1 in enumerate(tables):
-                for table2 in tables[i + 1:]:
-                    join_condition = self._get_join_condition(table1, table2)
-                    if join_condition:
-                        conditions.append(join_condition)
-
-        where_clause = ""
-        if conditions:
-            where_clause = f"WHERE {' AND '.join(conditions)}"
+        join_clauses = self._generate_joins_for_tables(tables)
+        join_clause = " JOIN ".join(join_clauses)
+        if join_clause:
+            from_clause = f"{from_clause} JOIN {join_clause}"
 
         sql_parts = [select_clause, from_clause]
-        if where_clause:
-            sql_parts.append(where_clause)
 
         sql = " ".join(sql_parts)
         self.logger.info(f"Generated count SQL: {sql}")
 
         return self._execute_and_process_query(sql)
 
-    def _handle_recent_query(self, nl_query, semantics=None, sub_intent=None):
-        """Handle recent queries with the new semantic approach"""
-        # Try semantic builder first
-        if semantics:
-            # Modify semantics to sort by date desc
-            semantics["operation"] = "sort_desc"
-            semantics["attribute"] = "date"
-            sql = self._build_sql_query(semantics, "database_query_recent")
-            if sql:
-                return self._execute_and_process_query(sql)
-
-        # Fall back to legacy approach
+    def _handle_recent_query(self, nl_query):
         tables = self._extract_tables(nl_query)
 
         if not tables:
@@ -381,19 +352,12 @@ class QueryProcessor:
         fields = self._extract_fields(nl_query, tables)
 
         select_clause = f"SELECT {', '.join(fields)}"
-        from_clause = f"FROM {', '.join(tables)}"
+        from_clause = f"FROM {tables[0]}"
 
-        conditions = []
-        if len(tables) > 1:
-            for i, table1 in enumerate(tables):
-                for table2 in tables[i + 1:]:
-                    join_condition = self._get_join_condition(table1, table2)
-                    if join_condition:
-                        conditions.append(join_condition)
-
-        where_clause = ""
-        if conditions:
-            where_clause = f"WHERE {' AND '.join(conditions)}"
+        join_clauses = self._generate_joins_for_tables(tables)
+        join_clause = " JOIN ".join(join_clauses)
+        if join_clause:
+            from_clause = f"{from_clause} JOIN {join_clause}"
 
         order_by_clause = ""
         if date_field:
@@ -402,8 +366,6 @@ class QueryProcessor:
         limit_clause = "LIMIT 20"
 
         sql_parts = [select_clause, from_clause]
-        if where_clause:
-            sql_parts.append(where_clause)
         if order_by_clause:
             sql_parts.append(order_by_clause)
         sql_parts.append(limit_clause)
@@ -413,15 +375,7 @@ class QueryProcessor:
 
         return self._execute_and_process_query(sql)
 
-    def _handle_filter_query(self, nl_query, semantics=None, sub_intent=None):
-        """Handle filter queries with the new semantic approach"""
-        # Try semantic builder first
-        if semantics:
-            sql = self._build_sql_query(semantics, "database_query_filter")
-            if sql:
-                return self._execute_and_process_query(sql)
-
-        # Fall back to legacy approach
+    def _handle_filter_query(self, nl_query):
         tables = self._extract_tables(nl_query)
 
         if not tables:
@@ -430,23 +384,18 @@ class QueryProcessor:
         fields = self._extract_fields(nl_query, tables)
 
         select_clause = f"SELECT {', '.join(fields)}"
-        from_clause = f"FROM {', '.join(tables)}"
+        from_clause = f"FROM {tables[0]}"
 
-        join_conditions = []
-        if len(tables) > 1:
-            for i, table1 in enumerate(tables):
-                for table2 in tables[i + 1:]:
-                    join_condition = self._get_join_condition(table1, table2)
-                    if join_condition:
-                        join_conditions.append(join_condition)
+        join_clauses = self._generate_joins_for_tables(tables)
+        join_clause = " JOIN ".join(join_clauses)
+        if join_clause:
+            from_clause = f"{from_clause} JOIN {join_clause}"
 
         filter_conditions = self._extract_filter_conditions(nl_query, tables)
 
-        all_conditions = join_conditions + filter_conditions
-
         where_clause = ""
-        if all_conditions:
-            where_clause = f"WHERE {' AND '.join(all_conditions)}"
+        if filter_conditions:
+            where_clause = f"WHERE {' AND '.join(filter_conditions)}"
 
         limit_clause = "LIMIT 100"
 
@@ -460,20 +409,7 @@ class QueryProcessor:
 
         return self._execute_and_process_query(sql)
 
-    def _handle_sort_query(self, nl_query, semantics=None, sub_intent=None):
-        """Handle sort queries with the new semantic approach"""
-        # Use the semantics-based builder
-        sql = self._build_sql_query(semantics, "database_query_sort", sub_intent)
-        if sql:
-            return self._execute_and_process_query(sql)
-
-        # If that fails, use the appropriate legacy handler based on sub-intent
-        if sub_intent == "database_query_sort_ascending":
-            return self._handle_sort_ascending_query(nl_query)
-        elif sub_intent == "database_query_sort_descending":
-            return self._handle_sort_descending_query(nl_query)
-
-        # Fall back to legacy approach
+    def _handle_sort_query(self, nl_query):
         tables = self._extract_tables(nl_query)
 
         if not tables:
@@ -482,19 +418,12 @@ class QueryProcessor:
         fields = self._extract_fields(nl_query, tables)
 
         select_clause = f"SELECT {', '.join(fields)}"
-        from_clause = f"FROM {', '.join(tables)}"
+        from_clause = f"FROM {tables[0]}"
 
-        conditions = []
-        if len(tables) > 1:
-            for i, table1 in enumerate(tables):
-                for table2 in tables[i + 1:]:
-                    join_condition = self._get_join_condition(table1, table2)
-                    if join_condition:
-                        conditions.append(join_condition)
-
-        where_clause = ""
-        if conditions:
-            where_clause = f"WHERE {' AND '.join(conditions)}"
+        join_clauses = self._generate_joins_for_tables(tables)
+        join_clause = " JOIN ".join(join_clauses)
+        if join_clause:
+            from_clause = f"{from_clause} JOIN {join_clause}"
 
         sort_field = self._extract_sort_field(nl_query, tables)
 
@@ -505,8 +434,6 @@ class QueryProcessor:
         limit_clause = "LIMIT 100"
 
         sql_parts = [select_clause, from_clause]
-        if where_clause:
-            sql_parts.append(where_clause)
         if order_by_clause:
             sql_parts.append(order_by_clause)
         sql_parts.append(limit_clause)
@@ -516,40 +443,21 @@ class QueryProcessor:
 
         return self._execute_and_process_query(sql)
 
-    def _handle_sort_ascending_query(self, nl_query, semantics=None, sub_intent=None):
-        """Handle ascending sort queries"""
-        # Try semantic builder first
-        if semantics:
-            semantics["operation"] = "sort_asc"
-            sql = self._build_sql_query(semantics, "database_query_sort", "database_query_sort_ascending")
-            if sql:
-                return self._execute_and_process_query(sql)
-
-        # Fall back to legacy approach
+    def _handle_sort_ascending_query(self, nl_query):
         tables = self._extract_tables(nl_query)
-
         if not tables:
             return None
 
         fields = self._extract_fields(nl_query, tables)
-
         select_clause = f"SELECT {', '.join(fields)}"
-        from_clause = f"FROM {', '.join(tables)}"
+        from_clause = f"FROM {tables[0]}"
 
-        conditions = []
-        if len(tables) > 1:
-            for i, table1 in enumerate(tables):
-                for table2 in tables[i + 1:]:
-                    join_condition = self._get_join_condition(table1, table2)
-                    if join_condition:
-                        conditions.append(join_condition)
-
-        where_clause = ""
-        if conditions:
-            where_clause = f"WHERE {' AND '.join(conditions)}"
+        join_clauses = self._generate_joins_for_tables(tables)
+        join_clause = " JOIN ".join(join_clauses)
+        if join_clause:
+            from_clause = f"{from_clause} JOIN {join_clause}"
 
         sort_field = self._extract_sort_field(nl_query, tables)
-
         order_by_clause = ""
         if sort_field:
             order_by_clause = f"ORDER BY {sort_field} ASC"
@@ -557,8 +465,6 @@ class QueryProcessor:
         limit_clause = "LIMIT 100"
 
         sql_parts = [select_clause, from_clause]
-        if where_clause:
-            sql_parts.append(where_clause)
         if order_by_clause:
             sql_parts.append(order_by_clause)
         sql_parts.append(limit_clause)
@@ -568,40 +474,21 @@ class QueryProcessor:
 
         return self._execute_and_process_query(sql)
 
-    def _handle_sort_descending_query(self, nl_query, semantics=None, sub_intent=None):
-        """Handle descending sort queries"""
-        # Try semantic builder first
-        if semantics:
-            semantics["operation"] = "sort_desc"
-            sql = self._build_sql_query(semantics, "database_query_sort", "database_query_sort_descending")
-            if sql:
-                return self._execute_and_process_query(sql)
-
-        # Fall back to legacy approach
+    def _handle_sort_descending_query(self, nl_query):
         tables = self._extract_tables(nl_query)
-
         if not tables:
             return None
 
         fields = self._extract_fields(nl_query, tables)
-
         select_clause = f"SELECT {', '.join(fields)}"
-        from_clause = f"FROM {', '.join(tables)}"
+        from_clause = f"FROM {tables[0]}"
 
-        conditions = []
-        if len(tables) > 1:
-            for i, table1 in enumerate(tables):
-                for table2 in tables[i + 1:]:
-                    join_condition = self._get_join_condition(table1, table2)
-                    if join_condition:
-                        conditions.append(join_condition)
-
-        where_clause = ""
-        if conditions:
-            where_clause = f"WHERE {' AND '.join(conditions)}"
+        join_clauses = self._generate_joins_for_tables(tables)
+        join_clause = " JOIN ".join(join_clauses)
+        if join_clause:
+            from_clause = f"{from_clause} JOIN {join_clause}"
 
         sort_field = self._extract_sort_field(nl_query, tables)
-
         order_by_clause = ""
         if sort_field:
             order_by_clause = f"ORDER BY {sort_field} DESC"
@@ -609,8 +496,6 @@ class QueryProcessor:
         limit_clause = "LIMIT 100"
 
         sql_parts = [select_clause, from_clause]
-        if where_clause:
-            sql_parts.append(where_clause)
         if order_by_clause:
             sql_parts.append(order_by_clause)
         sql_parts.append(limit_clause)
@@ -621,15 +506,11 @@ class QueryProcessor:
         return self._execute_and_process_query(sql)
 
     def _handle_comparative_query(self, nl_query, semantics=None, sub_intent=None):
-        """
-        Handle comparative queries (highest, lowest, middle)
-        """
-        # Use the semantics-based builder
+
         sql = self._build_sql_query(semantics, "database_query_comparative", sub_intent)
         if sql:
             return self._execute_and_process_query(sql)
 
-        # If that fails, use the appropriate legacy handler based on sub-intent
         if sub_intent == "database_query_comparative_highest":
             return self._handle_highest_query(nl_query)
         elif sub_intent == "database_query_comparative_lowest":
@@ -637,43 +518,23 @@ class QueryProcessor:
         elif sub_intent == "database_query_comparative_middle":
             return self._handle_middle_query(nl_query)
 
-        # Default to highest if no sub-intent specified
         return self._handle_highest_query(nl_query)
 
-    def _handle_highest_query(self, nl_query, semantics=None, sub_intent=None):
-        """Handle highest queries"""
-        # Try semantic builder first
-        if semantics:
-            semantics["operation"] = "max"
-            sql = self._build_sql_query(semantics, "database_query_comparative", "database_query_comparative_highest")
-            if sql:
-                return self._execute_and_process_query(sql)
-
-        # Fall back to legacy approach
+    def _handle_highest_query(self, nl_query):
         tables = self._extract_tables(nl_query)
-
         if not tables:
             return None
 
         fields = self._extract_fields(nl_query, tables)
-
         select_clause = f"SELECT {', '.join(fields)}"
-        from_clause = f"FROM {', '.join(tables)}"
+        from_clause = f"FROM {tables[0]}"
 
-        conditions = []
-        if len(tables) > 1:
-            for i, table1 in enumerate(tables):
-                for table2 in tables[i + 1:]:
-                    join_condition = self._get_join_condition(table1, table2)
-                    if join_condition:
-                        conditions.append(join_condition)
-
-        where_clause = ""
-        if conditions:
-            where_clause = f"WHERE {' AND '.join(conditions)}"
+        join_clauses = self._generate_joins_for_tables(tables)
+        join_clause = " JOIN ".join(join_clauses)
+        if join_clause:
+            from_clause = f"{from_clause} JOIN {join_clause}"
 
         sort_field = self._extract_superlative_field(nl_query, tables, "highest")
-
         order_by_clause = ""
         if sort_field:
             order_by_clause = f"ORDER BY {sort_field} DESC"
@@ -682,8 +543,6 @@ class QueryProcessor:
         limit_clause = f"LIMIT {limit}"
 
         sql_parts = [select_clause, from_clause]
-        if where_clause:
-            sql_parts.append(where_clause)
         if order_by_clause:
             sql_parts.append(order_by_clause)
         sql_parts.append(limit_clause)
@@ -693,67 +552,21 @@ class QueryProcessor:
 
         return self._execute_and_process_query(sql)
 
-    def _handle_lowest_query(self, nl_query, semantics=None, sub_intent=None):
-        """Handle lowest queries"""
-        # Try semantic builder first
-        if semantics:
-            semantics["operation"] = "min"
-            sql = self._build_sql_query(semantics, "database_query_comparative", "database_query_comparative_lowest")
-            if sql:
-                return self._execute_and_process_query(sql)
-
-        # Special case for transaction count
-        nl_query_lower = nl_query.lower()
-        if "transaction count" in nl_query_lower and "trader" in nl_query_lower:
-            sql = """
-            SELECT t.name, t.registration_date, COUNT(tr.transaction_id) as transaction_count 
-            FROM traders t
-            JOIN accounts a ON t.trader_id = a.trader_id
-            LEFT JOIN transactions tr ON a.account_id = tr.account_id
-            GROUP BY t.trader_id
-            ORDER BY transaction_count ASC
-            LIMIT 10
-            """
-            self.logger.info(f"Generated specialized transaction count SQL: {sql}")
-            return self._execute_and_process_query(sql)
-
-        # Special case for account balance
-        if "account balance" in nl_query_lower and "trader" in nl_query_lower:
-            sql = """
-            SELECT t.name, t.registration_date, a.balance 
-            FROM traders t
-            JOIN accounts a ON t.trader_id = a.trader_id
-            ORDER BY a.balance ASC
-            LIMIT 10
-            """
-            self.logger.info(f"Generated specialized account balance SQL: {sql}")
-            return self._execute_and_process_query(sql)
-
-        # Fall back to legacy approach
+    def _handle_lowest_query(self, nl_query):
         tables = self._extract_tables(nl_query)
-
         if not tables:
             return None
 
         fields = self._extract_fields(nl_query, tables)
-
         select_clause = f"SELECT {', '.join(fields)}"
-        from_clause = f"FROM {', '.join(tables)}"
+        from_clause = f"FROM {tables[0]}"
 
-        conditions = []
-        if len(tables) > 1:
-            for i, table1 in enumerate(tables):
-                for table2 in tables[i + 1:]:
-                    join_condition = self._get_join_condition(table1, table2)
-                    if join_condition:
-                        conditions.append(join_condition)
-
-        where_clause = ""
-        if conditions:
-            where_clause = f"WHERE {' AND '.join(conditions)}"
+        join_clauses = self._generate_joins_for_tables(tables)
+        join_clause = " JOIN ".join(join_clauses)
+        if join_clause:
+            from_clause = f"{from_clause} JOIN {join_clause}"
 
         sort_field = self._extract_superlative_field(nl_query, tables, "lowest")
-
         order_by_clause = ""
         if sort_field:
             order_by_clause = f"ORDER BY {sort_field} ASC"
@@ -762,8 +575,6 @@ class QueryProcessor:
         limit_clause = f"LIMIT {limit}"
 
         sql_parts = [select_clause, from_clause]
-        if where_clause:
-            sql_parts.append(where_clause)
         if order_by_clause:
             sql_parts.append(order_by_clause)
         sql_parts.append(limit_clause)
@@ -773,93 +584,76 @@ class QueryProcessor:
 
         return self._execute_and_process_query(sql)
 
-    def _handle_middle_query(self, nl_query, semantics=None, sub_intent=None):
-        """Handle middle/median queries"""
-        # Try semantic builder first
-        if semantics:
-            semantics["operation"] = "avg"
-            sql = self._build_sql_query(semantics, "database_query_comparative", "database_query_comparative_middle")
-            if sql:
-                return self._execute_and_process_query(sql)
-
-        # Special case for median price
-        nl_query_lower = nl_query.lower()
-        if "median price" in nl_query_lower and "asset" in nl_query_lower:
-            sql = """
-            SELECT a.name, a.asset_type, p.close_price
-            FROM assets a
-            JOIN price_history p ON a.asset_id = p.asset_id
-            ORDER BY p.close_price
-            LIMIT 10 OFFSET (
-                SELECT COUNT(*)/2 - 5 FROM price_history
-            )
-            """
-            self.logger.info(f"Generated specialized median price SQL: {sql}")
-            return self._execute_and_process_query(sql)
-
-        # Fall back to legacy approach
+    def _handle_middle_query(self, nl_query):
         tables = self._extract_tables(nl_query)
-
         if not tables:
             return None
 
+        if "price" in nl_query.lower() and "asset" in nl_query.lower():
+            if "assets" not in tables:
+                tables.append("assets")
+            if "price_history" not in tables:
+                tables.append("price_history")
+
         fields = self._extract_fields(nl_query, tables)
-
-        select_clause = f"SELECT {', '.join(fields)}"
-        from_clause = f"FROM {', '.join(tables)}"
-
-        conditions = []
-        if len(tables) > 1:
-            for i, table1 in enumerate(tables):
-                for table2 in tables[i + 1:]:
-                    join_condition = self._get_join_condition(table1, table2)
-                    if join_condition:
-                        conditions.append(join_condition)
-
-        where_clause = ""
-        if conditions:
-            where_clause = f"WHERE {' AND '.join(conditions)}"
 
         sort_field = self._extract_superlative_field(nl_query, tables, "middle")
 
-        limit = self._extract_number_from_query(nl_query) or 10
+        if "price" in nl_query.lower() and "price_history" in tables:
+            sort_field = "price_history.close_price"
+        elif "price" in nl_query.lower() and "trades" in tables:
+            sort_field = "trades.price"
+        elif not sort_field:
+            if "price_history" in tables:
+                sort_field = "price_history.close_price"
+            elif "trades" in tables:
+                sort_field = "trades.price"
+            elif "assets" in tables:
+                sort_field = "assets.asset_id"
 
-        if sort_field:
-            order_by_clause = f"ORDER BY {sort_field}"
-            limit_clause = f"LIMIT {limit} OFFSET (SELECT COUNT(*)/2 - {limit}/2 FROM {', '.join(tables)})"
+        if not sort_field:
+            self.logger.warning("No sort field identified for median query")
+            return self._handle_generic_query(nl_query)
 
-            sql_parts = [select_clause, from_clause]
-            if where_clause:
-                sql_parts.append(where_clause)
-            sql_parts.append(order_by_clause)
-            sql_parts.append(limit_clause)
+        select_clause = f"SELECT {', '.join(fields)}"
+        from_clause = f"FROM {tables[0]}"
 
-            sql = " ".join(sql_parts)
-            self.logger.info(f"Generated middle value SQL: {sql}")
+        join_clauses = self._generate_joins_for_tables(tables)
+        if join_clauses:
+            join_clause = " JOIN ".join(join_clauses)
+            from_clause = f"{from_clause} JOIN {join_clause}"
 
-            return self._execute_and_process_query(sql)
+        main_table = tables[0]
+        count_sql = f"SELECT COUNT(*) as count FROM {main_table}"
+        count_result = self.db_connector.execute_query(count_sql)
+
+        if not count_result or not count_result[0].get('count', 0):
+            self.logger.warning(f"Count query returned no results: {count_sql}")
+            return None
+
+        total_count = count_result[0]['count']
+
+        requested_limit = self._extract_number_from_query(nl_query)
+        limit = requested_limit or 3
+
+        if total_count < limit * 2:
+            limit = max(1, total_count // 3)
+            middle_offset = max(0, (total_count // 2) - (limit // 2))
         else:
-            limit_clause = f"LIMIT {limit} OFFSET (SELECT COUNT(*)/2 - {limit}/2 FROM {', '.join(tables)})"
+            middle_offset = max(0, (total_count // 2) - (limit // 2))
 
-            sql_parts = [select_clause, from_clause]
-            if where_clause:
-                sql_parts.append(where_clause)
-            sql_parts.append(limit_clause)
+        self.logger.info(f"Total records: {total_count}, getting {limit} records from offset {middle_offset}")
 
-            sql = " ".join(sql_parts)
-            self.logger.info(f"Generated basic middle value SQL: {sql}")
+        order_by_clause = f"ORDER BY {sort_field}"
+        limit_clause = f"LIMIT {middle_offset}, {limit}"
 
-            return self._execute_and_process_query(sql)
+        sql_parts = [select_clause, from_clause, order_by_clause, limit_clause]
+        sql = " ".join(sql_parts)
 
-    def _handle_specific_id_query(self, nl_query, semantics=None, sub_intent=None):
-        """Handle queries for specific IDs with the new semantic approach"""
-        # Try semantic builder first
-        if semantics:
-            sql = self._build_sql_query(semantics, "database_query_specific_id")
-            if sql:
-                return self._execute_and_process_query(sql)
+        self.logger.info(f"Generated middle value SQL: {sql}")
+        return self._execute_and_process_query(sql)
 
-        # Fall back to legacy approach
+    def _handle_specific_id_query(self, nl_query):
         tables = self._extract_tables(nl_query)
 
         if not tables:
@@ -894,16 +688,7 @@ class QueryProcessor:
 
         return self._execute_and_process_query(sql)
 
-    def _handle_sensitive_query(self, nl_query, semantics=None, sub_intent=None):
-        """Handle queries for sensitive data with the new semantic approach"""
-        # Try semantic builder first
-        if semantics:
-            semantics["sensitive"] = True
-            sql = self._build_sql_query(semantics, "database_query_sensitive")
-            if sql:
-                return self._execute_and_process_query(sql)
-
-        # Fall back to legacy approach
+    def _handle_sensitive_query(self, nl_query):
         tables = self._extract_tables(nl_query)
 
         if not tables:
@@ -915,77 +700,64 @@ class QueryProcessor:
             all_fields.extend([f"{table}.{field}" for field in table_fields])
 
         select_clause = f"SELECT {', '.join(all_fields)}" if all_fields else "SELECT *"
-        from_clause = f"FROM {', '.join(tables)}"
+        from_clause = f"FROM {tables[0]}"
 
-        conditions = []
-        if len(tables) > 1:
-            for i, table1 in enumerate(tables):
-                for table2 in tables[i + 1:]:
-                    join_condition = self._get_join_condition(table1, table2)
-                    if join_condition:
-                        conditions.append(join_condition)
-
-        where_clause = ""
-        if conditions:
-            where_clause = f"WHERE {' AND '.join(conditions)}"
+        join_clauses = self._generate_joins_for_tables(tables)
+        join_clause = " JOIN ".join(join_clauses)
+        if join_clause:
+            from_clause = f"{from_clause} JOIN {join_clause}"
 
         limit_clause = "LIMIT 100"
 
-        sql_parts = [select_clause, from_clause]
-        if where_clause:
-            sql_parts.append(where_clause)
-        sql_parts.append(limit_clause)
+        sql_parts = [select_clause, from_clause, limit_clause]
 
         sql = " ".join(sql_parts)
         self.logger.info(f"Generated sensitive data SQL: {sql}")
 
         return self._execute_and_process_query(sql)
     def _initialize_table_relationships(self):
-        """Initialize the relationships between tables for proper JOIN handling"""
         self.table_relationships = {
             ("traders", "accounts"): {
                 "join": "traders.trader_id = accounts.trader_id",
-                "cardinality": "one-to-many"  # One trader has many accounts
+                "cardinality": "one-to-many"
             },
             ("accounts", "transactions"): {
                 "join": "accounts.account_id = transactions.account_id",
-                "cardinality": "one-to-many"  # One account has many transactions
+                "cardinality": "one-to-many"
             },
             ("assets", "price_history"): {
                 "join": "assets.asset_id = price_history.asset_id",
-                "cardinality": "one-to-many"  # One asset has many price points
+                "cardinality": "one-to-many"
             },
             ("assets", "trades"): {
                 "join": "assets.asset_id = trades.asset_id",
-                "cardinality": "one-to-many"  # One asset appears in many trades
+                "cardinality": "one-to-many"
             },
             ("traders", "trades"): {
                 "join": "traders.trader_id = trades.trader_id",
-                "cardinality": "one-to-many"  # One trader makes many trades
+                "cardinality": "one-to-many"
             },
             ("orders", "trades"): {
                 "join": "orders.trade_id = trades.trade_id",
-                "cardinality": "one-to-one"  # One order corresponds to one trade
+                "cardinality": "one-to-one"
             },
             ("markets", "trades"): {
                 "join": "markets.market_id = trades.market_id",
-                "cardinality": "one-to-many"  # One market has many trades
+                "cardinality": "one-to-many"
             },
             ("orders", "order_status"): {
                 "join": "orders.order_id = order_status.order_id",
-                "cardinality": "one-to-many"  # One order has many status updates
+                "cardinality": "one-to-many"
             },
             ("brokers", "assets"): {
                 "join": "brokers.broker_id = assets.broker_id",
-                "cardinality": "one-to-many"  # One broker manages many assets
+                "cardinality": "one-to-many"
             }
         }
 
-        # Add reverse relationships automatically
         reverse_relationships = {}
         for (table1, table2), relationship in self.table_relationships.items():
             join = relationship["join"]
-            # Flip cardinality for reverse relationship
             cardinality = relationship["cardinality"]
             if cardinality == "one-to-many":
                 reverse_cardinality = "many-to-one"
@@ -1001,7 +773,6 @@ class QueryProcessor:
 
         self.table_relationships.update(reverse_relationships)
 
-        # Special indirect relationships (multi-hop joins)
         self.indirect_relationships = {
             ("traders", "transactions"): {
                 "path": [("traders", "accounts"), ("accounts", "transactions")],
@@ -1014,11 +785,9 @@ class QueryProcessor:
         }
 
     def get_essential_fields(self, table_name):
-        """Get essential fields for a table"""
         return self.essential_fields.get(table_name, ["name"])
 
     def _should_encrypt_field(self, field_name):
-        """Determine if a field should be encrypted"""
         if field_name in self.sensitive_fields:
             return True
 
@@ -1039,7 +808,6 @@ class QueryProcessor:
         return any(pattern in field_name.lower() for pattern in sensitive_patterns)
 
     def _make_serializable(self, value):
-        """Make a value serializable for output"""
         if hasattr(value, '__class__') and value.__class__.__name__ == 'CKKSVector':
             return {
                 "type": "encrypted",
@@ -1050,25 +818,15 @@ class QueryProcessor:
         return value
 
     def process_query(self, nl_query, intent_data):
-        """
-        Process a natural language query based on intent classification
-        """
         intent = intent_data.get('intent', 'database_query_list')
-        sub_intent = intent_data.get('sub_intent', None)
         confidence = intent_data.get('confidence', 0.0)
 
-        self.logger.info(f"Processing query with intent: {intent}, sub-intent: {sub_intent}, confidence: {confidence}")
+        self.logger.info(f"Processing query with intent: {intent}, confidence: {confidence}")
 
-        # Use semantic analysis for SQL generation
-        semantics = self._analyze_query_semantics(nl_query)
-        self.logger.info(f"Query semantics: {semantics}")
-
-        # If confidence is too low, use generic processing
         if confidence < 0.5:
             self.logger.warning(f"Low confidence ({confidence}) for intent: {intent}. Using generic processing.")
             return self._handle_generic_query(nl_query)
 
-        # Mapping of intents to handlers
         handlers = {
             "database_query_list": self._handle_list_query,
             "database_query_count": self._handle_count_query,
@@ -1076,21 +834,25 @@ class QueryProcessor:
             "database_query_recent": self._handle_recent_query,
             "database_query_filter": self._handle_filter_query,
             "database_query_sort": self._handle_sort_query,
+            "database_query_sort_ascending": self._handle_sort_ascending_query,
+            "database_query_sort_descending": self._handle_sort_descending_query,
+            "database_query_comparative_highest": self._handle_highest_query,
+            "database_query_comparative_lowest": self._handle_lowest_query,
+            "database_query_comparative_middle": self._handle_middle_query,
             "database_query_specific_id": self._handle_specific_id_query,
-            "database_query_sensitive": self._handle_sensitive_query,
-            "database_query_comparative": self._handle_comparative_query
+            "database_query_sensitive": self._handle_sensitive_query
         }
 
-        # Get the appropriate handler (or default to generic)
-        handler = handlers.get(intent, self._handle_generic_query)
+        sub_intent = intent_data.get('sub_intent')
+        if sub_intent and sub_intent in handlers:
+            self.logger.info(f"Using sub-intent handler: {sub_intent}")
+            handler = handlers[sub_intent]
+        else:
+            handler = handlers.get(intent, self._handle_generic_query)
 
-        # Pass both the query and semantics to the handler
-        return handler(nl_query, semantics, sub_intent)
+        return handler(nl_query)
 
     def _analyze_query_semantics(self, nl_query):
-        """
-        Analyze query semantics to understand what the user is asking for
-        """
         nl_query_lower = nl_query.lower()
 
         semantics = {
@@ -1101,7 +863,6 @@ class QueryProcessor:
             "constraints": []
         }
 
-        # Detect operations
         if any(word in nl_query_lower for word in ["highest", "max", "maximum", "greatest", "largest"]):
             semantics["operation"] = "max"
         elif any(word in nl_query_lower for word in ["lowest", "min", "minimum", "smallest", "least"]):
@@ -1114,7 +875,6 @@ class QueryProcessor:
             else:
                 semantics["operation"] = "sort_asc"
 
-        # Detect aggregations
         if "count" in nl_query_lower or "number of" in nl_query_lower:
             semantics["aggregation"] = "count"
             if "transaction" in nl_query_lower:
@@ -1122,7 +882,6 @@ class QueryProcessor:
             elif "trade" in nl_query_lower:
                 semantics["attribute"] = "trade_count"
 
-        # Detect constraints
         constraint_patterns = [
             (r'where\s+(\w+)\s+is\s+(\w+)', "{} = '{}'"),
             (r'with\s+(\w+)\s+(\w+)', "{} = '{}'"),
@@ -1137,10 +896,8 @@ class QueryProcessor:
         return semantics
 
     def _extract_primary_entity(self, nl_query):
-        """Extract the main entity type from the query"""
         nl_query_lower = nl_query.lower()
 
-        # Try multi-word entity variations first (to avoid partial matches)
         multi_word_entities = sorted([entity for entity in self.entity_mapping if ' ' in entity],
                                      key=len, reverse=True)
 
@@ -1148,12 +905,10 @@ class QueryProcessor:
             if entity in nl_query_lower:
                 return self.entity_mapping[entity]
 
-        # Try single-word entity variations
         for entity, table in self.entity_mapping.items():
             if ' ' not in entity and re.search(r'\b' + re.escape(entity) + r'\b', nl_query_lower):
                 return table
 
-        # Default fallback detection
         if any(re.search(r'\b' + word + r'\b', nl_query_lower) for word in ["market", "exchange"]):
             return "markets"
         elif any(re.search(r'\b' + word + r'\b', nl_query_lower) for word in ["trader", "client", "customer"]):
@@ -1177,10 +932,8 @@ class QueryProcessor:
         return None
 
     def _extract_attribute(self, nl_query):
-        """Extract the attribute of interest from the query"""
         nl_query_lower = nl_query.lower()
 
-        # Common attribute patterns
         attribute_patterns = {
             r'by\s+(\w+)': 1,
             r'with\s+(?:highest|lowest|median)\s+(\w+)': 1,
@@ -1198,12 +951,10 @@ class QueryProcessor:
                 if mapped_attribute:
                     return mapped_attribute
 
-        # Direct attribute detection
         for attribute in self.attribute_mapping:
             if attribute in nl_query_lower:
                 return attribute
 
-        # Specialized attribute detection for common queries
         if "account balance" in nl_query_lower:
             return "balance"
         if "transaction count" in nl_query_lower:
@@ -1214,7 +965,6 @@ class QueryProcessor:
         return None
 
     def _map_attribute_to_field(self, attribute):
-        """Map a natural language attribute to a standardized attribute name"""
         attribute_map = {
             "price": "price",
             "cost": "price",
@@ -1236,8 +986,6 @@ class QueryProcessor:
         return attribute_map.get(attribute, attribute)
 
     def _map_constraint_field_to_column(self, field, tables):
-        """Map a constraint field from natural language to a database column"""
-        # Try direct mapping first
         direct_mappings = {
             "type": {
                 "assets": "assets.asset_type",
@@ -1266,19 +1014,16 @@ class QueryProcessor:
             }
         }
 
-        # Check for direct mappings
         if field in direct_mappings:
             for table in tables:
                 if table in direct_mappings[field]:
                     return direct_mappings[field][table]
 
-        # Check for field in format "table.column"
         if "." in field:
             table, column = field.split(".")
             if table in tables:
                 return f"{table}.{column}"
 
-        # Try to find the field in any of the tables
         for table in tables:
             if table in self.table_info:
                 for column in self.table_info[table]:
@@ -1288,21 +1033,17 @@ class QueryProcessor:
         return None
 
     def _build_join_path(self, table1, table2, visited=None):
-        """Find a path of JOINs between two tables that aren't directly related"""
         if visited is None:
             visited = set()
 
         visited.add(table1)
 
-        # Direct relationship
         if (table1, table2) in self.table_relationships:
             return [(table1, table2)]
 
-        # Check for predefined indirect relationship
         if (table1, table2) in self.indirect_relationships:
             return self.indirect_relationships[(table1, table2)]["path"]
 
-        # Try to find a path through other tables
         for (t1, t2) in self.table_relationships:
             if t1 == table1 and t2 not in visited:
                 path = self._build_join_path(t2, table2, visited.copy())
@@ -1312,9 +1053,7 @@ class QueryProcessor:
         return None
 
     def _build_sql_query(self, semantics, intent=None, sub_intent=None):
-        """
-        Build an SQL query based on semantic analysis
-        """
+
         entity_type = semantics["entity_type"]
         attribute = semantics["attribute"]
         operation = semantics["operation"]
@@ -1323,45 +1062,36 @@ class QueryProcessor:
             self.logger.warning("No entity type identified. Using generic query.")
             return None
 
-        # Determine required tables
         tables = []
 
-        # Start with the primary entity table
         tables.append(entity_type)
 
-        # Add tables required by the attribute
         if attribute and attribute in self.attribute_mapping:
             attr_info = self.attribute_mapping[attribute]
             for table in attr_info.get("tables", []):
                 if table != entity_type and table not in tables:
                     tables.append(table)
 
-        # Build SELECT clause
         select_parts = []
 
-        # Add identification fields from primary entity
         if entity_type in self.essential_fields:
-            for field in self.essential_fields[entity_type][:2]:  # Take first two essential fields
+            for field in self.essential_fields[entity_type][:2]:
                 select_parts.append(f"{entity_type}.{field}")
 
-        # Add attribute fields
         if attribute and attribute in self.attribute_mapping:
             attr_info = self.attribute_mapping[attribute]
 
-            # Handle aggregation
             if attr_info.get("aggregate", False):
                 agg_function = attr_info.get("function", "COUNT")
                 field = attr_info.get("fields", ["*"])[0]
                 select_parts.append(f"{agg_function}({field}) as {attribute}")
             else:
-                # Add the first relevant field for this attribute
                 for field in attr_info.get("fields", []):
                     table_name = field.split('.')[0]
                     if table_name in tables:
                         select_parts.append(field)
                         break
 
-        # If no fields were added, use essential fields from all tables
         if not select_parts:
             for table in tables:
                 if table in self.essential_fields:
@@ -1373,42 +1103,34 @@ class QueryProcessor:
         if len(tables) == 1:
             from_clause = f"FROM {tables[0]}"
         else:
-            # Build FROM clause with explicit JOINs
             main_table = tables[0]
             from_clause = f"FROM {main_table}"
 
-            # Add JOIN clauses for other tables
             for i in range(1, len(tables)):
                 secondary_table = tables[i]
                 join_condition = self._get_join_condition(main_table, secondary_table)
                 if join_condition:
                     from_clause += f" JOIN {secondary_table} ON {join_condition}"
                 else:
-                    # Try to find an indirect join path
                     join_path = self._build_join_path(main_table, secondary_table)
                     if join_path:
-                        # Add intermediate tables if needed
                         for path_table1, path_table2 in join_path:
                             if path_table1 != main_table and path_table1 not in tables[:i]:
                                 from_clause += f" JOIN {path_table1} ON {self._get_join_condition(main_table, path_table1)}"
                             if path_table2 not in tables[:i]:
                                 from_clause += f" JOIN {path_table2} ON {self._get_join_condition(path_table1, path_table2)}"
 
-        # Build JOIN clauses
         join_clauses = []
 
-        # Add necessary joins between tables
         for i in range(len(tables)):
             for j in range(i + 1, len(tables)):
                 table1, table2 = tables[i], tables[j]
 
-                # Direct relationship
                 if (table1, table2) in self.table_relationships:
                     join_info = self.table_relationships[(table1, table2)]
                     join_condition = join_info["join"]
                     join_clauses.append(join_condition)
                 else:
-                    # Try to find an indirect join path
                     join_path = self._build_join_path(table1, table2)
                     if join_path:
                         for (path_table1, path_table2) in join_path:
@@ -1416,24 +1138,19 @@ class QueryProcessor:
                             if join_condition not in join_clauses:
                                 join_clauses.append(join_condition)
 
-        # Build WHERE clause with constraints
         where_conditions = []
 
         for field, value in semantics.get("constraints", []):
-            # Map the field to a database column if possible
             mapped_field = self._map_constraint_field_to_column(field, tables)
             if mapped_field:
                 where_conditions.append(f"{mapped_field} = '{value}'")
 
-        # Build GROUP BY clause if needed
         group_by_clause = ""
         if attribute and attribute in self.attribute_mapping:
             attr_info = self.attribute_mapping[attribute]
             if attr_info.get("aggregate", False):
-                # Group by the primary entity's ID for accurate aggregation
                 group_by_clause = f"GROUP BY {entity_type}.{entity_type[:-1]}_id"
 
-        # Build ORDER BY clause based on intent and operation
         order_by_clause = ""
 
         if operation in ["max", "sort_desc"] or sub_intent in ["database_query_comparative_highest",
@@ -1459,21 +1176,16 @@ class QueryProcessor:
                             order_by_clause = f"ORDER BY {field} {direction}"
                             break
 
-        # Build LIMIT and OFFSET clauses
         limit_clause = "LIMIT 10"
         offset_clause = ""
 
-        # For "middle" queries, use OFFSET to get middle values
         if sub_intent == "database_query_comparative_middle" or operation == "avg":
-            # Get the count and calculate middle offset
             if tables:
                 main_table = tables[0]
                 offset_clause = f"OFFSET (SELECT COUNT(*)/2 - 5 FROM {main_table})"
 
-        # Build the final SQL query
         sql_parts = [select_clause, from_clause]
 
-        # Build WHERE with JOINs and constraints
         if join_clauses or where_conditions:
             combined_conditions = join_clauses + where_conditions
             sql_parts.append(f"WHERE {' AND '.join(combined_conditions)}")
@@ -1496,9 +1208,7 @@ class QueryProcessor:
         return sql
 
     def _extract_tables(self, nl_query):
-        """
-        Extract mentioned tables from natural language query
-        """
+
         tables = []
         nl_query = nl_query.lower()
 
@@ -1537,7 +1247,6 @@ class QueryProcessor:
         return list(set(tables))
 
     def _extract_fields(self, nl_query, tables):
-        """Extract relevant fields based on the query and tables"""
         fields = []
 
         if "*" in nl_query or "all fields" in nl_query.lower():
@@ -1589,7 +1298,6 @@ class QueryProcessor:
         return fields
 
     def _extract_filter_conditions(self, nl_query, tables):
-        """Extract filter conditions from a query"""
         nl_query = nl_query.lower()
         conditions = []
 
@@ -1634,10 +1342,8 @@ class QueryProcessor:
         return conditions
 
     def _extract_sort_field(self, nl_query, tables):
-        """Extract the field to sort by from the query"""
         nl_query = nl_query.lower()
 
-        # Direct pattern matching for common patterns
         if "price" in nl_query and "descending" in nl_query:
             if "price_history" in tables:
                 return "price_history.close_price"
@@ -1652,7 +1358,6 @@ class QueryProcessor:
             elif "orders" in tables:
                 return "orders.order_date"
 
-        # Continue with original logic
         sort_indicators = ["sort by", "ordered by", "arranged by", "in order of"]
         sort_field = None
 
@@ -1702,9 +1407,7 @@ class QueryProcessor:
         return None
 
     def _extract_superlative_field(self, nl_query, tables, superlative_type):
-        """
-        Extract the field to sort/compare by for superlative queries
-        """
+
         nl_query = nl_query.lower()
 
         superlative_indicators = {
@@ -1757,7 +1460,6 @@ class QueryProcessor:
         return None
 
     def _extract_number_from_query(self, nl_query):
-        """Extract a numeric value from a query (for limits, etc.)"""
         number_patterns = [
             r'top\s+(\d+)',
             r'first\s+(\d+)',
@@ -1774,12 +1476,11 @@ class QueryProcessor:
                 except ValueError:
                     pass
 
-        # Look for standalone numbers
         all_numbers = re.findall(r'\b\d+\b', nl_query)
         for num in all_numbers:
             try:
                 value = int(num)
-                if 1 <= value <= 1000:  # Reasonable limit range
+                if 1 <= value <= 1000:
                     return value
             except ValueError:
                 pass
@@ -1787,47 +1488,13 @@ class QueryProcessor:
         return None
 
     def _get_join_condition(self, table1, table2):
-        """Get join condition between two tables"""
-        join_mappings = {
-            ("traders", "trades"): "traders.trader_id = trades.trader_id",
-            ("trades", "traders"): "trades.trader_id = traders.trader_id",
-
-            ("assets", "trades"): "assets.asset_id = trades.asset_id",
-            ("trades", "assets"): "trades.asset_id = assets.asset_id",
-
-            ("markets", "trades"): "markets.market_id = trades.market_id",
-            ("trades", "markets"): "trades.market_id = markets.market_id",
-
-            ("brokers", "assets"): "brokers.broker_id = assets.broker_id",
-            ("assets", "brokers"): "assets.broker_id = brokers.broker_id",
-
-            ("traders", "accounts"): "traders.trader_id = accounts.trader_id",
-            ("accounts", "traders"): "accounts.trader_id = traders.trader_id",
-
-            ("accounts", "transactions"): "accounts.account_id = transactions.account_id",
-            ("transactions", "accounts"): "transactions.account_id = accounts.account_id",
-
-            ("trades", "orders"): "trades.trade_id = orders.trade_id",
-            ("orders", "trades"): "orders.trade_id = trades.trade_id",
-
-            ("orders", "order_status"): "orders.order_id = order_status.order_id",
-            ("order_status", "orders"): "order_status.order_id = orders.order_id",
-
-            ("assets", "price_history"): "assets.asset_id = price_history.asset_id",
-            ("price_history", "assets"): "price_history.asset_id = assets.asset_id",
-
-            # Add these for better join support
-            ("traders",
-             "transactions"): "traders.trader_id = accounts.trader_id AND accounts.account_id = transactions.account_id",
-            ("transactions",
-             "traders"): "transactions.account_id = accounts.account_id AND accounts.trader_id = traders.trader_id",
-        }
-
-        table_pair = (table1, table2)
-        return join_mappings.get(table_pair)
+        direct_path = self._find_join_path(table1, table2)
+        if direct_path and len(direct_path) == 1:
+            key = direct_path[0]["key"]
+            return f"{table1}.{key} = {table2}.{key}"
+        return None
 
     def _execute_and_process_query(self, sql):
-        """Execute the SQL query and process the results"""
         try:
             result = self.db_connector.execute_query(sql)
 
@@ -1851,22 +1518,8 @@ class QueryProcessor:
             return None
 
     def secure_process_query(self, nl_query):
-        """
-        Process a query without relying on intent classification
-        This is used as a fallback when intent classification fails
-        """
         try:
             self.logger.info(f"Direct query processing for: {nl_query}")
-
-            # Try the new semantic analysis approach first
-            semantics = self._analyze_query_semantics(nl_query)
-            sql = self._build_sql_query(semantics)
-
-            if sql:
-                self.logger.info(f"Generated SQL using semantic analysis: {sql}")
-                return self._execute_and_process_query(sql)
-
-            # If the semantic analysis fails, fall back to the old method
             tables = self._extract_tables(nl_query)
 
             if not tables:
@@ -1876,26 +1529,16 @@ class QueryProcessor:
             fields = self._extract_fields(nl_query, tables)
 
             select_clause = f"SELECT {', '.join(fields)}"
-            from_clause = f"FROM {', '.join(tables)}"
+            from_clause = f"FROM {tables[0]}"
 
-            conditions = []
-            if len(tables) > 1:
-                for i, table1 in enumerate(tables):
-                    for table2 in tables[i + 1:]:
-                        join_condition = self._get_join_condition(table1, table2)
-                        if join_condition:
-                            conditions.append(join_condition)
-
-            where_clause = ""
-            if conditions:
-                where_clause = f"WHERE {' AND '.join(conditions)}"
+            join_clauses = self._generate_joins_for_tables(tables)
+            join_clause = " JOIN ".join(join_clauses)
+            if join_clause:
+                from_clause = f"{from_clause} JOIN {join_clause}"
 
             limit_clause = "LIMIT 100"
 
-            sql_parts = [select_clause, from_clause]
-            if where_clause:
-                sql_parts.append(where_clause)
-            sql_parts.append(limit_clause)
+            sql_parts = [select_clause, from_clause, limit_clause]
 
             sql = " ".join(sql_parts)
             self.logger.info(f"Generated SQL from natural language: {sql}")
@@ -1906,7 +1549,6 @@ class QueryProcessor:
             return None
 
     def natural_language_to_sql(self, nl_query):
-        """Convert natural language to SQL without executing it"""
         tables = self._extract_tables(nl_query)
 
         if not tables:

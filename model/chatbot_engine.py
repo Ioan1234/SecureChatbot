@@ -16,13 +16,9 @@ class ChatbotEngine:
         self.logger.info("Intent merger initialized")
 
     def process_user_input(self, user_input):
-        """
-        Process user input and generate a response
-        """
         try:
             self.current_query = user_input
 
-            # Classify the intent using the merger
             intent_result = None
             try:
                 intent_result = self.intent_merger.classify_intent(user_input)
@@ -30,7 +26,6 @@ class ChatbotEngine:
             except Exception as e:
                 self.logger.error(f"Error classifying intent: {e}")
 
-            # If intent classification failed, use direct query processing
             if not intent_result:
                 self.logger.info("Using direct query mode (intent classification unavailable)")
                 query_result = self.query_processor.secure_process_query(user_input)
@@ -40,7 +35,6 @@ class ChatbotEngine:
                 else:
                     return {"response": "I couldn't find any information for your query."}
 
-            # Get the main intent, confidence, and any sub-intent
             intent = intent_result['intent']
             confidence = intent_result['confidence']
             sub_intent = intent_result.get('sub_intent')
@@ -48,19 +42,12 @@ class ChatbotEngine:
             if sub_intent:
                 self.logger.info(f"Sub-intent: {sub_intent}, Parent intent: {intent}")
 
-            # For database queries with good confidence, use the semantic processor
             if intent.startswith("database_query") and confidence > 0.6:
-                # Analyze query semantics
-                semantics = self.query_processor._analyze_query_semantics(user_input)
-                self.logger.info(f"Query semantics: {semantics}")
 
-                # Process the query using the enhanced query processor
                 query_result = self.query_processor.process_query(user_input, intent_result)
 
-                # Generate a response from the query result
                 return self.generate_response(intent, query_result, sub_intent)
 
-            # Handle special intents
             elif intent == "help":
                 return {
                     "response": "I can help you query the financial database securely. Try asking questions like:\n" +
@@ -78,7 +65,6 @@ class ChatbotEngine:
             elif intent == "goodbye":
                 return {"response": "Goodbye! Feel free to come back if you have more questions."}
 
-            # Fall back to direct query processing if intent doesn't match known types
             else:
                 query_result = self.query_processor.secure_process_query(user_input)
 
@@ -92,9 +78,7 @@ class ChatbotEngine:
             return {"response": "An error occurred while processing your request."}
 
     def generate_response(self, intent, query_result, sub_intent=None):
-        """
-        Generate a human-friendly response from query results
-        """
+
         if not query_result:
             return {"response": "I couldn't find any information for your query."}
 
