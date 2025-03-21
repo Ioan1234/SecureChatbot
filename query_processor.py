@@ -639,13 +639,9 @@ class QueryProcessor:
         total_count = count_result[0]['count']
 
         requested_limit = self._extract_number_from_query(nl_query)
-        limit = requested_limit or 3
+        limit = requested_limit or 10
 
-        if total_count < limit * 2:
-            limit = max(1, total_count // 3)
-            middle_offset = max(0, (total_count // 2) - (limit // 2))
-        else:
-            middle_offset = max(0, (total_count // 2) - (limit // 2))
+        middle_offset = max(0, (total_count // 2) - (limit // 2))
 
         order_by_clause = f"ORDER BY {sort_field}"
         limit_clause = f"LIMIT {middle_offset}, {limit}"
