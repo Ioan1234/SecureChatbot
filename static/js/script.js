@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const userInput = document.getElementById('user-input');
     const sendButton = document.getElementById('send-button');
     const clearButton = document.getElementById('clear-chat');
+    const sqlModeButton = document.getElementById('sql-mode');
 
     const userMessageTemplate = document.getElementById('user-message-template');
     const botMessageTemplate = document.getElementById('bot-message-template');
@@ -21,6 +22,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const typingIndicator = showTypingIndicator();
 
+        if (document.querySelector('.chat-input').classList.contains('sql-mode')) {
+            chatMessages.removeChild(typingIndicator);
+            executeSqlQuery(message);
+            return;
+        }
+
         fetch('/api/chat', {
             method: 'POST',
             headers: {
@@ -31,12 +38,10 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             chatMessages.removeChild(typingIndicator);
-
             addBotResponse(data);
         })
         .catch(error => {
             chatMessages.removeChild(typingIndicator);
-
             addBotErrorMessage("Sorry, I couldn't process your request. Please try again.");
             console.error('Error:', error);
         });
@@ -51,46 +56,135 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function addBotResponse(data) {
-    const messageElement = botMessageTemplate.content.cloneNode(true);
-    const messageContent = messageElement.querySelector('.message-content');
+        const messageElement = botMessageTemplate.content.cloneNode(true);
+        const messageContent = messageElement.querySelector('.message-content');
 
-    if (data.response) {
-        const responseText = document.createElement('p');
-        responseText.textContent = data.response;
-        messageContent.appendChild(responseText);
-    }
-
-    if (data.entity_data && Array.isArray(data.entity_data)) {
-        data.entity_data.forEach(tableInfo => {
-            if (tableInfo.table_name) {
-                const tableHeader = document.createElement('h4');
-                tableHeader.textContent = tableInfo.table_name;
-                messageContent.appendChild(tableHeader);
-            }
-
-            if (tableInfo.rows && tableInfo.rows.length > 0) {
-                addDataTable(messageContent, tableInfo.rows);
-            }
-        });
-    }
-    else if (data.data) {
-        if (Array.isArray(data.data)) {
-            addDataTable(messageContent, data.data);
-        } else {
-            addDataTable(messageContent, [data.data]);
+        if (data.response) {
+            const responseText = document.createElement('p');
+            responseText.textContent = data.response;
+            messageContent.appendChild(responseText);
         }
+
+        if (data.entity_data && Array.isArray(data.entity_data)) {
+            data.entity_data.forEach(tableInfo => {
+                if (tableInfo.table_name) {
+                    const tableHeader = document.createElement('h4');
+                    tableHeader.textContent = tableInfo.table_name;
+                    messageContent.appendChild(tableHeader);
+                }
+
+                if (tableInfo.rows && tableInfo.rows.length > 0) {
+                    addDataTable(messageContent, tableInfo.rows);
+                }
+            });
+        }
+        else if (data.data) {
+            if (Array.isArray(data.data)) {
+                addDataTable(messageContent, data.data);
+            } else {
+                addDataTable(messageContent, [data.data]);
+            }
+        }
+
+        if (data.data || data.entity_data) {
+            const exportButton = document.createElement('button');
+            exportButton.className = 'export-data-btn';
+            exportButton.innerHTML = '<i class="fas fa-download"></i> Export as CSV';
+            exportButton.addEventListener('click', () => {
+                exportDataToCSV(data.data || getDataFromEntityData(data.entity_data));
+            });
+            messageContent.appendChild(exportButton);
+        }
+
+        if (data.suggestions) {
+            addSuggestions(messageContent, data.suggestions);
+        } else if (data.data && Array.isArray(data.data) && data.data.length > 0) {
+            // Generate context-aware suggestions
+            const suggestions = generateSuggestions(data.data);
+            if (suggestions.length > 0) {
+                addSuggestions(messageContent, suggestions);
+            }
+        }
+
+        messageElement.querySelector('.message-time').textContent = getCurrentTime();
+
+        chatMessages.appendChild(messageElement);
+        scrollToBottom();
     }
 
-    messageElement.querySelector('.message-time').textContent = getCurrentTime();
+    function addSuggestions(container, suggestions) {
+        const suggestionList = document.createElement('ul');
+        suggestionList.className = 'suggestion-list';
 
-    chatMessages.appendChild(messageElement);
-    scrollToBottom();
-}
+        suggestions.forEach(suggestion => {
+            const li = document.createElement('li');
+            const button = document.createElement('button');
+            button.className = 'suggestion-btn';
+            button.textContent = suggestion;
+            button.addEventListener('click', () => {
+                userInput.value = suggestion;
+                sendMessage();
+            });
+            li.appendChild(button);
+            suggestionList.appendChild(li);
+        });
+
+        container.appendChild(suggestionList);
+    }
+
+    function generateSuggestions(data) {
+        const suggestions = [];
+
+        if (data.length === 0) return suggestions;
+
+        if ('trader_id' in data[0] || 'name' in data[0] && 'registration_date' in data[0]) {
+            suggestions.push("Show me traders with highest account balance");
+            suggestions.push("Count how many traders we have");
+        }
+
+        if ('asset_id' in data[0] || 'asset_type' in data[0]) {
+            suggestions.push("Show me ETF assets");
+            suggestions.push("Get the average price of assets");
+        }
+
+        if ('trade_id' in data[0] || 'trade_date' in data[0]) {
+            suggestions.push("Show trades from last week");
+            suggestions.push("Show me completed orders");
+        }
+
+        if ('transaction_id' in data[0] || 'transaction_date' in data[0]) {
+            suggestions.push("List transactions over $10,000");
+        }
+
+        if (suggestions.length < 2) {
+            suggestions.push("List all traders");
+            suggestions.push("Show me recent trades");
+        }
+
+        return suggestions.slice(0, 3);
+    }
+
+    function getDataFromEntityData(entityData) {
+        let allRows = [];
+        if (entityData && Array.isArray(entityData)) {
+            entityData.forEach(tableInfo => {
+                if (tableInfo.rows && tableInfo.rows.length > 0) {
+                    allRows = allRows.concat(tableInfo.rows);
+                }
+            });
+        }
+        return allRows;
+    }
 
     function addBotErrorMessage(errorMessage) {
         const messageElement = botMessageTemplate.content.cloneNode(true);
-        messageElement.querySelector('.message-content').textContent = errorMessage;
-        messageElement.querySelector('.message-content').style.color = '#e74c3c';
+        const content = messageElement.querySelector('.message-content');
+
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = errorMessage;
+        content.appendChild(errorDiv);
+
         messageElement.querySelector('.message-time').textContent = getCurrentTime();
         chatMessages.appendChild(messageElement);
         scrollToBottom();
@@ -134,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     encryptedSpan.textContent = '[ENCRYPTED]';
                     td.appendChild(encryptedSpan);
                 } else {
-                    td.textContent = value;
+                    td.textContent = value !== null && value !== undefined ? value : '';
                 }
 
                 row.appendChild(td);
@@ -172,95 +266,169 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function clearChat() {
-        while (chatMessages.children.length > 1) {
-            chatMessages.removeChild(chatMessages.lastChild);
+        const welcomeMessage = chatMessages.firstElementChild;
+
+        while (chatMessages.firstChild) {
+            chatMessages.removeChild(chatMessages.firstChild);
         }
+
+        if (welcomeMessage) {
+            chatMessages.appendChild(welcomeMessage);
+        }
+
         userInput.focus();
     }
 
-    sendButton.addEventListener('click', sendMessage);
+    function toggleSqlMode() {
+        const inputArea = document.querySelector('.chat-input');
 
+        if (inputArea.classList.contains('sql-mode')) {
+            inputArea.classList.remove('sql-mode');
+            userInput.placeholder = "Type a message...";
+            sqlModeButton.classList.remove('active');
+        } else {
+            inputArea.classList.add('sql-mode');
+            userInput.placeholder = "Enter SQL query (SELECT only)...";
+            sqlModeButton.classList.add('active');
+
+            const sqlMessage = botMessageTemplate.content.cloneNode(true);
+            sqlMessage.querySelector('.message-content').innerHTML = `
+                <p>🔍 <strong>SQL Mode activated</strong></p>
+                <p>You can now enter SQL queries directly. For safety reasons, only SELECT queries are allowed.</p>
+                <p class="sql-query">SELECT * FROM traders LIMIT 10</p>
+            `;
+            sqlMessage.querySelector('.message-time').textContent = getCurrentTime();
+            chatMessages.appendChild(sqlMessage);
+            scrollToBottom();
+        }
+    }
+
+    function executeSqlQuery(sql) {
+        const typingIndicator = showTypingIndicator();
+
+        fetch('/api/execute_sql', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ sql })
+        })
+        .then(response => response.json())
+        .then(data => {
+            chatMessages.removeChild(typingIndicator);
+
+            const message = botMessageTemplate.content.cloneNode(true);
+            const content = message.querySelector('.message-content');
+
+            if (data.error) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = data.error;
+                content.appendChild(errorDiv);
+            } else {
+                content.innerHTML = `
+                    <p>📊 <strong>SQL Results</strong></p>
+                    <div class="sql-query">${sql}</div>
+                `;
+
+                if (data.results && data.results.length > 0) {
+                    addDataTable(content, data.results);
+
+                    const rowInfo = document.createElement('p');
+                    rowInfo.style.fontSize = '12px';
+                    rowInfo.style.color = '#666';
+                    rowInfo.style.fontStyle = 'italic';
+                    rowInfo.textContent = `${data.results.length} rows returned`;
+                    content.appendChild(rowInfo);
+
+                    const exportButton = document.createElement('button');
+                    exportButton.className = 'export-data-btn';
+                    exportButton.innerHTML = '<i class="fas fa-download"></i> Export Results';
+                    exportButton.addEventListener('click', () => {
+                        exportDataToCSV(data.results, 'sql_results');
+                    });
+                    content.appendChild(exportButton);
+                } else {
+                    content.innerHTML += '<p>No results returned</p>';
+                }
+            }
+
+            message.querySelector('.message-time').textContent = getCurrentTime();
+            chatMessages.appendChild(message);
+            scrollToBottom();
+        })
+        .catch(error => {
+            chatMessages.removeChild(typingIndicator);
+            console.error('SQL error:', error);
+            addBotErrorMessage("Error executing SQL query.");
+        });
+    }
+
+    function exportDataToCSV(data, filename = 'export') {
+        if (!data || !data.length) {
+            alert('No data to export');
+            return;
+        }
+
+        const headers = Object.keys(data[0]);
+        const csvContent = [
+            headers.join(','),
+            ...data.map(row => {
+                return headers.map(header => {
+                    const value = row[header];
+
+                    if (value === null || value === undefined) {
+                        return '';
+                    }
+
+                    if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
+                        return `"${value.replace(/"/g, '""')}"`;
+                    }
+
+                    return value;
+                }).join(',');
+            })
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `${filename}_${getFormattedDate()}.csv`);
+        link.style.display = 'none';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function getFormattedDate() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+
+        return `${year}${month}${day}_${hours}${minutes}`;
+    }
+
+    document.querySelectorAll('.suggestion-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            userInput.value = this.textContent;
+            sendMessage();
+        });
+    });
+
+    sendButton.addEventListener('click', sendMessage);
     userInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             sendMessage();
         }
     });
-
     clearButton.addEventListener('click', clearChat);
+    sqlModeButton.addEventListener('click', toggleSqlMode);
 
-    const exampleQueries = [
-        {
-            query: "Show me markets",
-            description: "Basic view with only essential fields"
-        },
-        {
-            query: "Show me all details about markets",
-            description: "Detailed view with all available fields"
-        },
-        {
-            query: "Show me brokers with their contact details",
-            description: "Query with sensitive encrypted fields"
-        },
-        {
-            query: "Show me the highest priced assets",
-            description: "Comparative query with ranking"
-        },
-        {
-            query: "Show me recent trades in New York markets",
-            description: "Complex query with filtering and relationships"
-        }
-    ];
-
-    function createExampleQuestions() {
-        const exampleContainer = document.createElement('div');
-        exampleContainer.className = 'message bot';
-
-        const exampleContent = document.createElement('div');
-        exampleContent.className = 'message-content';
-        exampleContent.innerHTML = '<p>Try one of these example queries:</p>';
-
-        const questionsList = document.createElement('div');
-        questionsList.className = 'example-questions';
-
-        exampleQueries.forEach(example => {
-            const questionButton = document.createElement('button');
-            questionButton.className = 'example-question-btn';
-
-            const queryContainer = document.createElement('div');
-
-            const queryText = document.createElement('div');
-            queryText.className = 'query-text';
-            queryText.textContent = example.query;
-            queryContainer.appendChild(queryText);
-
-            const queryDescription = document.createElement('div');
-            queryDescription.className = 'query-description';
-            queryDescription.textContent = example.description;
-            queryContainer.appendChild(queryDescription);
-
-            questionButton.appendChild(queryContainer);
-
-            questionButton.addEventListener('click', () => {
-                userInput.value = example.query;
-                sendMessage();
-            });
-
-            questionsList.appendChild(questionButton);
-        });
-
-        exampleContent.appendChild(questionsList);
-        exampleContainer.appendChild(exampleContent);
-
-        const timeElement = document.createElement('div');
-        timeElement.className = 'message-time';
-        timeElement.textContent = getCurrentTime();
-        exampleContainer.appendChild(timeElement);
-
-        chatMessages.appendChild(exampleContainer);
-    }
-
-    setTimeout(() => {
-        createExampleQuestions();
-        scrollToBottom();
-    }, 1000);
+    window.sendMessage = sendMessage;
 });

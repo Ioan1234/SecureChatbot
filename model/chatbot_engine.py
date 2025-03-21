@@ -1,7 +1,6 @@
 import logging
-import json
 import re
-from quick_intent_merger import QuickIntentMerger
+from datetime import datetime, timedelta
 
 
 class ChatbotEngine:
@@ -11,83 +10,840 @@ class ChatbotEngine:
         self.query_processor = query_processor
         self.current_query = None
 
-        self.intent_merger = QuickIntentMerger(self.intent_classifier)
-        self.logger.info("Intent merger initialized")
+        self.table_display_names = {
+            "traders": "Traders",
+            "assets": "Assets",
+            "markets": "Markets",
+            "trades": "Trades",
+            "orders": "Orders",
+            "accounts": "Accounts",
+            "transactions": "Transactions",
+            "brokers": "Brokers",
+            "price_history": "Price History",
+            "order_status": "Order Status"
+        }
 
     def process_user_input(self, user_input):
+
         try:
             self.current_query = user_input
+            self.logger.info(f"Processing user input: {user_input}")
 
-            intent_result = None
-            try:
-                intent_result = self.intent_merger.classify_intent(user_input)
-                self.logger.info(f"Classified intent: {intent_result}")
-            except Exception as e:
-                self.logger.error(f"Error classifying intent: {e}")
+            specialized_result = self._check_specialized_queries(user_input)
+            if specialized_result:
+                return specialized_result
 
-            entity_detection_keywords = ["about", "details", "information on", "tell me about",
-                                         "show me", "what is", "who is", "find", "lookup"]
-            is_entity_query = any(keyword in user_input.lower() for keyword in entity_detection_keywords)
+            self.logger.info("No specialized handler, using intent classifier")
+            intent_data = self.intent_classifier.classify_intent(user_input)
+            self.logger.info(f"Classified intent: {intent_data}")
 
-            if is_entity_query:
-                try:
-                    entity_result = self.query_processor.process_entity_query(user_input)
-                    if entity_result:
-                        return self.generate_entity_response(entity_result)
-                except Exception as e:
-                    self.logger.error(f"Error processing entity query: {e}")
+            if not intent_data or 'intent' not in intent_data:
+                return {"response": "I couldn't understand your query. Could you rephrase it?"}
 
-            if not intent_result:
-                self.logger.info("Using direct query mode (intent classification unavailable)")
-                query_result = self.query_processor.secure_process_query(user_input)
+            intent = intent_data.get('intent')
+            confidence = intent_data.get('confidence', 0.0)
 
-                if query_result:
-                    return self.generate_response("database_query_list", query_result)
-                else:
-                    return {"response": "I couldn't find any information for your query."}
+            if "trader" in user_input.lower() and "balance" in user_input.lower():
+                return self._handle_highest_balance_query()
 
-            intent = intent_result['intent']
-            confidence = intent_result['confidence']
-            sub_intent = intent_result.get('sub_intent')
+            if intent == "database_query_list" or intent == "database_query_detailed":
+                result = self._execute_list_query(user_input)
+                return self.generate_response(intent, result, intent_data.get('sub_intent'))
 
-            if sub_intent:
-                self.logger.info(f"Sub-intent: {sub_intent}, Parent intent: {intent}")
+            elif intent == "database_query_count":
+                return self._handle_count_query(user_input)
 
-            if intent.startswith("database_query") and confidence > 0.6:
-                query_result = self.query_processor.process_query(user_input, intent_result)
-                return self.generate_response(intent, query_result, sub_intent)
-            elif intent == "help":
-                return {
-                    "response": "I can help you query the financial database securely. Try asking questions like:\n" +
-                                "- What markets are available?\n" +
-                                "- Show me all traders\n" +
-                                "- Tell me about BrokerOne\n" +
-                                "- Find details about Stock A\n" +
-                                "- Which assets are stocks?\n" +
-                                "- Find completed orders\n" +
-                                "- Show recent trades\n" +
-                                "- List assets with highest price\n" +
-                                "- Sort trades by date descending\n" +
-                                "- Show me the average price of assets"
-                }
-            elif intent == "greeting":
-                return {"response": "Hello! I'm your secure financial database assistant. How can I help you today?"}
-            elif intent == "goodbye":
-                return {"response": "Goodbye! Feel free to come back if you have more questions."}
+            elif intent == "database_query_comparative":
+                sub_intent = intent_data.get('sub_intent')
+                if sub_intent == "database_query_comparative_highest":
+                    if "balance" in user_input.lower():
+                        return self._handle_highest_balance_query()
+                    elif "price" in user_input.lower():
+                        return self._handle_highest_price_query()
+                return self._execute_comparative_query(user_input, sub_intent)
+
             else:
-                query_result = self.query_processor.secure_process_query(user_input)
-
-                if query_result:
-                    return self.generate_response("database_query_list", query_result)
-                else:
-                    return {"response": "I'm not sure I understand. Could you rephrase your question?"}
+                result = self.query_processor.process_query(user_input, intent_data)
+                return self.generate_response(intent, result)
 
         except Exception as e:
             self.logger.error(f"Error processing user input: {e}")
-            return {"response": "An error occurred while processing your request."}
+            return {"response": f"An error occurred while processing your request: {str(e)}"}
+
+
+    def _handle_date_specific_query(self, user_input):
+        from datetime import datetime, timedelta
+        import re
+        import calendar
+
+        query_lower = user_input.lower()
+
+        main_table = None
+        date_field = None
+
+        if "trade" in query_lower:
+            main_table = "trades"
+            date_field = "trade_date"
+        elif "transaction" in query_lower:
+            main_table = "transactions"
+            date_field = "transaction_date"
+        elif "order" in query_lower:
+            main_table = "orders"
+            date_field = "order_date"
+        else:
+            main_table = "trades"
+            date_field = "trade_date"
+
+        today = datetime.now()
+
+        specific_date_pattern = r'(\d{1,2})\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+(20\d{2})'
+        specific_date_match = re.search(specific_date_pattern, query_lower)
+        if specific_date_match:
+            day = int(specific_date_match.group(1))
+            month_name = specific_date_match.group(2).lower()
+            year = int(specific_date_match.group(3))
+
+            months = {
+                "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
+                "july": 7, "august": 8, "september": 9, "october": 10, "november": 11, "december": 12
+            }
+            month = months[month_name]
+
+            max_days = calendar.monthrange(year, month)[1]
+            day = min(day, max_days)
+
+            specific_date = datetime(year, month, day)
+
+            date_str = specific_date.strftime('%Y-%m-%d')
+
+            sql = f"""
+            SELECT * FROM {main_table}
+            WHERE DATE({date_field}) = '{date_str}'
+            ORDER BY {date_field}
+            LIMIT 100
+            """
+
+            result_description = f"on {day} {month_name.capitalize()} {year}"
+
+        elif re.search(
+                r'(january|february|march|april|may|june|july|august|september|october|november|december)\s+(last|this|next)\s+year',
+                query_lower):
+            month_rel_year_match = re.search(
+                r'(january|february|march|april|may|june|july|august|september|october|november|december)\s+(last|this|next)\s+year',
+                query_lower)
+            month_name = month_rel_year_match.group(1).lower()
+            relative_year = month_rel_year_match.group(2).lower()
+
+            months = {
+                "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
+                "july": 7, "august": 8, "september": 9, "october": 10, "november": 11, "december": 12
+            }
+            month = months[month_name]
+
+            if relative_year == "last":
+                year = today.year - 1
+            elif relative_year == "next":
+                year = today.year + 1
+            else:  # "this"
+                year = today.year
+
+            days_in_month = calendar.monthrange(year, month)[1]
+
+            start_date = datetime(year, month, 1)
+            end_date = datetime(year, month, days_in_month)
+
+            start_date_str = start_date.strftime('%Y-%m-%d')
+            end_date_str = end_date.strftime('%Y-%m-%d')
+
+            sql = f"""
+            SELECT * FROM {main_table}
+            WHERE {date_field} BETWEEN '{start_date_str}' AND '{end_date_str}'
+            ORDER BY {date_field}
+            LIMIT 100
+            """
+
+            result_description = f"from {month_name.capitalize()} {year}"
+
+        else:
+            start_date = None
+            end_date = today
+
+            year_pattern = r'from\s+(20\d{2})\b'
+            year_match = re.search(year_pattern, query_lower)
+            if year_match:
+                year = int(year_match.group(1))
+                start_date = datetime(year, 1, 1)
+                end_date = datetime(year, 12, 31)
+                result_description = f"from {year}"
+
+            elif re.search(r'\b(20\d{2})\b', query_lower):
+                year_alt_match = re.search(r'\b(20\d{2})\b', query_lower)
+                year = int(year_alt_match.group(1))
+                start_date = datetime(year, 1, 1)
+                end_date = datetime(year, 12, 31)
+                result_description = f"from {year}"
+
+            elif "last week" in query_lower:
+                start_date = today - timedelta(days=7)
+                result_description = "from last week"
+            elif "last month" in query_lower:
+                start_date = today - timedelta(days=30)
+                result_description = "from last month"
+            elif "last year" in query_lower:
+                start_date = datetime(today.year - 1, 1, 1)
+                end_date = datetime(today.year - 1, 12, 31)
+                result_description = "from last year"
+            elif "this year" in query_lower:
+                start_date = datetime(today.year, 1, 1)
+                end_date = datetime(today.year, 12, 31)
+                result_description = "from this year"
+            elif "this month" in query_lower:
+                start_date = datetime(today.year, today.month, 1)
+                days_in_month = calendar.monthrange(today.year, today.month)[1]
+                end_date = datetime(today.year, today.month, days_in_month)
+                result_description = "from this month"
+            elif "recent" in query_lower or "latest" in query_lower:
+                start_date = today - timedelta(days=30)  # Default to last 30 days
+                result_description = "from the last 30 days"
+            else:
+                start_date = today - timedelta(days=30)
+                result_description = "from the last 30 days"
+
+            start_date_str = start_date.strftime('%Y-%m-%d')
+            end_date_str = end_date.strftime('%Y-%m-%d')
+
+            sql = f"""
+            SELECT * FROM {main_table}
+            WHERE {date_field} BETWEEN '{start_date_str}' AND '{end_date_str}'
+            ORDER BY {date_field} DESC
+            LIMIT 100
+            """
+
+        self.logger.info(f"Generated date-specific SQL: {sql}")
+        result = self.query_processor.db_connector.execute_query(sql)
+
+        if result and len(result) > 0:
+            return {
+                "response": f"Found {len(result)} {main_table} {result_description}:",
+                "data": result
+            }
+        else:
+            return {
+                "response": f"No {main_table} found {result_description}."
+            }
+
+
+    def _check_specialized_queries(self, user_input):
+        query_lower = user_input.lower()
+
+        if re.search(r'(?i)etf\s+assets', user_input) or re.search(r'(?i)show\s+me\s+etf', user_input):
+            return self._handle_etf_assets_query()
+
+        if re.search(r'(?i)completed\s+orders', user_input):
+            return self._handle_completed_orders_query()
+
+        if re.search(r'(?i)average\s+price', user_input) and re.search(r'(?i)assets', user_input):
+            return self._handle_average_price_query()
+
+        if (re.search(
+                r'(?i)trades.*(january|february|march|april|may|june|july|august|september|october|november|december)\s+(last|this|next)\s+year',
+                query_lower) or
+                re.search(
+                    r'(?i)(january|february|march|april|may|june|july|august|september|october|november|december)\s+(last|this|next)\s+year.*trades',
+                    query_lower)):
+            return self._handle_date_specific_query(user_input)
+
+        if (re.search(
+                r'(?i)trades.*\b(\d{1,2})\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+(20\d{2})\b',
+                query_lower) or
+                re.search(
+                    r'(?i)\b(\d{1,2})\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+(20\d{2})\b.*trades',
+                    query_lower)):
+            return self._handle_date_specific_query(user_input)
+
+        if (re.search(r'(?i)(recent|latest)\s+(trades|trade)', user_input) or
+                re.search(r'(?i)trades\s+from\s+(last|this|previous|20\d{2})', user_input) or
+                re.search(r'(?i)(20\d{2})\s+trades', user_input)):
+            return self._handle_date_specific_query(user_input)
+
+        if (re.search(
+                r'(?i)transactions.*(january|february|march|april|may|june|july|august|september|october|november|december)\s+(last|this|next)\s+year',
+                query_lower) or
+                re.search(
+                    r'(?i)(january|february|march|april|may|june|july|august|september|october|november|december)\s+(last|this|next)\s+year.*transactions',
+                    query_lower)):
+            return self._handle_date_specific_query(user_input)
+
+        if (re.search(
+                r'(?i)transactions.*\b(\d{1,2})\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+(20\d{2})\b',
+                query_lower) or
+                re.search(
+                    r'(?i)\b(\d{1,2})\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+(20\d{2})\b.*transactions',
+                    query_lower)):
+            return self._handle_date_specific_query(user_input)
+
+        if (re.search(r'(?i)(recent|latest)\s+(transactions|transaction)', user_input) or
+                re.search(r'(?i)transactions\s+from\s+(last|this|previous|20\d{2})', user_input) or
+                re.search(r'(?i)(20\d{2})\s+transactions', user_input)):
+            return self._handle_date_specific_query(user_input)
+
+        if (re.search(
+                r'(?i)orders.*(january|february|march|april|may|june|july|august|september|october|november|december)\s+(last|this|next)\s+year',
+                query_lower) or
+                re.search(
+                    r'(?i)(january|february|march|april|may|june|july|august|september|october|november|december)\s+(last|this|next)\s+year.*orders',
+                    query_lower)):
+            return self._handle_date_specific_query(user_input)
+
+        if (re.search(
+                r'(?i)orders.*\b(\d{1,2})\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+(20\d{2})\b',
+                query_lower) or
+                re.search(
+                    r'(?i)\b(\d{1,2})\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+(20\d{2})\b.*orders',
+                    query_lower)):
+            return self._handle_date_specific_query(user_input)
+
+        if (re.search(r'(?i)(recent|latest)\s+(orders|order)', user_input) or
+                re.search(r'(?i)orders\s+from\s+(last|this|previous|20\d{2})', user_input) or
+                re.search(r'(?i)(20\d{2})\s+orders', user_input)):
+            return self._handle_date_specific_query(user_input)
+
+        match = re.search(r'(?i)transactions\s+over\s+\$?(\d+[,\d]*)', user_input)
+        if match:
+            threshold = float(match.group(1).replace(',', ''))
+            return self._handle_large_transactions_query(threshold)
+
+        if re.search(r'(?i)traders\s+with\s+highest\s+account\s+balance', user_input):
+            return self._handle_highest_balance_query()
+
+        if re.search(r'(?i)list\s+all\s+traders', user_input) or re.search(r'(?i)show\s+all\s+traders', user_input):
+            return self._handle_list_traders_query()
+
+        if re.search(r'(?i)count\s+how\s+many\s+traders', user_input) or re.search(r'(?i)how\s+many\s+traders',
+                                                                                   user_input):
+            return self._handle_count_traders_query()
+
+        return None
+
+    def _handle_etf_assets_query(self):
+        sql = """
+        SELECT * FROM assets 
+        WHERE asset_type = 'ETF'
+        ORDER BY asset_id
+        """
+
+        result = self.query_processor.db_connector.execute_query(sql)
+
+        if result and len(result) > 0:
+            return {
+                "response": f"Found {len(result)} ETF assets in the database:",
+                "data": result
+            }
+        else:
+            return {
+                "response": "No ETF assets found in the database."
+            }
+
+    def _handle_completed_orders_query(self):
+        try:
+            sql = """
+            SELECT o.*, os.status, os.status_date
+            FROM orders o
+            JOIN order_status os ON o.order_id = os.order_id
+            WHERE os.status = 'Completed'
+            ORDER BY os.status_date DESC
+            """
+
+            result = self.query_processor.db_connector.execute_query(sql)
+
+            if result and len(result) > 0:
+                return {
+                    "response": f"Found {len(result)} completed orders:",
+                    "data": result
+                }
+            else:
+                return {
+                    "response": "No completed orders found in the database."
+                }
+        except Exception as e:
+            self.logger.error(f"Error in completed orders query: {e}")
+            try:
+                sql = """
+                SELECT * FROM orders
+                WHERE order_type LIKE '%Completed%'
+                ORDER BY order_date DESC
+                """
+
+                result = self.query_processor.db_connector.execute_query(sql)
+
+                if result and len(result) > 0:
+                    return {
+                        "response": f"Found {len(result)} completed-type orders:",
+                        "data": result
+                    }
+                else:
+                    return {
+                        "response": "No completed orders found in the database."
+                    }
+            except Exception as e2:
+                self.logger.error(f"Error in fallback query: {e2}")
+                return {
+                    "response": "Could not retrieve completed orders due to an error."
+                }
+
+    def _handle_average_price_query(self):
+        try:
+            sql = """
+            SELECT AVG(price_history.close_price) as average_price
+            FROM price_history
+            JOIN assets ON price_history.asset_id = assets.asset_id
+            """
+
+            result = self.query_processor.db_connector.execute_query(sql)
+
+            if result and result[0]['average_price'] is not None:
+                avg_price = result[0]['average_price']
+
+                sample_sql = """
+                SELECT assets.asset_id, assets.name, assets.asset_type, 
+                       price_history.close_price as price
+                FROM assets
+                JOIN price_history ON assets.asset_id = price_history.asset_id
+                ORDER BY price_history.close_price DESC
+                LIMIT 10
+                """
+
+                sample_result = self.query_processor.db_connector.execute_query(sample_sql)
+
+                return {
+                    "response": f"The average price of assets is ${avg_price:.2f}. Here are some sample assets:",
+                    "data": sample_result
+                }
+            else:
+                sql = """
+                SELECT AVG(price) as average_price
+                FROM assets
+                WHERE price IS NOT NULL
+                """
+
+                result = self.query_processor.db_connector.execute_query(sql)
+
+                if result and result[0]['average_price'] is not None:
+                    avg_price = result[0]['average_price']
+
+                    sample_sql = """
+                    SELECT *
+                    FROM assets
+                    WHERE price IS NOT NULL
+                    ORDER BY price DESC
+                    LIMIT 10
+                    """
+
+                    sample_result = self.query_processor.db_connector.execute_query(sample_sql)
+
+                    return {
+                        "response": f"The average price of assets is ${avg_price:.2f}. Here are some sample assets:",
+                        "data": sample_result
+                    }
+                else:
+                    sql = """
+                    SELECT AVG(price) as average_price
+                    FROM trades
+                    """
+
+                    result = self.query_processor.db_connector.execute_query(sql)
+
+                    if result and result[0]['average_price'] is not None:
+                        avg_price = result[0]['average_price']
+
+                        sample_sql = """
+                        SELECT assets.*
+                        FROM assets
+                        LIMIT 10
+                        """
+
+                        sample_result = self.query_processor.db_connector.execute_query(sample_sql)
+
+                        return {
+                            "response": f"The average price in trades is ${avg_price:.2f}. Here are some sample assets:",
+                            "data": sample_result
+                        }
+                    else:
+                        return {
+                            "response": "Could not calculate the average price of assets. No price data found."
+                        }
+        except Exception as e:
+            self.logger.error(f"Error in average price query: {e}")
+            return {
+                "response": "Could not calculate the average price of assets due to an error."
+            }
+
+    def _handle_recent_trades_query(self):
+        try:
+            today = datetime.now()
+            one_week_ago = today - timedelta(days=7)
+            one_week_ago_str = one_week_ago.strftime('%Y-%m-%d')
+
+            sql = f"""
+            SELECT t.*, a.name as asset_name, m.name as market_name, tr.name as trader_name
+            FROM trades t
+            JOIN assets a ON t.asset_id = a.asset_id
+            JOIN markets m ON t.market_id = m.market_id
+            JOIN traders tr ON t.trader_id = tr.trader_id
+            WHERE t.trade_date >= '{one_week_ago_str}'
+            ORDER BY t.trade_date DESC
+            """
+
+            result = self.query_processor.db_connector.execute_query(sql)
+
+            if result and len(result) > 0:
+                return {
+                    "response": f"Found {len(result)} trades from the last week (since {one_week_ago_str}):",
+                    "data": result
+                }
+            else:
+                sql = """
+                SELECT t.*, a.name as asset_name, m.name as market_name, tr.name as trader_name
+                FROM trades t
+                JOIN assets a ON t.asset_id = a.asset_id
+                JOIN markets m ON t.market_id = m.market_id
+                JOIN traders tr ON t.trader_id = tr.trader_id
+                ORDER BY t.trade_date DESC
+                LIMIT 10
+                """
+
+                result = self.query_processor.db_connector.execute_query(sql)
+
+                if result and len(result) > 0:
+                    return {
+                        "response": f"Showing the 10 most recent trades (could not filter by last week):",
+                        "data": result
+                    }
+                else:
+                    return {
+                        "response": f"No trades found in the database."
+                    }
+        except Exception as e:
+            self.logger.error(f"Error in recent trades query: {e}")
+            try:
+                sql = """
+                SELECT * FROM trades
+                ORDER BY trade_date DESC
+                LIMIT 10
+                """
+
+                result = self.query_processor.db_connector.execute_query(sql)
+
+                if result and len(result) > 0:
+                    return {
+                        "response": f"Showing the 10 most recent trades:",
+                        "data": result
+                    }
+                else:
+                    return {
+                        "response": f"No trades found in the database."
+                    }
+            except Exception as e2:
+                self.logger.error(f"Error in fallback trades query: {e2}")
+                return {
+                    "response": "Could not retrieve recent trades due to an error."
+                }
+
+    def _handle_large_transactions_query(self, threshold):
+        try:
+            sql = f"""
+            SELECT t.*, a.account_type, tr.name as trader_name
+            FROM transactions t
+            JOIN accounts a ON t.account_id = a.account_id
+            JOIN traders tr ON a.trader_id = tr.trader_id
+            WHERE t.amount > {threshold}
+            ORDER BY t.amount DESC
+            """
+
+            result = self.query_processor.db_connector.execute_query(sql)
+
+            if result and len(result) > 0:
+                return {
+                    "response": f"Found {len(result)} transactions over ${threshold:,.2f}:",
+                    "data": result
+                }
+            else:
+                sql = f"""
+                SELECT * FROM transactions
+                WHERE amount > {threshold}
+                ORDER BY amount DESC
+                """
+
+                result = self.query_processor.db_connector.execute_query(sql)
+
+                if result and len(result) > 0:
+                    return {
+                        "response": f"Found {len(result)} transactions over ${threshold:,.2f}:",
+                        "data": result
+                    }
+                else:
+                    return {
+                        "response": f"No transactions found over ${threshold:,.2f}."
+                    }
+        except Exception as e:
+            self.logger.error(f"Error in large transactions query: {e}")
+            return {
+                "response": f"Could not retrieve transactions over ${threshold:,.2f} due to an error."
+            }
+
+    def _handle_highest_balance_query(self):
+        try:
+            sql = """
+            SELECT t.trader_id, t.name, t.email, a.account_id, a.balance, a.account_type
+            FROM traders t
+            JOIN accounts a ON t.trader_id = a.trader_id
+            ORDER BY a.balance DESC
+            LIMIT 10
+            """
+
+            result = self.query_processor.db_connector.execute_query(sql)
+
+            if result and len(result) > 0:
+                return {
+                    "response": "Traders with highest account balances:",
+                    "data": result
+                }
+            else:
+                return {
+                    "response": "No account balance information found."
+                }
+        except Exception as e:
+            self.logger.error(f"Error in highest balance query: {e}")
+            return {
+                "response": "Could not retrieve trader balance information due to an error."
+            }
+
+    def _handle_highest_price_query(self):
+        try:
+            sql = """
+            SELECT a.asset_id, a.name, a.asset_type, p.close_price as price
+            FROM assets a
+            JOIN price_history p ON a.asset_id = p.asset_id
+            ORDER BY p.close_price DESC
+            LIMIT 10
+            """
+
+            result = self.query_processor.db_connector.execute_query(sql)
+
+            if result and len(result) > 0:
+                return {
+                    "response": "Assets with highest prices:",
+                    "data": result
+                }
+            else:
+                sql = """
+                SELECT * FROM assets
+                WHERE price IS NOT NULL
+                ORDER BY price DESC
+                LIMIT 10
+                """
+
+                result = self.query_processor.db_connector.execute_query(sql)
+
+                if result and len(result) > 0:
+                    return {
+                        "response": "Assets with highest prices:",
+                        "data": result
+                    }
+                else:
+                    sql = """
+                    SELECT t.*, a.name as asset_name
+                    FROM trades t
+                    JOIN assets a ON t.asset_id = a.asset_id
+                    ORDER BY t.price DESC
+                    LIMIT 10
+                    """
+
+                    result = self.query_processor.db_connector.execute_query(sql)
+
+                    if result and len(result) > 0:
+                        return {
+                            "response": "Trades with highest prices:",
+                            "data": result
+                        }
+                    else:
+                        return {
+                            "response": "No price information found."
+                        }
+        except Exception as e:
+            self.logger.error(f"Error in highest price query: {e}")
+            return {
+                "response": "Could not retrieve price information due to an error."
+            }
+
+    def _handle_list_traders_query(self):
+        sql = """
+        SELECT * FROM traders
+        ORDER BY trader_id
+        LIMIT 100
+        """
+
+        result = self.query_processor.db_connector.execute_query(sql)
+
+        if result and len(result) > 0:
+            return {
+                "response": f"Listing all traders ({len(result)} total):",
+                "data": result
+            }
+        else:
+            return {
+                "response": "No traders found in the database."
+            }
+
+    def _handle_count_traders_query(self):
+        sql = """
+        SELECT COUNT(*) as trader_count FROM traders
+        """
+
+        result = self.query_processor.db_connector.execute_query(sql)
+
+        if result and result[0]['trader_count'] is not None:
+            count = result[0]['trader_count']
+
+            sample_sql = """
+            SELECT * FROM traders
+            LIMIT 5
+            """
+
+            sample_result = self.query_processor.db_connector.execute_query(sample_sql)
+
+            return {
+                "response": f"There are {count} traders in the database. Here's a sample:",
+                "data": sample_result
+            }
+        else:
+            return {
+                "response": "Could not count traders in the database."
+            }
+
+    def _handle_count_query(self, query):
+        query_context = self._analyze_query_context(query)
+        table = query_context.get('table', 'traders')
+
+        sql = f"""
+        SELECT COUNT(*) as count FROM {table}
+        """
+
+        result = self.query_processor.db_connector.execute_query(sql)
+
+        if result and result[0]['count'] is not None:
+            count = result[0]['count']
+
+            sample_sql = f"""
+            SELECT * FROM {table}
+            LIMIT 5
+            """
+
+            sample_result = self.query_processor.db_connector.execute_query(sample_sql)
+
+            return {
+                "response": f"There are {count} {table} in the database. Here's a sample:",
+                "data": sample_result
+            }
+        else:
+            return {
+                "response": f"Could not count {table} in the database."
+            }
+
+    def _execute_list_query(self, query):
+        query_context = self._analyze_query_context(query)
+        table = query_context.get('table', 'traders')
+
+        sql = f"""
+        SELECT * FROM {table}
+        LIMIT 100
+        """
+
+        return self.query_processor.db_connector.execute_query(sql)
+
+    def _execute_comparative_query(self, query, sub_intent):
+        query_context = self._analyze_query_context(query)
+        table = query_context.get('table', 'traders')
+        attribute = query_context.get('attribute')
+
+        sort_field = None
+        if attribute:
+            sort_field = attribute
+        elif 'balance' in query.lower():
+            sort_field = 'balance'
+        elif 'price' in query.lower():
+            sort_field = 'price'
+
+        if not sort_field:
+            if table == 'accounts':
+                sort_field = 'balance'
+            elif table == 'assets' or table == 'trades':
+                sort_field = 'price'
+            elif table == 'transactions':
+                sort_field = 'amount'
+            else:
+                sort_field = f"{table[:-1] if table.endswith('s') else table}_id"
+
+        sort_direction = "DESC"
+        if sub_intent and "lowest" in sub_intent:
+            sort_direction = "ASC"
+
+        sql = f"""
+        SELECT * FROM {table}
+        ORDER BY {sort_field} {sort_direction}
+        LIMIT 10
+        """
+
+        result = self.query_processor.db_connector.execute_query(sql)
+
+        return result
+
+    def _analyze_query_context(self, query):
+        result = {
+            "table": None,
+            "attribute": None,
+            "comparative": None
+        }
+
+        query_lower = query.lower()
+
+        table_keywords = {
+            "traders": ["trader", "traders"],
+            "assets": ["asset", "assets", "stock", "stocks", "security", "securities"],
+            "markets": ["market", "markets", "exchange", "exchanges"],
+            "accounts": ["account", "accounts"],
+            "trades": ["trade", "trades", "transaction", "transactions"],
+            "brokers": ["broker", "brokers"],
+            "orders": ["order", "orders"]
+        }
+
+        for table, keywords in table_keywords.items():
+            if any(keyword in query_lower for keyword in keywords):
+                result["table"] = table
+                break
+
+        attribute_keywords = {
+            "balance": ["balance", "money", "funds", "account balance"],
+            "price": ["price", "cost", "value", "worth"],
+            "date": ["date", "time", "when"],
+            "name": ["name", "called", "named"]
+        }
+
+        for attribute, keywords in attribute_keywords.items():
+            if any(keyword in query_lower for keyword in keywords):
+                result["attribute"] = attribute
+                break
+
+        if any(term in query_lower for term in ["highest", "most", "maximum", "largest"]):
+            result["comparative"] = "highest"
+        elif any(term in query_lower for term in ["lowest", "least", "minimum", "smallest"]):
+            result["comparative"] = "lowest"
+        elif any(term in query_lower for term in ["middle", "median", "average", "mid"]):
+            result["comparative"] = "middle"
+
+        return result
 
     def generate_response(self, intent, query_result, sub_intent=None):
-
         if not query_result:
             return {"response": "I couldn't find any information for your query."}
 
@@ -102,6 +858,7 @@ class ChatbotEngine:
                 return {"response": "I found no matching records."}
 
             table_detected = self._determine_primary_table(query_result[0])
+
             intent_parts = intent.split('_')
             intent_table = None
             for part in intent_parts:
@@ -109,162 +866,53 @@ class ChatbotEngine:
                     intent_table = part
                     break
 
-            primary_table = intent_table or table_detected or "records"
+            query_context = self._analyze_query_context(self.current_query)
 
-            detailed_view = "detailed" in intent or self._is_detailed_request()
-
-            comparative_query = False
-            sort_direction = None
-            comparative_type = None
-
-            if intent == "database_query_comparative":
-                comparative_query = True
-                if sub_intent:
-                    if "highest" in sub_intent:
-                        comparative_type = "highest"
-                    elif "lowest" in sub_intent:
-                        comparative_type = "lowest"
-                    elif "middle" in sub_intent:
-                        comparative_type = "middle"
-                else:
-                    comparative_type = "highest"
-
-            if intent == "database_query_sort":
-                if sub_intent:
-                    if "ascending" in sub_intent:
-                        sort_direction = "ascending"
-                    elif "descending" in sub_intent:
-                        sort_direction = "descending"
-                else:
-                    if any(term in self.current_query.lower() for term in
-                           ["desc", "decreasing", "high to low", "largest to smallest"]):
-                        sort_direction = "descending"
-                    else:
-                        sort_direction = "ascending"
-
-            contains_encrypted = False
-            has_sensitive_fields = False
-
-            processed_results = []
-            for item in query_result:
-                processed_item = {}
-
-                for key, value in item.items():
-                    if key.endswith('_id') and not detailed_view:
-                        continue
-
-                    if isinstance(value, str) and value.startswith("[ENCRYPTED:"):
-                        contains_encrypted = True
-                        has_sensitive_fields = True
-                        continue
-
-                    if self._is_sensitive_field(key) and not detailed_view:
-                        has_sensitive_fields = True
-                        continue
-
-                    processed_item[key] = value
-
-                processed_results.append(processed_item)
-
-            if intent == "database_query_count":
-                if "count" in query_result[0]:
-                    count = query_result[0]["count"]
-                    return {
-                        "response": f"I found {count} {primary_table}.",
-                        "data": query_result[0]
-                    }
+            primary_table = query_context.get("table") or intent_table or table_detected or "records"
 
             if len(query_result) == 1:
-                if comparative_query:
-                    if comparative_type == "highest":
-                        response_text = f"Here's the {primary_table} with the highest value:"
-                    elif comparative_type == "lowest":
-                        response_text = f"Here's the {primary_table} with the lowest value:"
-                    elif comparative_type == "middle":
-                        response_text = f"Here's the {primary_table} with the median value:"
-                else:
-                    response_text = "Here's what I found:"
-                data_to_return = processed_results[0]
+                response_text = "Here's what I found:"
+                data_to_return = query_result[0]
             else:
-                if comparative_query:
-                    if comparative_type == "highest":
-                        response_text = f"Here are the {primary_table} with the highest values:"
-                    elif comparative_type == "lowest":
-                        response_text = f"Here are the {primary_table} with the lowest values:"
-                    elif comparative_type == "middle":
-                        response_text = f"Here are the {primary_table} with the middle values:"
-                else:
-                    response_text = f"I found {len(query_result)} matching {primary_table}."
+                response_text = f"Here are some {primary_table} from the database:"
 
-                if len(query_result) <= 10:
-                    sample = query_result[0]
+                sample = query_result[0]
+                if "name" in sample:
+                    names = [r["name"] for r in query_result if "name" in r]
+                    name_list = ", ".join(names[:5])
+                    if len(names) > 5:
+                        name_list += " and others"
+                    response_text += f" Including {name_list}."
 
-                    if "name" in sample:
-                        try:
-                            names = [r["name"] for r in query_result if "name" in r]
-                            response_text += f" Names include: {', '.join(names[:5])}"
-                            if len(names) > 5:
-                                response_text += " and others."
-                        except:
-                            pass
-                    elif "asset_name" in sample:
-                        try:
-                            names = [r["asset_name"] for r in query_result if "asset_name" in r]
-                            response_text += f" Assets include: {', '.join(names[:5])}"
-                            if len(names) > 5:
-                                response_text += " and others."
-                        except:
-                            pass
-                    elif primary_table == "traders":
-                        response_text += " These are trader records."
-                    elif primary_table == "assets":
-                        response_text += " These are asset records."
-                    elif primary_table == "markets":
-                        response_text += " These are market records."
-                    elif primary_table == "trades":
-                        response_text += " These are trading transactions."
-                    elif primary_table == "orders":
-                        response_text += " These are orders."
-                    elif primary_table == "accounts":
-                        response_text += " These are account records."
-                    elif primary_table == "transactions":
-                        response_text += " These are financial transactions."
-
-                data_to_return = processed_results
-
-                if intent == "database_query_sort" and sort_direction:
-                    if sort_direction == "ascending":
-                        response_text += " Results are sorted in ascending order."
-                    else:
-                        response_text += " Results are sorted in descending order."
-
-            if has_sensitive_fields:
-                encryption_message = "\n\nSome fields contain sensitive information that is encrypted with Homomorphic Encryption. This advanced encryption allows computations on encrypted data without decrypting it first, providing enhanced security for sensitive information like email addresses, license numbers, and other personal details."
-                response_text += encryption_message
-
-            if self._is_requesting_sensitive_data():
-                response_text += "\n\nI'm sorry, but I cannot display the actual values of sensitive fields such as contact emails, license numbers, and phone numbers. These fields are protected with Homomorphic Encryption, a privacy-preserving technology that allows us to perform operations on encrypted data without exposing the actual values."
+                data_to_return = query_result
 
             return {
                 "response": response_text,
                 "data": data_to_return
             }
         else:
-            affected_rows = query_result.get("affected_rows", 0) if isinstance(query_result, dict) else 0
-            return {"response": f"Operation completed successfully. {affected_rows} rows affected."}
-
-    def _is_sensitive_field(self, field_name):
-        sensitive_patterns = [
-            "email", "contact_email", "phone", "license",
-            "password", "secret", "token", "key", "ssn",
-            "social_security", "tax_id", "credit_card", "card_number"
-        ]
-
-        return any(pattern in field_name.lower() for pattern in sensitive_patterns)
+            return {"response": "Operation completed successfully."}
 
     def _determine_primary_table(self, result_item):
         if not result_item:
             return None
+
+        query_lower = self.current_query.lower() if hasattr(self, "current_query") else ""
+
+        if "trader" in query_lower and ("trader_id" in result_item or "trader_name" in result_item):
+            return "traders"
+        elif "market" in query_lower and ("market_id" in result_item or "market_name" in result_item):
+            return "markets"
+        elif "asset" in query_lower and ("asset_id" in result_item or "asset_name" in result_item):
+            return "assets"
+        elif "account" in query_lower and "account_id" in result_item:
+            return "accounts"
+        elif "broker" in query_lower and ("broker_id" in result_item or "broker_name" in result_item):
+            return "brokers"
+        elif "trade" in query_lower and "trade_id" in result_item:
+            return "trades"
+        elif "order" in query_lower and "order_id" in result_item:
+            return "orders"
 
         if "market_id" in result_item or "market_name" in result_item:
             return "markets"
@@ -287,120 +935,4 @@ class ChatbotEngine:
         elif "price_id" in result_item or "price_date" in result_item:
             return "price_history"
 
-        for key in result_item.keys():
-            if key == "location" and "operating_hours" in result_item:
-                return "markets"
-            elif key == "license_number":
-                return "brokers"
-
         return "records"
-
-    def _is_requesting_sensitive_data(self):
-        if not hasattr(self, "current_query") or not self.current_query:
-            return False
-
-        query = self.current_query.lower()
-        sensitive_indicators = [
-            "email", "contact email", "license number", "phone", "encrypted", "sensitive",
-            "private information", "personal details", "personal information", "contact details"
-        ]
-
-        return any(indicator in query for indicator in sensitive_indicators)
-
-    def _is_detailed_request(self):
-        if not hasattr(self, "current_query") or not self.current_query:
-            return False
-
-        query = self.current_query.lower()
-
-        detail_indicators = [
-            "all details", "more details", "detailed", "complete", "all information",
-            "everything about", "all data", "show all", "all fields", "full record",
-            "details about", "details", "detail"
-        ]
-
-        return any(indicator in query for indicator in detail_indicators)
-
-    def handle_error(self, error_type, error_message=None):
-        error_responses = {
-            "connection": "I'm having trouble connecting to the database. Please try again later.",
-            "authentication": "There seems to be an authentication issue. Please check your credentials.",
-            "query": "There was a problem with your query. Please try again with a different question.",
-            "permission": "You don't have permission to access this information.",
-            "encryption": "There was an issue with the encryption. Your data remains secure.",
-            "sensitive_data": "I'm sorry, but I cannot display sensitive information such as emails, license numbers, and phone numbers as they are encrypted for security reasons."
-        }
-
-        response = error_responses.get(error_type, "An unexpected error occurred.")
-        if error_message and isinstance(error_message, str):
-            safe_message = re.sub(r'(password|key|credential|token)=\S+', r'\1=[REDACTED]', error_message)
-            response += f" Details: {safe_message}"
-
-        return {"response": response, "error": True}
-
-    def generate_entity_response(self, entity_result):
-
-        if not entity_result:
-            return {"response": "I couldn't find details about that entity."}
-
-        entity_type = entity_result.get("entity_type")
-        entity_info = entity_result.get("entity_info", [])
-        related_info = entity_result.get("related_info", {})
-
-        if not entity_info:
-            return {"response": f"I couldn't find any {entity_type} matching your query."}
-
-        entity = entity_info[0]
-
-        entity_name = entity.get("name", "this entity")
-
-        displayable_data = []
-
-        main_entity_rows = []
-        for key, value in entity.items():
-
-            if key == entity_type[:-1] + '_id':
-                continue
-
-            prop_name = key.replace('_', ' ').title()
-
-            if isinstance(value, str) and value.startswith("[ENCRYPTED"):
-                display_value = "[ENCRYPTED]"
-            elif key.endswith('_date'):
-                display_value = str(value)
-            elif key == 'price' or key == 'balance' or key == 'amount' or key.endswith('_price'):
-                if isinstance(value, (int, float)):
-                    display_value = f"${value:,.2f}"
-                else:
-                    display_value = f"${value}"
-            else:
-                display_value = str(value)
-
-            main_entity_rows.append({
-                "Property": prop_name,
-                "Value": display_value
-            })
-
-        displayable_data.append({
-            "table_name": f"{entity_name} Details",
-            "rows": main_entity_rows
-        })
-
-        for relation_name, items in related_info.items():
-            if items and len(items) > 0:
-                display_name = relation_name.replace('_', ' ').title()
-                if len(items) > 1 and not display_name.endswith('s'):
-                    display_name += 's'
-
-                displayable_data.append({
-                    "table_name": f"Related {display_name}",
-                    "rows": items
-                })
-
-        friendly_type = entity_type[:-1] if entity_type.endswith('s') else entity_type
-        response_text = f"Here are the details about {entity_name} ({friendly_type})."
-
-        return {
-            "response": response_text,
-            "entity_data": displayable_data
-        }

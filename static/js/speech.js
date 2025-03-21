@@ -1,9 +1,3 @@
-// static/js/speech-recognition.js
-
-/**
- * Speech recognition component for the secure chatbot
- * Handles browser-based speech recognition and sends audio data to the server
- */
 
 class SpeechRecognitionHandler {
     constructor(options = {}) {
@@ -78,7 +72,6 @@ class SpeechRecognitionHandler {
         try {
             this.recognition.start();
 
-            // If using server processing, also start recording audio for secure processing
             if (this.useServerProcessing) {
                 this._startAudioRecording();
             }
@@ -94,7 +87,6 @@ class SpeechRecognitionHandler {
         try {
             this.recognition.stop();
 
-            // If using server processing, stop recording and send to server
             if (this.useServerProcessing && this.mediaRecorder) {
                 this.mediaRecorder.stop();
             }
@@ -167,8 +159,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatInput = document.querySelector('.chat-input');
     const sendButton = document.getElementById('send-button');
 
-    if (!chatInput || !sendButton) {
-        console.error('Chat input or send button not found');
+    if (!chatInput || !sendButton || document.getElementById('speech-button')) {
+        console.log('Chat input, send button not found, or speech button already exists');
         return;
     }
 
@@ -189,6 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
     speechButton.style.alignItems = 'center';
 
     chatInput.insertBefore(speechButton, sendButton);
+
 
     const statusIndicator = document.createElement('div');
     statusIndicator.id = 'speech-status';

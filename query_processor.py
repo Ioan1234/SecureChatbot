@@ -1,5 +1,6 @@
 import logging
 import re
+import datetime
 
 
 class QueryProcessor:
@@ -11,13 +12,11 @@ class QueryProcessor:
             "email", "contact_email", "phone", "license_number", "balance"
         ]
 
-        self.dev_mode = True
-
-        self.table_info = {
+        self.schema = {
             "traders": ["trader_id", "name", "email", "phone", "registration_date"],
             "brokers": ["broker_id", "name", "license_number", "contact_email"],
             "assets": ["asset_id", "name", "asset_type", "broker_id"],
-            "markets": ["market_id", "name", "location", "operating_hours"],
+            "markets": ["market_id", "name", "location", "opening_time", "closing_time"],
             "trades": ["trade_id", "trader_id", "asset_id", "market_id", "trade_date", "quantity", "price"],
             "accounts": ["account_id", "trader_id", "balance", "account_type", "creation_date"],
             "transactions": ["transaction_id", "account_id", "transaction_date", "transaction_type", "amount"],
@@ -26,430 +25,716 @@ class QueryProcessor:
             "price_history": ["price_id", "asset_id", "price_date", "open_price", "close_price"]
         }
 
-        self.entity_mapping = {
-            "market": "markets",
-            "markets": "markets",
-            "stock exchange": "markets",
-            "trading venues": "markets",
-            "exchanges": "markets",
-
-            "trader": "traders",
-            "traders": "traders",
-            "trading users": "traders",
-            "trade accounts": "traders",
-            "trader profiles": "traders",
-            "customers": "traders",
-            "clients": "traders",
-
-            "broker": "brokers",
-            "brokers": "brokers",
-            "broker accounts": "brokers",
-            "broker profiles": "brokers",
-            "intermediaries": "brokers",
-            "broker companies": "brokers",
-
-            "asset": "assets",
-            "assets": "assets",
-            "stock": "assets",
-            "stocks": "assets",
-            "bond": "assets",
-            "bonds": "assets",
-            "securities": "assets",
-            "financial instruments": "assets",
-            "investment options": "assets",
-
-            "trade": "trades",
-            "trades": "trades",
-            "trading": "trades",
-            "trading activity": "trades",
-            "market activity": "trades",
-            "trade records": "trades",
-            "deals": "trades",
-
-            "transaction": "transactions",
-            "transactions": "transactions",
-            "account activity": "transactions",
-            "money transfers": "transactions",
-            "payments": "transactions",
-            "financial transactions": "transactions",
-
-            "account": "accounts",
-            "accounts": "accounts",
-            "financial accounts": "accounts",
-            "trading accounts": "accounts",
-            "user accounts": "accounts",
-
-            "order": "orders",
-            "orders": "orders",
-            "trade orders": "orders",
-            "market orders": "orders",
-            "order records": "orders",
-            "buy orders": "orders",
-            "sell orders": "orders",
-
-            "status": "order_status",
-            "order status": "order_status",
-            "order statuses": "order_status",
-            "status of orders": "order_status",
-            "order states": "order_status",
-            "statuses": "order_status",
-
-            "price": "price_history",
-            "price history": "price_history",
-            "prices": "price_history",
-            "historical prices": "price_history",
-            "price records": "price_history",
-            "past prices": "price_history",
-            "historical pricing": "price_history"
+        self.relationships = {
+            ("traders", "trades"): ("trader_id", "trader_id"),
+            ("traders", "accounts"): ("trader_id", "trader_id"),
+            ("assets", "trades"): ("asset_id", "asset_id"),
+            ("assets", "price_history"): ("asset_id", "asset_id"),
+            ("markets", "trades"): ("market_id", "market_id"),
+            ("brokers", "assets"): ("broker_id", "broker_id"),
+            ("accounts", "transactions"): ("account_id", "account_id"),
+            ("trades", "orders"): ("trade_id", "trade_id"),
+            ("orders", "order_status"): ("order_id", "order_id")
         }
 
-        self.essential_fields = {
-            "markets": ["name", "location"],
-            "brokers": ["name"],
-            "traders": ["name", "registration_date"],
-            "assets": ["name", "asset_type"],
-            "trades": ["trade_date", "quantity", "price"],
-            "accounts": ["account_type", "balance"],
-            "transactions": ["transaction_date", "transaction_type", "amount"],
-            "orders": ["order_type", "order_date"],
-            "order_status": ["status", "status_date"],
-            "price_history": ["price_date", "open_price", "close_price"]
+        self.filter_patterns = {
+            "equal": "{field} = {value}",
+            "not_equal": "{field} != {value}",
+            "greater": "{field} > {value}",
+            "less": "{field} < {value}",
+            "contains": "{field} LIKE '%{value}%'",
+            "starts_with": "{field} LIKE '{value}%'",
+            "ends_with": "{field} LIKE '%{value}'",
+            "between": "{field} BETWEEN {value1} AND {value2}",
+            "in": "{field} IN ({values})"
         }
 
-        self.attribute_mapping = {
-            "price": {"tables": ["trades", "price_history"], "fields": ["trades.price", "price_history.close_price"]},
-            "cost": {"tables": ["trades", "price_history"], "fields": ["trades.price", "price_history.close_price"]},
-            "value": {"tables": ["trades", "price_history"], "fields": ["trades.price", "price_history.close_price"]},
-            "date": {"tables": ["trades", "orders", "transactions", "price_history"],
-                     "fields": ["trades.trade_date", "orders.order_date", "transactions.transaction_date",
-                                "price_history.price_date"]},
-            "time": {"tables": ["trades", "orders", "transactions", "price_history"],
-                     "fields": ["trades.trade_date", "orders.order_date", "transactions.transaction_date",
-                                "price_history.price_date"]},
-            "name": {"tables": ["traders", "brokers", "assets", "markets"],
-                     "fields": ["traders.name", "brokers.name", "assets.name", "markets.name"]},
-            "location": {"tables": ["markets"], "fields": ["markets.location"]},
-            "type": {"tables": ["assets", "accounts", "orders", "transactions"],
-                     "fields": ["assets.asset_type", "accounts.account_type", "orders.order_type",
-                                "transactions.transaction_type"]},
-            "quantity": {"tables": ["trades"], "fields": ["trades.quantity"]},
-            "amount": {"tables": ["transactions"], "fields": ["transactions.amount"]},
-            "volume": {"tables": ["trades"], "fields": ["trades.quantity"]},
-            "balance": {"tables": ["accounts"], "fields": ["accounts.balance"]},
-            "status": {"tables": ["order_status"], "fields": ["order_status.status"]},
+    def process_query(self, nl_query, intent_data=None):
+        self.logger.info(f"Processing query with intent: {intent_data}")
 
-            "transaction_count": {"aggregate": True, "function": "COUNT", "tables": ["transactions"],
-                                  "fields": ["transactions.transaction_id"]},
-            "trade_count": {"aggregate": True, "function": "COUNT", "tables": ["trades"],
-                            "fields": ["trades.trade_id"]},
-            "account_count": {"aggregate": True, "function": "COUNT", "tables": ["accounts"],
-                              "fields": ["accounts.account_id"]},
-            "average_price": {"aggregate": True, "function": "AVG", "tables": ["trades"], "fields": ["trades.price"]},
-            "total_amount": {"aggregate": True, "function": "SUM", "tables": ["transactions"],
-                             "fields": ["transactions.amount"]},
-            "total_quantity": {"aggregate": True, "function": "SUM", "tables": ["trades"],
-                               "fields": ["trades.quantity"]}
-        }
-        self.table_graph = {
-            "traders": {"trades": "trader_id", "accounts": "trader_id"},
-            "trades": {"traders": "trader_id", "assets": "asset_id", "markets": "market_id", "orders": "trade_id"},
-            "assets": {"trades": "asset_id", "brokers": "broker_id", "price_history": "asset_id"},
-            "markets": {"trades": "market_id"},
-            "accounts": {"traders": "trader_id", "transactions": "account_id"},
-            "transactions": {"accounts": "account_id"},
-            "orders": {"trades": "trade_id", "order_status": "order_id"},
-            "order_status": {"orders": "order_id"},
-            "brokers": {"assets": "broker_id"},
-            "price_history": {"assets": "asset_id"}
-        }
-        self._initialize_table_relationships()
+        intent = intent_data.get('intent') if intent_data else None
 
-    def _extract_sort_field(self, nl_query, tables):
-        nl_query = nl_query.lower()
+        if "trader" in nl_query.lower() and "balance" in nl_query.lower():
+            sort_order = "DESC"
+            if "lowest" in nl_query.lower():
+                sort_order = "ASC"
 
-        sort_indicators = ["sort by", "ordered by", "arranged by", "in order of"]
-        for indicator in sort_indicators:
-            if indicator in nl_query:
-                parts = nl_query.split(indicator)
-                if len(parts) > 1:
-                    field_text = parts[1].strip().split()[0]
+            sql = f"""
+            SELECT 
+                traders.trader_id,
+                traders.name, 
+                traders.registration_date,
+                accounts.account_id,
+                accounts.account_type,
+                accounts.creation_date,
+                accounts.balance
+            FROM 
+                traders
+            JOIN 
+                accounts ON traders.trader_id = accounts.trader_id
+            ORDER BY 
+                accounts.balance {sort_order}
+            LIMIT 10
+            """
 
-                    field_mappings = {
-                        "price": "price",
-                        "cost": "price",
-                        "value": "price",
-                        "date": "trade_date",
-                        "time": "trade_date",
-                        "name": "name",
-                        "type": "asset_type",
-                        "quantity": "quantity",
-                        "amount": "amount",
-                        "volume": "quantity",
-                        "balance": "balance"
-                    }
+            self.logger.info(f"Generated focused trader balance SQL: {sql}")
+            result = self._execute_and_process_query(sql)
+            return result
 
-                    field = field_mappings.get(field_text, field_text)
-
-                    for table in tables:
-                        table_fields = self.table_info.get(table, [])
-                        for table_field in table_fields:
-                            if field in table_field:
-                                return f"{table}.{table_field}"
-
-        default_sort_fields = {
-            "trades": "trades.trade_date",
-            "orders": "orders.order_date",
-            "assets": "assets.name",
-            "traders": "traders.name",
-            "markets": "markets.name",
-            "transactions": "transactions.transaction_date",
-            "accounts": "accounts.balance",
-            "price_history": "price_history.price_date"
-        }
-
-        for table in tables:
-            if table in default_sort_fields:
-                return default_sort_fields[table]
-
-        return None
-    def _get_complete_field_set(self, tables):
-
-        fields = []
-
-        for table in tables:
-            if table in self.table_info:
-                for field in self.table_info[table]:
-                    if not self._should_encrypt_field(field):
-                        fields.append(f"{table}.{field}")
-
-        return list(set(fields))
-
-    def _get_related_tables(self, primary_table):
-        related_tables = []
-
-        for (table1, table2), relationship in self.table_relationships.items():
-            if table1 == primary_table and table2 not in related_tables:
-                related_tables.append(table2)
-            elif table2 == primary_table and table1 not in related_tables:
-                related_tables.append(table1)
-
-        return related_tables
-
-    def _extend_tables_for_query(self, tables, nl_query):
-        nl_query = nl_query.lower()
-        extended_tables = tables.copy()
-
-        if "price" in nl_query and "assets" in extended_tables and "price_history" not in extended_tables:
-            extended_tables.append("price_history")
-
-        if "balance" in nl_query and "traders" in extended_tables and "accounts" not in extended_tables:
-            extended_tables.append("accounts")
-
-        if "transaction" in nl_query and "traders" in extended_tables:
-            if "accounts" not in extended_tables:
-                extended_tables.append("accounts")
-            if "transactions" not in extended_tables:
-                extended_tables.append("transactions")
-
-        if "trade" in nl_query and "date" in nl_query and "trades" not in extended_tables:
-            extended_tables.append("trades")
-
-        for table in tables.copy():
-            related = self._get_related_tables(table)
-            for related_table in related:
-                related_words = self._get_related_keywords(related_table)
-                if any(word in nl_query for word in related_words) and related_table not in extended_tables:
-                    extended_tables.append(related_table)
-
-        return extended_tables
-
-    def _get_related_keywords(self, table_name):
-
-        keywords = [table_name]
-
-        if table_name.endswith('s'):
-            keywords.append(table_name[:-1])
-        else:
-            keywords.append(table_name + 's')
-
-        table_keywords = {
-            'traders': ['trader', 'client', 'customer', 'user'],
-            'accounts': ['account', 'balance', 'money'],
-            'assets': ['asset', 'stock', 'security', 'investment'],
-            'trades': ['trade', 'transaction', 'deal'],
-            'price_history': ['price', 'cost', 'value'],
-            'transactions': ['transaction', 'payment', 'transfer'],
-            'markets': ['market', 'exchange'],
-            'brokers': ['broker', 'dealer', 'agent'],
-            'orders': ['order', 'purchase', 'sale'],
-            'order_status': ['status', 'state', 'condition']
-        }
-
-        if table_name in table_keywords:
-            keywords.extend(table_keywords[table_name])
-
-        return keywords
-
-    def _handle_aggregation_query(self, nl_query, tables, aggregation_table, aggregation_type):
-        primary_table = None
-        for table in tables:
-            if table != aggregation_table:
-                primary_table = table
-                break
-
-        if not primary_table:
-            primary_table = tables[0]
-
-        primary_fields = []
-        for field in self.table_info.get(primary_table, []):
-            if not self._should_encrypt_field(field):
-                primary_fields.append(f"{primary_table}.{field}")
-
-        if aggregation_type == "count":
-            agg_field = f"COUNT({aggregation_table}.{aggregation_table[:-1]}_id) as {aggregation_table[:-1]}_count"
-        else:
-            agg_field = f"{aggregation_type.upper()}({aggregation_table}.amount) as total_amount"
-
-        fields = primary_fields + [agg_field]
-
-        select_clause = f"SELECT {', '.join(fields)}"
-        from_clause = f"FROM {primary_table}"
-
-        tables_in_query = [primary_table]
-
-        join_clauses = []
-
-        if aggregation_table != primary_table and aggregation_table not in tables_in_query:
-            path = self._find_join_path(primary_table, aggregation_table)
-
-            if path:
-                for step in path:
-                    from_table = step["from"]
-                    to_table = step["to"]
-                    key = step["key"]
-
-                    if to_table not in tables_in_query:
-                        join_clause = f"{to_table} ON {from_table}.{key} = {to_table}.{key}"
-                        join_clauses.append(join_clause)
-                        tables_in_query.append(to_table)
-
-        for table in tables:
-            if table not in tables_in_query:
-                best_path = None
-                start_table = None
-
-                for joined_table in tables_in_query:
-                    path = self._find_join_path(joined_table, table)
-                    if path and (best_path is None or len(path) < len(best_path)):
-                        best_path = path
-                        start_table = joined_table
-
-                if best_path:
-                    for step in best_path:
-                        from_table = step["from"]
-                        to_table = step["to"]
-                        key = step["key"]
-
-                        if to_table not in tables_in_query:
-                            join_clause = f"{to_table} ON {from_table}.{key} = {to_table}.{key}"
-                            join_clauses.append(join_clause)
-                            tables_in_query.append(to_table)
-
-        if join_clauses:
-            join_clause = " JOIN ".join(join_clauses)
-            from_clause = f"{from_clause} JOIN {join_clause}"
-
-        group_by_fields = [f"{primary_table}.{primary_table[:-1]}_id"]
-        if f"{primary_table}.name" in primary_fields:
-            group_by_fields.append(f"{primary_table}.name")
-
-        group_by_clause = f"GROUP BY {', '.join(group_by_fields)}"
-
-        nl_query = nl_query.lower()
-        agg_column = f"{aggregation_table[:-1]}_count"
-
-        if "highest" in nl_query or "most" in nl_query:
-            order_by_clause = f"ORDER BY {agg_column} DESC"
-        else:
-            order_by_clause = f"ORDER BY {agg_column} ASC"
-
-        limit_clause = "LIMIT 10"
-
-        sql = f"{select_clause} {from_clause} {group_by_clause} {order_by_clause} {limit_clause}"
-
-        self.logger.info(f"Generated aggregation SQL: {sql}")
-        return self._execute_and_process_query(sql)
-    def _process_query_generic(self, nl_query, intent_type=None, sub_intent=None):
+        if intent in ['database_query_date_range', 'database_query_recent']:
+            return self._handle_date_range_query(nl_query, intent_data)
 
         tables = self._extract_tables(nl_query)
         if not tables:
-            self.logger.warning("No tables identified in query")
+            self.logger.warning("No tables identified in the query")
             return None
 
-        extended_tables = self._extend_tables_for_query(tables, nl_query)
-
-        fields = self._get_complete_field_set(extended_tables)
-
-        if "transaction" in nl_query.lower() and "count" in nl_query.lower():
-            return self._handle_aggregation_query(nl_query, extended_tables, "transactions", "count")
-
-        if len(fields) == 0:
-            self.logger.warning("No fields selected for query")
-            return None
+        fields = self._extract_fields(nl_query, tables)
 
         select_clause = f"SELECT {', '.join(fields)}"
         from_clause = f"FROM {tables[0]}"
 
-        join_clauses = self._generate_joins_for_tables(extended_tables)
-        if join_clauses:
-            join_clause = " JOIN ".join(join_clauses)
+        join_clauses = self._generate_joins_for_tables(tables)
+        join_clause = " JOIN ".join(join_clauses)
+        if join_clause:
             from_clause = f"{from_clause} JOIN {join_clause}"
 
-        sort_field = None
-        sort_direction = None
+        where_clause = self._generate_where_clause(nl_query, tables[0])
 
-        if intent_type == "database_query_sort" or sub_intent in ["database_query_sort_ascending",
-                                                                  "database_query_sort_descending"]:
-            sort_field = self._extract_sort_field(nl_query, extended_tables)
-            if "descending" in nl_query.lower() or sub_intent == "database_query_sort_descending":
-                sort_direction = "DESC"
+        order_clause = self._generate_order_clause(nl_query, tables[0])
+
+        limit_clause = "LIMIT 100"
+
+        sql_parts = [select_clause, from_clause, limit_clause]
+        sql = " ".join(sql_parts)
+
+        self.logger.info(f"Generated SQL: {sql}")
+        return self._execute_and_process_query(sql)
+
+    def _generate_where_clause(self, query, table):
+        query_lower = query.lower()
+        where_conditions = []
+
+        over_pattern = r'(with|having)\s+(\w+)\s+(over|above|greater than|more than)\s+(\d+[,\d]*(?:\.\d+)?)'
+        for match in re.finditer(over_pattern, query_lower):
+            field = match.group(2)
+            value = match.group(4).replace(',', '')
+
+            table_fields = self.schema.get(table, [])
+            field_match = None
+            for tf in table_fields:
+                if field in tf or field.replace(' ', '_') == tf:
+                    field_match = tf
+                    break
+
+            if field_match:
+                where_conditions.append(f"{table}.{field_match} > {value}")
+
+        under_pattern = r'(with|having)\s+(\w+)\s+(under|below|less than|lower than)\s+(\d+[,\d]*(?:\.\d+)?)'
+        for match in re.finditer(under_pattern, query_lower):
+            field = match.group(2)
+            value = match.group(4).replace(',', '')
+
+            table_fields = self.schema.get(table, [])
+            field_match = None
+            for tf in table_fields:
+                if field in tf or field.replace(' ', '_') == tf:
+                    field_match = tf
+                    break
+
+            if field_match:
+                where_conditions.append(f"{table}.{field_match} < {value}")
+
+        if where_conditions:
+            return "WHERE " + " AND ".join(where_conditions)
+
+        return ""
+
+    def _generate_order_clause(self, query, table):
+        query_lower = query.lower()
+
+        if "sort by" in query_lower or "order by" in query_lower:
+            sort_pattern = r'(sort|order)\s+by\s+(\w+)'
+            match = re.search(sort_pattern, query_lower)
+            if match:
+                field = match.group(2)
+
+                table_fields = self.schema.get(table, [])
+                field_match = None
+                for tf in table_fields:
+                    if field in tf or field.replace(' ', '_') == tf:
+                        field_match = tf
+                        break
+
+                if field_match:
+                    direction = "DESC" if "desc" in query_lower or "highest" in query_lower else "ASC"
+                    return f"ORDER BY {table}.{field_match} {direction}"
+
+        date_column = self._get_date_column(table)
+        if date_column:
+            direction = "DESC" if "recent" in query_lower else "DESC"
+            return f"ORDER BY {date_column} {direction}"
+
+        id_column = f"{table}.{table[:-1]}_id" if table.endswith('s') else f"{table}.{table}_id"
+        return f"ORDER BY {id_column} DESC"
+
+    def _extract_fields(self, query, tables):
+        if not tables:
+            return ["*"]
+
+        query_lower = query.lower()
+        selected_fields = []
+
+        for table in tables:
+            if table in self.schema:
+                table_fields = self.schema[table]
+
+                for field in table_fields:
+                    field_name = field.replace('_', ' ')
+                    if field_name in query_lower or field in query_lower:
+                        selected_fields.append(f"{table}.{field}")
+
+        if not selected_fields:
+            for table in tables:
+                if table in self.schema:
+                    for field in self.schema[table]:
+                        if field.endswith('_id') or field == 'name':
+                            selected_fields.append(f"{table}.{field}")
+
+                        if table == 'assets' and field in ['asset_type', 'price']:
+                            selected_fields.append(f"{table}.{field}")
+                        elif table == 'accounts' and field == 'balance':
+                            selected_fields.append(f"{table}.{field}")
+                        elif table == 'trades' and field in ['quantity', 'price', 'trade_date']:
+                            selected_fields.append(f"{table}.{field}")
+
+        if not selected_fields:
+            return ["*"]
+
+        return selected_fields
+
+    def _generate_joins_for_tables(self, tables):
+        if len(tables) <= 1:
+            return []
+
+        join_clauses = []
+        primary_table = tables[0]
+
+        for secondary_table in tables[1:]:
+            if (primary_table, secondary_table) in self.relationships:
+                from_key, to_key = self.relationships[(primary_table, secondary_table)]
+                join_clauses.append(f"{secondary_table} ON {primary_table}.{from_key} = {secondary_table}.{to_key}")
+
+            elif (secondary_table, primary_table) in self.relationships:
+                to_key, from_key = self.relationships[(secondary_table, primary_table)]
+                join_clauses.append(f"{secondary_table} ON {primary_table}.{from_key} = {secondary_table}.{to_key}")
+
             else:
-                sort_direction = "ASC"
-        elif intent_type == "database_query_comparative" or sub_intent in ["database_query_comparative_highest",
-                                                                           "database_query_comparative_lowest",
-                                                                           "database_query_comparative_middle"]:
-            if sub_intent == "database_query_comparative_highest" or "highest" in nl_query.lower():
-                sort_field = self._extract_superlative_field(nl_query, extended_tables, "highest")
-                sort_direction = "DESC"
-            elif sub_intent == "database_query_comparative_lowest" or "lowest" in nl_query.lower():
-                sort_field = self._extract_superlative_field(nl_query, extended_tables, "lowest")
-                sort_direction = "ASC"
-            elif sub_intent == "database_query_comparative_middle" or "middle" in nl_query.lower() or "median" in nl_query.lower():
-                return self._handle_middle_value_query(nl_query, extended_tables, fields)
+                for intermediate_table in self.schema.keys():
+                    if intermediate_table == primary_table or intermediate_table == secondary_table:
+                        continue
 
-        if (intent_type == "database_query_sort" or intent_type == "database_query_comparative") and not sort_field:
-            sort_field = self._get_default_sort_field(extended_tables, nl_query)
+                    if ((primary_table, intermediate_table) in self.relationships and
+                            (intermediate_table, secondary_table) in self.relationships):
+
+                        p_from_key, i_to_key = self.relationships[(primary_table, intermediate_table)]
+                        join_clauses.append(
+                            f"{intermediate_table} ON {primary_table}.{p_from_key} = {intermediate_table}.{i_to_key}")
+
+                        i_from_key, s_to_key = self.relationships[(intermediate_table, secondary_table)]
+                        join_clauses.append(
+                            f"{secondary_table} ON {intermediate_table}.{i_from_key} = {secondary_table}.{s_to_key}")
+
+                        break
+
+                    elif ((intermediate_table, primary_table) in self.relationships and
+                          (intermediate_table, secondary_table) in self.relationships):
+
+                        i_from_key, p_to_key = self.relationships[(intermediate_table, primary_table)]
+                        join_clauses.append(
+                            f"{intermediate_table} ON {primary_table}.{p_to_key} = {intermediate_table}.{i_from_key}")
+
+                        i_from_key, s_to_key = self.relationships[(intermediate_table, secondary_table)]
+                        join_clauses.append(
+                            f"{secondary_table} ON {intermediate_table}.{i_from_key} = {secondary_table}.{s_to_key}")
+
+                        break
+
+                if len(join_clauses) == 0:
+                    self.logger.warning(
+                        f"No direct relationship found between {primary_table} and {secondary_table}. Using fallback join.")
+                    join_clauses.append(
+                        f"{secondary_table} ON {primary_table}.{primary_table[:-1]}_id = {secondary_table}.{primary_table[:-1]}_id")
+
+        return join_clauses
+
+
+    def _handle_date_range_query(self, query, intent_data=None):
+
+        query_lower = query.lower()
+        tables = self._extract_tables(query)
+
+        if not tables:
+            return None
+
+        primary_table = tables[0]
+        date_column = self._get_date_column(primary_table)
+
+        if not date_column:
+            self.logger.warning(f"No date column found for table {primary_table}")
+            return None
+
+        date_range = self._extract_date_range(query_lower)
+        if not date_range:
+            self.logger.warning("Could not determine date range from query")
+            return self.process_query(query, intent_data)
+
+        start_date, end_date = date_range
+
+        sql = f"""
+        SELECT * 
+        FROM {primary_table}
+        WHERE {date_column} BETWEEN '{start_date}' AND '{end_date}'
+        ORDER BY {date_column} DESC
+        LIMIT 100
+        """
+
+        self.logger.info(f"Generated date range SQL: {sql}")
+        result = self._execute_and_process_query(sql)
+        return result
+
+    def _get_date_column(self, table):
+        date_column_mapping = {
+            "trades": "trade_date",
+            "orders": "order_date",
+            "transactions": "transaction_date",
+            "accounts": "creation_date",
+            "traders": "registration_date",
+            "price_history": "price_date",
+            "order_status": "status_date"
+        }
+
+        return f"{table}.{date_column_mapping.get(table, '')}" if table in date_column_mapping else None
+
+    def _extract_date_range(self, query):
+
+        from datetime import datetime, timedelta
+        import re
+        import calendar
+
+        today = datetime.now()
+
+        specific_date_pattern = r'(\d{1,2})\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+(20\d{2})'
+        specific_date_match = re.search(specific_date_pattern, query.lower())
+        if specific_date_match:
+            day = int(specific_date_match.group(1))
+            month_name = specific_date_match.group(2).lower()
+            year = int(specific_date_match.group(3))
+
+            months = {
+                "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
+                "july": 7, "august": 8, "september": 9, "october": 10, "november": 11, "december": 12
+            }
+            month = months[month_name]
+
+            max_days = calendar.monthrange(year, month)[1]
+            day = min(day, max_days)
+
+            specific_date = datetime(year, month, day)
+            return specific_date.strftime('%Y-%m-%d'), specific_date.strftime('%Y-%m-%d')
+
+        month_rel_year_pattern = r'(january|february|march|april|may|june|july|august|september|october|november|december)\s+(last|this|next)\s+year'
+        month_rel_year_match = re.search(month_rel_year_pattern, query.lower())
+        if month_rel_year_match:
+            month_name = month_rel_year_match.group(1).lower()
+            relative_year = month_rel_year_match.group(2).lower()
+
+            months = {
+                "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
+                "july": 7, "august": 8, "september": 9, "october": 10, "november": 11, "december": 12
+            }
+            month = months[month_name]
+
+            if relative_year == "last":
+                year = today.year - 1
+            elif relative_year == "next":
+                year = today.year + 1
+            else:  # "this"
+                year = today.year
+
+            days_in_month = calendar.monthrange(year, month)[1]
+
+            start_date = datetime(year, month, 1)
+            end_date = datetime(year, month, days_in_month)
+            return start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')
+
+        month_year_pattern = r'(january|february|march|april|may|june|july|august|september|october|november|december)\s+(20\d{2})'
+        month_year_match = re.search(month_year_pattern, query.lower())
+        if month_year_match:
+            month_name = month_year_match.group(1).lower()
+            year = int(month_year_match.group(2))
+
+            months = {
+                "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
+                "july": 7, "august": 8, "september": 9, "october": 10, "november": 11, "december": 12
+            }
+            month = months[month_name]
+
+            days_in_month = calendar.monthrange(year, month)[1]
+
+            start_date = datetime(year, month, 1)
+            end_date = datetime(year, month, days_in_month)
+            return start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')
+
+        year_pattern = r'from\s+(20\d{2})\b'
+        year_match = re.search(year_pattern, query)
+        if year_match:
+            year = int(year_match.group(1))
+            start_date = datetime(year, 1, 1)
+            end_date = datetime(year, 12, 31)
+            return start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')
+
+        alt_year_pattern = r'\b(20\d{2})\b.*?(trades|transactions|orders)'
+        alt_year_match = re.search(alt_year_pattern, query)
+        if alt_year_match:
+            year = int(alt_year_match.group(1))
+            start_date = datetime(year, 1, 1)
+            end_date = datetime(year, 12, 31)
+            return start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')
+
+        last_pattern = r'last\s+(\d+)\s+(day|days|week|weeks|month|months|year|years)'
+        match = re.search(last_pattern, query)
+        if match:
+            num = int(match.group(1))
+            unit = match.group(2).lower()
+
+            if unit in ['day', 'days']:
+                start_date = today - timedelta(days=num)
+            elif unit in ['week', 'weeks']:
+                start_date = today - timedelta(weeks=num)
+            elif unit in ['month', 'months']:
+                start_date = today - timedelta(days=num * 30)  # Approximate
+            elif unit in ['year', 'years']:
+                start_date = today - timedelta(days=num * 365)  # Approximate
+
+            return start_date.strftime('%Y-%m-%d'), today.strftime('%Y-%m-%d')
+
+        if "last year" in query:
+            start_date = datetime(today.year - 1, 1, 1)
+            end_date = datetime(today.year - 1, 12, 31)
+            return start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')
+
+        if "last month" in query:
+            month = today.month - 1
+            year = today.year
+            if month == 0:
+                month = 12
+                year -= 1
+
+            days_in_month = calendar.monthrange(year, month)[1]
+
+            start_date = datetime(year, month, 1)
+            end_date = datetime(year, month, days_in_month)
+            return start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')
+
+        if "last week" in query:
+            start_date = today - timedelta(days=today.weekday() + 7)
+            end_date = start_date + timedelta(days=6)
+            return start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')
+
+        if "this year" in query:
+            start_date = datetime(today.year, 1, 1)
+            end_date = datetime(today.year, 12, 31)
+            return start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')
+
+        if "this month" in query:
+            days_in_month = calendar.monthrange(today.year, today.month)[1]
+
+            start_date = datetime(today.year, today.month, 1)
+            end_date = datetime(today.year, today.month, days_in_month)
+            return start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')
+
+        if any(word in query for word in ["recent", "latest", "newest", "current"]):
+            start_date = today - timedelta(days=30)
+            return start_date.strftime('%Y-%m-%d'), today.strftime('%Y-%m-%d')
+
+        months = {
+            "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
+            "july": 7, "august": 8, "september": 9, "october": 10, "november": 11, "december": 12
+        }
+
+        for month_name, month_num in months.items():
+            if month_name in query:
+                year_pattern = r'\b(20\d{2})\b'
+                year_match = re.search(year_pattern, query)
+                year = int(year_match.group(1)) if year_match else today.year
+
+                days_in_month = calendar.monthrange(year, month_num)[1]
+
+                start_date = datetime(year, month_num, 1)
+                end_date = datetime(year, month_num, days_in_month)
+                return start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')
+
+        start_date = today - timedelta(days=30)
+        return start_date.strftime('%Y-%m-%d'), today.strftime('%Y-%m-%d')
+
+    def _extract_tables(self, query):
+        query_lower = query.lower()
+
+        table_indicators = {
+            "traders": ["trader", "traders"],
+            "assets": ["asset", "assets", "etf", "stock"],
+            "markets": ["market", "markets"],
+            "trades": ["trade", "trades"],
+            "accounts": ["account", "accounts", "balance"],
+            "transactions": ["transaction", "transactions", "transfer", "deposit"],
+            "orders": ["order", "orders"],
+            "brokers": ["broker", "brokers"],
+            "price_history": ["price history", "historical price"]
+        }
+
+        for table, indicators in table_indicators.items():
+            if any(indicator in query_lower for indicator in indicators):
+                return [table]
+
+        return ["traders"]
+
+    def _analyze_query(self, query):
+        query_lower = query.lower()
+        components = {
+            "tables": [],
+            "fields": [],
+            "filters": [],
+            "sort_field": None,
+            "sort_order": "ASC",
+            "limit": 50,
+            "offset": 0,
+            "aggregate_function": None,
+            "group_by": [],
+            "is_list_query": False,
+            "is_count_query": False,
+            "is_aggregate_query": False,
+            "is_specific_entity": False,
+            "entity_name": None
+        }
+
+        for table in self.schema.keys():
+            singular = table[:-1] if table.endswith('s') else table
+            if table in query_lower or singular in query_lower:
+                components["tables"].append(table)
+
+        entity_patterns = [
+            r'about\s+([A-Za-z0-9\s]+)',
+            r'details\s+(?:for|of|about)\s+([A-Za-z0-9\s]+)',
+            r'show\s+(?:me\s+)?([A-Za-z0-9\s]+)(?:\s+details)?',
+            r'tell\s+me\s+about\s+([A-Za-z0-9\s]+)'
+        ]
+
+        for pattern in entity_patterns:
+            match = re.search(pattern, query_lower)
+            if match:
+                entity_name = match.group(1).strip()
+                skip_words = ["all", "the", "details", "info", "information"]
+                if entity_name not in skip_words and len(entity_name.split()) <= 3:
+                    components["is_specific_entity"] = True
+                    components["entity_name"] = entity_name
+                    break
+
+        list_indicators = ["list", "show", "get", "find", "display", "all"]
+        if any(indicator in query_lower for indicator in list_indicators) and not components["is_specific_entity"]:
+            components["is_list_query"] = True
+
+        count_indicators = ["count", "how many", "number of", "total"]
+        if any(indicator in query_lower for indicator in count_indicators):
+            components["is_count_query"] = True
+
+        agg_functions = {
+            "average": "AVG", "avg": "AVG", "mean": "AVG",
+            "sum": "SUM", "total": "SUM",
+            "minimum": "MIN", "min": "MIN", "lowest": "MIN",
+            "maximum": "MAX", "max": "MAX", "highest": "MAX"
+        }
+
+        for indicator, function in agg_functions.items():
+            if indicator in query_lower:
+                components["is_aggregate_query"] = True
+                components["aggregate_function"] = function
+                break
+
+        sort_indicators = ["sort by", "order by", "sorted by", "arranged by"]
+        for indicator in sort_indicators:
+            if indicator in query_lower:
+                parts = query_lower.split(indicator)
+                if len(parts) > 1:
+                    sort_part = parts[1].strip().split()
+                    if sort_part:
+                        field = sort_part[0]
+                        components["sort_field"] = field
+
+                        if "desc" in query_lower or "descending" in query_lower:
+                            components["sort_order"] = "DESC"
+                        break
+
+        for table in components["tables"]:
+            table_fields = self.schema.get(table, [])
+            for field in table_fields:
+                field_name = field.replace('_', ' ')
+                if field_name in query_lower or field in query_lower:
+                    components["fields"].append(f"{table}.{field}")
+
+        if "etf" in query_lower and "assets" in components["tables"]:
+            components["filters"].append(("assets.asset_type", "=", "ETF"))
+        elif "stock" in query_lower and "assets" in components["tables"]:
+            components["filters"].append(("assets.asset_type", "=", "STOCK"))
+        elif "bond" in query_lower and "assets" in components["tables"]:
+            components["filters"].append(("assets.asset_type", "=", "BOND"))
+
+        if "completed" in query_lower and "orders" in components["tables"]:
+            components["filters"].append(("order_status.status", "=", "COMPLETED"))
+        elif "pending" in query_lower and "orders" in components["tables"]:
+            components["filters"].append(("order_status.status", "=", "PENDING"))
+
+        if "balance" in query_lower and "accounts" in components["tables"]:
+            if "highest" in query_lower:
+                components["sort_field"] = "accounts.balance"
+                components["sort_order"] = "DESC"
+            elif "lowest" in query_lower:
+                components["sort_field"] = "accounts.balance"
+                components["sort_order"] = "ASC"
+
+        if any(term in query_lower for term in ["price", "cost", "value"]):
+            if "assets" in components["tables"] and "price_history" not in components["tables"]:
+                components["tables"].append("price_history")
+            if "highest" in query_lower:
+                components["sort_field"] = "price_history.close_price"
+                components["sort_order"] = "DESC"
+            elif "lowest" in query_lower:
+                components["sort_field"] = "price_history.close_price"
+                components["sort_order"] = "ASC"
+
+        if not components["tables"]:
+            if "traders" in query_lower or "trader" in query_lower:
+                components["tables"].append("traders")
+            elif "assets" in query_lower or "asset" in query_lower:
+                components["tables"].append("assets")
+            elif "markets" in query_lower or "market" in query_lower:
+                components["tables"].append("markets")
+            elif "trades" in query_lower or "trade" in query_lower:
+                components["tables"].append("trades")
+            elif "orders" in query_lower or "order" in query_lower:
+                components["tables"].append("orders")
+            elif "brokers" in query_lower or "broker" in query_lower:
+                components["tables"].append("brokers")
+
+        limit_match = re.search(r'(top|first|limit)\s+(\d+)', query_lower)
+        if limit_match:
+            try:
+                components["limit"] = int(limit_match.group(2))
+            except ValueError:
+                pass
+
+        return components
+
+    def _build_sql_query(self, components):
+        if not components["tables"]:
+            self.logger.warning("No tables identified in query")
+            return None
+
+        if components["is_count_query"]:
+            select_clause = "SELECT COUNT(*) as count"
+        elif components["is_aggregate_query"] and components["aggregate_function"]:
+            agg_field = None
+            if "price" in components["fields"] or "close_price" in ' '.join(components["fields"]):
+                agg_field = "price_history.close_price"
+            elif "balance" in components["fields"]:
+                agg_field = "accounts.balance"
+            elif "amount" in components["fields"]:
+                agg_field = "transactions.amount"
+            elif "quantity" in components["fields"]:
+                agg_field = "trades.quantity"
+            else:
+                table = components["tables"][0]
+                numeric_fields = ["price", "balance", "amount", "quantity"]
+                for field in self.schema.get(table, []):
+                    if any(nf in field for nf in numeric_fields):
+                        agg_field = f"{table}.{field}"
+                        break
+
+            if not agg_field:
+                self.logger.warning("Could not determine field for aggregation")
+                select_clause = "SELECT *"
+            else:
+                select_clause = f"SELECT {components['aggregate_function']}({agg_field}) as result"
+
+                if components["group_by"]:
+                    group_fields = []
+                    for field in components["group_by"]:
+                        group_fields.append(field)
+                    select_clause += f", {', '.join(group_fields)}"
+        else:
+            if components["fields"]:
+                select_clause = f"SELECT {', '.join(components['fields'])}"
+            else:
+                essential_fields = []
+                for table in components["tables"]:
+                    table_fields = self.schema.get(table, [])
+                    for field in table_fields:
+                        if field == f"{table[:-1]}_id" or field == "name" or field == "balance" or field == "price":
+                            essential_fields.append(f"{table}.{field}")
+
+                if essential_fields:
+                    select_clause = f"SELECT {', '.join(essential_fields)}"
+                else:
+                    select_clause = "SELECT *"
+
+        primary_table = components["tables"][0]
+        from_clause = f"FROM {primary_table}"
+
+        for table in components["tables"][1:]:
+            join_path = self._find_join_path(primary_table, table)
+            if join_path:
+                for step in join_path:
+                    from_table, to_table, from_key, to_key = step
+                    from_clause += f" JOIN {to_table} ON {from_table}.{from_key} = {to_table}.{to_key}"
+            else:
+                self.logger.warning(f"Could not find join path from {primary_table} to {table}")
+        where_clauses = []
+        for field, operator, value in components["filters"]:
+            if isinstance(value, str) and not value.isdigit():
+                value = f"'{value}'"
+            where_clauses.append(f"{field} {operator} {value}")
+
+        where_clause = ""
+        if where_clauses:
+            where_clause = f"WHERE {' AND '.join(where_clauses)}"
+
+        group_by_clause = ""
+        if components["is_aggregate_query"] and components["group_by"]:
+            group_by_clause = f"GROUP BY {', '.join(components['group_by'])}"
 
         order_by_clause = ""
-        if sort_field and sort_direction:
-            order_by_clause = f"ORDER BY {sort_field} {sort_direction}"
+        if components["sort_field"]:
+            order_by_clause = f"ORDER BY {components['sort_field']} {components['sort_order']}"
 
-        if intent_type == "database_query_comparative":
-            limit = self._extract_number_from_query(nl_query) or 10
-        else:
-            limit = 100
-
-        limit_clause = f"LIMIT {limit}"
+        limit_clause = f"LIMIT {components['limit']}"
+        if components["offset"] > 0:
+            limit_clause += f" OFFSET {components['offset']}"
 
         sql_parts = [select_clause, from_clause]
+        if where_clause:
+            sql_parts.append(where_clause)
+        if group_by_clause:
+            sql_parts.append(group_by_clause)
         if order_by_clause:
             sql_parts.append(order_by_clause)
+
         sql_parts.append(limit_clause)
 
         sql = " ".join(sql_parts)
-        self.logger.info(f"Generated generic SQL: {sql}")
+        self.logger.info(f"Generated SQL: {sql}")
 
-        return self._execute_and_process_query(sql)
+        return sql
+
     def _find_join_path(self, from_table, to_table, visited=None):
         if visited is None:
             visited = set()
@@ -457,561 +742,125 @@ class QueryProcessor:
         if from_table == to_table:
             return []
 
-        if from_table in visited:
-            return None
-
         visited.add(from_table)
 
-        if to_table in self.table_graph.get(from_table, {}):
-            return [{"from": from_table, "to": to_table, "key": self.table_graph[from_table][to_table]}]
+        if (from_table, to_table) in self.relationships:
+            from_key, to_key = self.relationships[(from_table, to_table)]
+            return [(from_table, to_table, from_key, to_key)]
 
-        for neighbor, key in self.table_graph.get(from_table, {}).items():
-            path = self._find_join_path(neighbor, to_table, visited.copy())
-            if path:
-                return [{"from": from_table, "to": neighbor, "key": key}] + path
+        if (to_table, from_table) in self.relationships:
+            to_key, from_key = self.relationships[(to_table, from_table)]
+            return [(from_table, to_table, from_key, to_key)]
 
-        return None
-
-    def _generate_joins_for_tables(self, tables):
-        if not tables or len(tables) <= 1:
-            return []
-
-        join_clauses = []
-        already_joined = {tables[0]}
-
-        for target_table in tables[1:]:
-            if target_table in already_joined:
+        for next_table in self.schema.keys():
+            if next_table in visited:
                 continue
 
-            best_path = None
-            start_table = None
-
-            for joined_table in already_joined:
-                path = self._find_join_path(joined_table, target_table)
-                if path and (best_path is None or len(path) < len(best_path)):
-                    best_path = path
-                    start_table = joined_table
-
-            if best_path:
-                for step in best_path:
-                    from_table = step["from"]
-                    to_table = step["to"]
-                    key = step["key"]
-
-                    if to_table not in already_joined:
-                        join_clause = f"{to_table} ON {from_table}.{key} = {to_table}.{key}"
-                        join_clauses.append(join_clause)
-                        already_joined.add(to_table)
-
-        return join_clauses
-
-
-    def _handle_list_query(self, nl_query):
-        tables = self._extract_tables(nl_query)
-
-        if not tables:
-            self.logger.warning("No tables identified in the listing query")
-            return None
-
-        all_fields = []
-        for table in tables:
-            essential_fields = self.get_essential_fields(table)
-            all_fields.extend([f"{table}.{field}" for field in essential_fields])
-
-        select_clause = f"SELECT {', '.join(all_fields)}"
-        from_clause = f"FROM {tables[0]}"
-
-        join_clauses = self._generate_joins_for_tables(tables)
-        join_clause = " JOIN ".join(join_clauses)
-        if join_clause:
-            from_clause = f"{from_clause} JOIN {join_clause}"
-
-        limit_clause = "LIMIT 100"
-
-        sql_parts = [select_clause, from_clause, limit_clause]
-
-        sql = " ".join(sql_parts)
-        self.logger.info(f"Generated listing SQL: {sql}")
-
-        return self._execute_and_process_query(sql)
-
-    def _handle_count_query(self, nl_query):
-        tables = self._extract_tables(nl_query)
-
-        if not tables:
-            return None
-
-        select_clause = "SELECT COUNT(*) as count"
-        from_clause = f"FROM {tables[0]}"
-
-        join_clauses = self._generate_joins_for_tables(tables)
-        join_clause = " JOIN ".join(join_clauses)
-        if join_clause:
-            from_clause = f"{from_clause} JOIN {join_clause}"
-
-        sql_parts = [select_clause, from_clause]
-
-        sql = " ".join(sql_parts)
-        self.logger.info(f"Generated count SQL: {sql}")
-
-        return self._execute_and_process_query(sql)
-
-    def _handle_highest_query(self, nl_query):
-        tables = self._extract_tables(nl_query)
-        if not tables:
-            return None
-
-        fields = []
-        for table in tables:
-            for field in self.table_info.get(table, []):
-                if not self._should_encrypt_field(field):
-                    fields.append(f"{table}.{field}")
-        select_clause = f"SELECT {', '.join(fields)}"
-        from_clause = f"FROM {tables[0]}"
-
-        join_clauses = self._generate_joins_for_tables(tables)
-        join_clause = " JOIN ".join(join_clauses)
-        if join_clause:
-            from_clause = f"{from_clause} JOIN {join_clause}"
-
-        sort_field = self._extract_sort_field(nl_query, tables)
-        order_by_clause = ""
-        if sort_field:
-            order_by_clause = f"ORDER BY {sort_field} ASC"
-
-        limit_clause = "LIMIT 100"
-
-        sql_parts = [select_clause, from_clause]
-        if order_by_clause:
-            sql_parts.append(order_by_clause)
-        sql_parts.append(limit_clause)
-
-        sql = " ".join(sql_parts)
-        self.logger.info(f"Generated sort ascending SQL: {sql}")
-
-        return self._execute_and_process_query(sql)
-
-    def _handle_middle_query(self, nl_query):
-        tables = self._extract_tables(nl_query)
-        if not tables:
-            return None
-
-        fields = []
-        for table in tables:
-            for field in self.table_info.get(table, []):
-                if not self._should_encrypt_field(field):
-                    fields.append(f"{table}.{field}")
-
-        if "price" in nl_query.lower() and "asset" in nl_query.lower():
-            if "assets" not in tables:
-                tables.append("assets")
-            if "price_history" not in tables:
-                tables.append("price_history")
-
-        return self._handle_middle_value_query(nl_query, tables, fields)
-
-    def _handle_middle_value_query(self, nl_query, tables, fields):
-        sort_field = self._extract_superlative_field(nl_query, tables, "middle")
-
-        if not sort_field:
-            sort_field = self._get_default_sort_field(tables, nl_query)
-
-        if not sort_field:
-            self.logger.warning("No sort field identified for median query")
-            return self._process_query_generic(nl_query)
-
-        select_clause = f"SELECT {', '.join(fields)}"
-        from_clause = f"FROM {tables[0]}"
-
-        join_clauses = self._generate_joins_for_tables(tables)
-        if join_clauses:
-            join_clause = " JOIN ".join(join_clauses)
-            from_clause = f"{from_clause} JOIN {join_clause}"
-
-        main_table = tables[0]
-        count_sql = f"SELECT COUNT(*) as count FROM {main_table}"
-        count_result = self.db_connector.execute_query(count_sql)
-
-        if not count_result or not count_result[0].get('count', 0):
-            self.logger.warning(f"Count query returned no results: {count_sql}")
-            return None
-
-        total_count = count_result[0]['count']
-
-        requested_limit = self._extract_number_from_query(nl_query)
-        limit = requested_limit or 10
-
-        middle_offset = max(0, (total_count // 2) - (limit // 2))
-
-        order_by_clause = f"ORDER BY {sort_field}"
-        limit_clause = f"LIMIT {middle_offset}, {limit}"
-
-        sql_parts = [select_clause, from_clause, order_by_clause, limit_clause]
-        sql = " ".join(sql_parts)
-
-        self.logger.info(f"Generated middle value SQL: {sql}")
-        return self._execute_and_process_query(sql)
-
-    def _handle_specific_id_query(self, nl_query):
-        tables = self._extract_tables(nl_query)
-
-        if not tables:
-            return None
-
-        id_match = re.search(r'(\w+)\s+(\d+)', nl_query)
-        if not id_match:
-            all_numbers = re.findall(r'\d+', nl_query)
-            if all_numbers:
-                id_value = all_numbers[0]
-                table = tables[0]
-            else:
-                return self._process_query_generic(nl_query)
-        else:
-            entity, id_value = id_match.groups()
-            table = self.entity_mapping.get(entity.lower(), tables[0])
-
-        table_fields = self.table_info.get(table, [])
-        fields = [f"{table}.{field}" for field in table_fields
-                  if not self._should_encrypt_field(field)]
-
-        select_clause = f"SELECT {', '.join(fields)}" if fields else f"SELECT *"
-        from_clause = f"FROM {table}"
-
-        id_field = f"{table}_id"
-        where_clause = f"WHERE {id_field} = {id_value}"
-
-        sql_parts = [select_clause, from_clause, where_clause]
-
-        sql = " ".join(sql_parts)
-        self.logger.info(f"Generated specific ID SQL: {sql}")
-
-        return self._execute_and_process_query(sql)
-
-    def _initialize_table_relationships(self):
-        self.table_relationships = {
-            ("traders", "accounts"): {
-                "join": "traders.trader_id = accounts.trader_id",
-                "cardinality": "one-to-many"
-            },
-            ("accounts", "transactions"): {
-                "join": "accounts.account_id = transactions.account_id",
-                "cardinality": "one-to-many"
-            },
-            ("assets", "price_history"): {
-                "join": "assets.asset_id = price_history.asset_id",
-                "cardinality": "one-to-many"
-            },
-            ("assets", "trades"): {
-                "join": "assets.asset_id = trades.asset_id",
-                "cardinality": "one-to-many"
-            },
-            ("traders", "trades"): {
-                "join": "traders.trader_id = trades.trader_id",
-                "cardinality": "one-to-many"
-            },
-            ("orders", "trades"): {
-                "join": "orders.trade_id = trades.trade_id",
-                "cardinality": "one-to-one"
-            },
-            ("markets", "trades"): {
-                "join": "markets.market_id = trades.market_id",
-                "cardinality": "one-to-many"
-            },
-            ("orders", "order_status"): {
-                "join": "orders.order_id = order_status.order_id",
-                "cardinality": "one-to-many"
-            },
-            ("brokers", "assets"): {
-                "join": "brokers.broker_id = assets.broker_id",
-                "cardinality": "one-to-many"
-            }
-        }
-
-        reverse_relationships = {}
-        for (table1, table2), relationship in self.table_relationships.items():
-            join = relationship["join"]
-            cardinality = relationship["cardinality"]
-            if cardinality == "one-to-many":
-                reverse_cardinality = "many-to-one"
-            elif cardinality == "many-to-one":
-                reverse_cardinality = "one-to-many"
-            else:
-                reverse_cardinality = cardinality
-
-            reverse_relationships[(table2, table1)] = {
-                "join": join,
-                "cardinality": reverse_cardinality
-            }
-
-        self.table_relationships.update(reverse_relationships)
-
-        self.indirect_relationships = {
-            ("traders", "transactions"): {
-                "path": [("traders", "accounts"), ("accounts", "transactions")],
-                "description": "Traders make transactions through accounts"
-            },
-            ("brokers", "trades"): {
-                "path": [("brokers", "assets"), ("assets", "trades")],
-                "description": "Brokers manage assets that are traded"
-            }
-        }
-
-    def get_essential_fields(self, table_name):
-        return self.essential_fields.get(table_name, ["name"])
-
-    def _should_encrypt_field(self, field_name):
-        if field_name in self.sensitive_fields:
-            return True
-
-        sensitive_patterns = [
-            "password", "pwd", "secret", "token", "key",
-            "ssn", "social_security", "tax_id",
-            "credit_card", "card_number", "cvv", "ccv",
-            "license_number", "license_id",
-        ]
-
-        sensitive_email_fields = ["email", "contact_email"]
-        if field_name in sensitive_email_fields:
-            return True
-
-        if "phone" in field_name:
-            return True
-
-        return any(pattern in field_name.lower() for pattern in sensitive_patterns)
-
-    def process_query(self, nl_query, intent_data):
-        intent = intent_data.get('intent', 'database_query_list')
-        confidence = intent_data.get('confidence', 0.0)
-        sub_intent = intent_data.get('sub_intent')
-
-        self.logger.info(f"Processing query with intent: {intent}, confidence: {confidence}")
-
-        if confidence >= 0.7:
-            return self._process_query_generic(nl_query, intent, sub_intent)
-
-        tables = self._extract_tables(nl_query)
-        if not tables:
-            self.logger.warning("No tables identified in the query")
-            return None
-
-        if "count" in nl_query.lower() and any(term in nl_query.lower() for term in ["how many", "number of", "total"]):
-            return self._handle_count_query(nl_query)
-        elif "id" in nl_query.lower() and any(re.search(r'\b\d+\b', part) for part in nl_query.split()):
-            return self._handle_specific_id_query(nl_query)
-
-        return self._handle_list_query(nl_query)
-
-    def _extract_tables(self, nl_query):
-
-        tables = []
-        nl_query = nl_query.lower()
-
-        multi_word_entities = sorted([entity for entity in self.entity_mapping if ' ' in entity],
-                                     key=len, reverse=True)
-
-        for entity in multi_word_entities:
-            if entity in nl_query:
-                tables.append(self.entity_mapping[entity])
-
-        for entity, table in self.entity_mapping.items():
-            if ' ' not in entity:
-                if re.search(r'\b' + re.escape(entity) + r'\b', nl_query):
-                    tables.append(table)
-        if not tables:
-            if any(re.search(r'\b' + word + r'\b', nl_query) for word in ["market", "exchange"]):
-                tables.append("markets")
-            elif any(re.search(r'\b' + word + r'\b', nl_query) for word in ["trader", "client", "customer"]):
-                tables.append("traders")
-            elif any(re.search(r'\b' + word + r'\b', nl_query) for word in
-                     ["asset", "stock", "security", "etf", "bond"]):
-                tables.append("assets")
-            elif any(re.search(r'\b' + word + r'\b', nl_query) for word in ["trade", "trading"]):
-                tables.append("trades")
-            elif any(re.search(r'\b' + word + r'\b', nl_query) for word in ["order"]):
-                tables.append("orders")
-            elif any(re.search(r'\b' + word + r'\b', nl_query) for word in ["account", "balance"]):
-                tables.append("accounts")
-            elif any(re.search(r'\b' + word + r'\b', nl_query) for word in ["price", "value", "cost"]):
-                tables.append("price_history")
-            elif any(re.search(r'\b' + word + r'\b', nl_query) for word in ["transaction", "payment"]):
-                tables.append("transactions")
-            elif any(re.search(r'\b' + word + r'\b', nl_query) for word in ["broker", "dealer"]):
-                tables.append("brokers")
-
-        return list(set(tables))
-
-    def _extract_fields(self, nl_query, tables):
-        fields = []
-
-        if "*" in nl_query or "all fields" in nl_query.lower():
-            return ["*"]
-
-        price_related = any(
-            term in nl_query.lower() for term in ["price", "cost", "value", "worth", "expensive", "cheap"])
-        date_related = any(term in nl_query.lower() for term in ["date", "time", "when", "recent", "latest", "newest"])
-        name_related = any(term in nl_query.lower() for term in ["name", "called", "named"])
-
-        for table in tables:
-            if price_related:
-                if table == "price_history":
-                    fields.extend(["price_history.price_date", "price_history.close_price"])
-                elif table == "trades":
-                    fields.extend(["trades.trade_date", "trades.price"])
-                elif table == "assets":
-                    fields.append("assets.name")
-                    if "price_history" not in tables:
-                        tables.append("price_history")
-                        fields.append("price_history.close_price")
-
-            if date_related:
-                if table == "trades":
-                    fields.append("trades.trade_date")
-                elif table == "orders":
-                    fields.append("orders.order_date")
-                elif table == "transactions":
-                    fields.append("transactions.transaction_date")
-                elif table == "price_history":
-                    fields.append("price_history.price_date")
-
-            if name_related or not fields:
-                if table == "traders":
-                    fields.extend(["traders.name", "traders.registration_date"])
-                elif table == "brokers":
-                    fields.append("brokers.name")
-                elif table == "assets":
-                    fields.extend(["assets.name", "assets.asset_type"])
-                elif table == "markets":
-                    fields.extend(["markets.name", "markets.location"])
-
-        if not fields:
-            for table in tables:
-                essential = self.get_essential_fields(table)
-                for field in essential:
-                    fields.append(f"{table}.{field}")
-
-        return fields
-
-    def _get_default_sort_field(self, tables, nl_query):
-        nl_query = nl_query.lower()
-
-        if "price" in nl_query and "price_history" in tables:
-            return "price_history.close_price"
-        elif "price" in nl_query and "trades" in tables:
-            return "trades.price"
-        elif "date" in nl_query and "trades" in tables:
-            return "trades.trade_date"
-        elif "date" in nl_query and "orders" in tables:
-            return "orders.order_date"
-        elif "date" in nl_query and "transactions" in tables:
-            return "transactions.transaction_date"
-        elif "balance" in nl_query and "accounts" in tables:
-            return "accounts.balance"
-
-        default_sort_fields = {
-            "trades": "trades.trade_date",
-            "orders": "orders.order_date",
-            "assets": "assets.name",
-            "traders": "traders.name",
-            "markets": "markets.name",
-            "transactions": "transactions.transaction_date",
-            "accounts": "accounts.balance",
-            "price_history": "price_history.price_date",
-            "brokers": "brokers.name",
-            "order_status": "order_status.status_date"
-        }
-
-        if tables and tables[0] in default_sort_fields:
-            return default_sort_fields[tables[0]]
-
-        for table in tables:
-            if table in default_sort_fields:
-                return default_sort_fields[table]
-
-        if tables:
-            return f"{tables[0]}.{tables[0][:-1]}_id"
+            if (from_table, next_table) in self.relationships:
+                from_key, next_key = self.relationships[(from_table, next_table)]
+                rest_path = self._find_join_path(next_table, to_table, visited.copy())
+                if rest_path is not None:
+                    return [(from_table, next_table, from_key, next_key)] + rest_path
+
+            if (next_table, from_table) in self.relationships:
+                next_key, from_key = self.relationships[(next_table, from_table)]
+                rest_path = self._find_join_path(next_table, to_table, visited.copy())
+                if rest_path is not None:
+                    return [(from_table, next_table, from_key, next_key)] + rest_path
 
         return None
 
-    def _extract_superlative_field(self, nl_query, tables, superlative_type):
+    def _handle_list_query(self, query_components):
+        sql = self._build_sql_query(query_components)
+        if not sql:
+            return None
 
-        nl_query = nl_query.lower()
+        result = self._execute_and_process_query(sql)
+        return result
 
-        superlative_indicators = {
-            "highest": ["highest", "most", "maximum", "largest", "greatest", "biggest", "top"],
-            "lowest": ["lowest", "least", "minimum", "smallest", "least", "bottom"],
-            "middle": ["middle", "median", "average", "mid-range", "center"]
-        }
+    def _handle_count_query(self, query_components):
+        sql = self._build_sql_query(query_components)
+        if not sql:
+            return None
 
-        indicators = superlative_indicators.get(superlative_type, [])
+        result = self._execute_and_process_query(sql)
+        return result
 
-        for indicator in indicators:
-            if indicator in nl_query:
-                parts = nl_query.split(indicator)
-                if len(parts) > 1:
-                    field_text = parts[1].strip().split()[0]
+    def _handle_aggregate_query(self, query_components):
+        sql = self._build_sql_query(query_components)
+        if not sql:
+            return None
 
-                    field_mappings = {
-                        "price": "price",
-                        "cost": "price",
-                        "value": "price",
-                        "date": "trade_date",
-                        "time": "trade_date",
-                        "amount": "amount",
-                        "quantity": "quantity",
-                        "volume": "quantity",
-                        "balance": "balance"
+        result = self._execute_and_process_query(sql)
+        return result
+
+    def _handle_entity_query(self, query_components):
+        entity_name = query_components["entity_name"]
+        if not entity_name:
+            return None
+
+        tables_to_check = query_components["tables"] if query_components["tables"] else self.schema.keys()
+
+        for table in tables_to_check:
+            if "name" not in self.schema.get(table, []):
+                continue
+
+            sql = f"SELECT * FROM {table} WHERE name = '{entity_name}' LIMIT 1"
+            result = self._execute_and_process_query(sql)
+
+            if result and len(result) > 0:
+                entity_id = result[0].get(f"{table[:-1]}_id")
+                if entity_id:
+                    related_info = self._get_related_entity_data(table, entity_id)
+                    return {
+                        "entity_type": table,
+                        "entity_info": result,
+                        "related_info": related_info
                     }
 
-                    field = field_mappings.get(field_text)
+            sql = f"SELECT * FROM {table} WHERE name LIKE '%{entity_name}%' LIMIT 1"
+            result = self._execute_and_process_query(sql)
 
-                    if field:
-                        for table in tables:
-                            table_fields = self.table_info.get(table, [])
-                            for table_field in table_fields:
-                                if field in table_field:
-                                    return f"{table}.{table_field}"
-
-        default_fields = {
-            "trades": "trades.price",
-            "assets": "assets.price",
-            "accounts": "accounts.balance",
-            "transactions": "transactions.amount",
-            "price_history": "price_history.close_price"
-        }
-
-        for table in tables:
-            if table in default_fields:
-                return default_fields[table]
+            if result and len(result) > 0:
+                entity_id = result[0].get(f"{table[:-1]}_id")
+                if entity_id:
+                    related_info = self._get_related_entity_data(table, entity_id)
+                    return {
+                        "entity_type": table,
+                        "entity_info": result,
+                        "related_info": related_info
+                    }
 
         return None
 
-    def _extract_number_from_query(self, nl_query):
-        number_patterns = [
-            r'top\s+(\d+)',
-            r'first\s+(\d+)',
-            r'(\d+)\s+results',
-            r'limit\s+(\d+)',
-            r'limit\s+to\s+(\d+)'
-        ]
+    def _get_related_entity_data(self, entity_table, entity_id):
+        related_data = {}
+        id_field = f"{entity_table[:-1]}_id"
 
-        for pattern in number_patterns:
-            match = re.search(pattern, nl_query.lower())
-            if match:
-                try:
-                    return int(match.group(1))
-                except ValueError:
-                    pass
+        for (table1, table2), (key1, key2) in self.relationships.items():
+            if table1 == entity_table and key1 == id_field:
+                sql = f"SELECT * FROM {table2} WHERE {key2} = {entity_id} LIMIT 10"
+                result = self._execute_and_process_query(sql)
 
-        all_numbers = re.findall(r'\b\d+\b', nl_query)
-        for num in all_numbers:
-            try:
-                value = int(num)
-                if 1 <= value <= 1000:
-                    return value
-            except ValueError:
-                pass
+                if result and len(result) > 0:
+                    related_data[table2] = result
 
-        return None
+            elif table2 == entity_table and key2 == id_field:
+                sql = f"SELECT * FROM {table1} WHERE {key1} = {entity_id} LIMIT 10"
+                result = self._execute_and_process_query(sql)
+
+                if result and len(result) > 0:
+                    related_data[table1] = result
+
+        return related_data
+
+    def _handle_search_query(self, query_components):
+        sql = self._build_sql_query(query_components)
+        if not sql:
+            return None
+
+        result = self._execute_and_process_query(sql)
+        return result
 
     def _execute_and_process_query(self, sql):
         try:
@@ -1036,308 +885,22 @@ class QueryProcessor:
             self.logger.error(f"Error executing query: {e}")
             return None
 
-    def secure_process_query(self, nl_query):
-        try:
-            self.logger.info(f"Direct query processing for: {nl_query}")
-            tables = self._extract_tables(nl_query)
+    def _should_encrypt_field(self, field_name):
+        if field_name in self.sensitive_fields:
+            return True
 
-            if not tables:
-                self.logger.warning("No tables identified in the query")
-                return None
-
-            fields = self._extract_fields(nl_query, tables)
-
-            select_clause = f"SELECT {', '.join(fields)}"
-            from_clause = f"FROM {tables[0]}"
-
-            join_clauses = self._generate_joins_for_tables(tables)
-            join_clause = " JOIN ".join(join_clauses)
-            if join_clause:
-                from_clause = f"{from_clause} JOIN {join_clause}"
-
-            limit_clause = "LIMIT 100"
-
-            sql_parts = [select_clause, from_clause, limit_clause]
-
-            sql = " ".join(sql_parts)
-            self.logger.info(f"Generated SQL from natural language: {sql}")
-
-            return self._execute_and_process_query(sql)
-        except Exception as e:
-            self.logger.error(f"Error in secure_process_query: {e}")
-            return None
-
-
-    def _extract_entity_name(self, nl_query):
-        original_query = nl_query
-        nl_query = nl_query.lower()
-
-        entity_type_mappings = {
-            "broker": "brokers",
-            "trader": "traders",
-            "asset": "assets",
-            "stock": "assets",
-            "bond": "assets",
-            "etf": "assets",
-            "market": "markets",
-            "exchange": "markets",
-            "order": "orders",
-            "transaction": "transactions",
-            "account": "accounts"
-        }
-
-        entity_extraction_patterns = [
-            r'(?:about|on|for)\s+((?:[A-Za-z0-9]+(?:\s+[A-Za-z0-9]+)*)+)',
-
-            r'(?:details\s+(?:of|about|for)|information\s+(?:on|about))\s+((?:[A-Za-z0-9]+(?:\s+[A-Za-z0-9]+)*)+)',
-
-            r'(?:show\s+me|tell\s+me\s+about)\s+((?:[A-Za-z0-9]+(?:\s+[A-Za-z0-9]+)*)+)',
-
-            r'(?:find|lookup|get)\s+(?:details\s+(?:about|of|for)|information\s+(?:about|on))?\s+((?:[A-Za-z0-9]+(?:\s+[A-Za-z0-9]+)*)+)',
-
-            r'(?:give\s+me|what\s+is|who\s+is)\s+(?:all\s+information\s+about|details\s+about|information\s+about)?\s+((?:[A-Za-z0-9]+(?:\s+[A-Za-z0-9]+)*)+)'
+        sensitive_patterns = [
+            "password", "pwd", "secret", "token", "key",
+            "ssn", "social_security", "tax_id",
+            "credit_card", "card_number", "cvv", "ccv",
+            "license_number", "license_id"
         ]
 
-        entity_candidates = []
+        sensitive_email_fields = ["email", "contact_email"]
+        if field_name in sensitive_email_fields:
+            return True
 
-        for pattern in entity_extraction_patterns:
-            matches = re.search(pattern, nl_query)
-            if matches:
-                raw_entity = matches.group(1).strip()
+        if "phone" in field_name:
+            return True
 
-                cleanup_words = ['details', 'info', 'information', 'please', 'the']
-                for word in cleanup_words:
-                    if raw_entity.endswith(' ' + word):
-                        raw_entity = raw_entity.replace(' ' + word, '')
-                    if raw_entity.startswith(word + ' '):
-                        raw_entity = raw_entity.replace(word + ' ', '')
-
-                for entity_type in entity_type_mappings.keys():
-                    if raw_entity.startswith(entity_type + ' '):
-                        candidate = raw_entity[len(entity_type) + 1:].strip()
-                        entity_candidates.append((candidate, entity_type_mappings[entity_type]))
-
-                entity_candidates.append((raw_entity, None))
-
-        if entity_candidates:
-            entity_candidates.sort(key=lambda x: len(x[0]), reverse=True)
-
-            for candidate, table_hint in entity_candidates:
-                if table_hint:
-                    start_pos = nl_query.find(candidate.lower())
-                    if start_pos != -1:
-                        extracted_name = original_query[start_pos:start_pos + len(candidate)]
-
-                        result = self._check_entity_exists(extracted_name, table_hint)
-                        if result:
-                            self.logger.info(f"Found entity '{extracted_name}' in table '{table_hint}'")
-                            return extracted_name, table_hint
-
-                possible_tables = ['brokers', 'traders', 'assets', 'markets', 'accounts', 'orders', 'transactions']
-
-                for entity_type, table in entity_type_mappings.items():
-                    if entity_type in nl_query:
-                        if table in possible_tables:
-                            possible_tables.remove(table)
-                            possible_tables.insert(0, table)
-
-                start_pos = nl_query.find(candidate.lower())
-                if start_pos != -1:
-                    extracted_name = original_query[start_pos:start_pos + len(candidate)]
-
-                    for table in possible_tables:
-                        result = self._check_entity_exists(extracted_name, table)
-                        if result:
-                            self.logger.info(f"Found entity '{extracted_name}' in table '{table}'")
-                            return extracted_name, table
-
-        self.logger.warning(f"Could not extract entity name from query: {nl_query}")
-        return None, None
-
-    def _check_entity_exists(self, entity_name, table_name):
-        if not entity_name or not table_name:
-            return False
-
-        try:
-            sql = f"SELECT * FROM {table_name} WHERE LOWER(name) = LOWER(%s) LIMIT 1"
-            params = (entity_name,)
-            result = self.db_connector.execute_query(sql, params)
-
-            if result and len(result) > 0:
-                return True
-
-            sql = f"SELECT * FROM {table_name} WHERE LOWER(name) LIKE LOWER(%s) LIMIT 1"
-            params = (f"%{entity_name}%",)
-            result = self.db_connector.execute_query(sql, params)
-
-            return result and len(result) > 0
-
-        except Exception as e:
-            self.logger.error(f"Error checking if entity exists: {e}")
-            return False
-
-    def _get_entity_by_name(self, entity_name, table_name):
-        if not entity_name or not table_name:
-            return None
-
-        entity_name_lower = entity_name.lower()
-        name_field = "name"
-
-        sql = f"SELECT * FROM {table_name} WHERE LOWER({name_field}) LIKE %s"
-        params = (f"%{entity_name_lower}%",)
-
-        self.logger.info(f"Executing entity query: {sql} with params {params}")
-        result = self.db_connector.execute_query(sql, params)
-
-        if not result:
-            sql = f"SELECT * FROM {table_name} WHERE LOWER({name_field}) LIKE %s"
-            params = (f"%{entity_name_lower.split()[0]}%",)
-            self.logger.info(f"Trying more general entity query: {sql} with params {params}")
-            result = self.db_connector.execute_query(sql, params)
-
-        return result
-
-    def _get_related_entities(self, entity_id, table_name):
-        if not entity_id or not table_name:
-            self.logger.warning("Missing entity_id or table_name for related entity lookup")
-            return {}
-
-        self.logger.info(f"Getting related entities for {table_name} with ID {entity_id}")
-        related_data = {}
-
-        id_field = f"{table_name[:-1]}_id"
-
-        for related_table in self.table_info.keys():
-            if related_table != table_name:
-                if id_field in self.table_info.get(related_table, []):
-                    query = f"SELECT * FROM {related_table} WHERE {id_field} = {entity_id} LIMIT 10"
-                    self.logger.info(f"Checking for references in {related_table}: {query}")
-
-                    try:
-                        result = self.db_connector.execute_query(query)
-                        if result and len(result) > 0:
-                            related_data[related_table] = result
-                            self.logger.info(f"Found {len(result)} related records in {related_table}")
-                    except Exception as e:
-                        self.logger.error(f"Error checking for references in {related_table}: {e}")
-
-        entity_fields = self.table_info.get(table_name, [])
-        for field in entity_fields:
-            if field.endswith('_id') and field != id_field:
-                referenced_table = field[:-3] + 's'
-
-                try:
-                    ref_id_query = f"SELECT {field} FROM {table_name} WHERE {id_field} = {entity_id}"
-                    ref_id_result = self.db_connector.execute_query(ref_id_query)
-
-                    if ref_id_result and len(ref_id_result) > 0 and ref_id_result[0].get(field):
-                        referenced_id = ref_id_result[0][field]
-
-                        ref_query = f"SELECT * FROM {referenced_table} WHERE {referenced_table[:-1]}_id = {referenced_id}"
-                        self.logger.info(f"Looking up reference: {ref_query}")
-
-                        ref_result = self.db_connector.execute_query(ref_query)
-                        if ref_result and len(ref_result) > 0:
-                            related_data[referenced_table[:-1]] = ref_result
-                            self.logger.info(f"Found referenced {referenced_table} record")
-                except Exception as e:
-                    self.logger.error(f"Error retrieving reference for {field}: {e}")
-
-        return related_data
-
-    def process_entity_query(self, nl_query):
-        entity_name, table_name = self._extract_entity_name(nl_query)
-
-        self.logger.info(f"Extracted entity: '{entity_name}' from table: '{table_name}'")
-
-        if not entity_name:
-            self.logger.warning(f"Could not extract entity name from query: {nl_query}")
-            return None
-
-        if entity_name and not table_name:
-            possible_tables = ['brokers', 'traders', 'assets', 'markets', 'accounts', 'orders', 'transactions']
-            for table in possible_tables:
-                entity_info = self._get_entity_by_name(entity_name, table)
-                if entity_info and len(entity_info) > 0:
-                    table_name = table
-                    self.logger.info(f"Found entity '{entity_name}' in table '{table_name}'")
-                    break
-
-            if not table_name:
-                self.logger.warning(f"Could not determine table for entity: {entity_name}")
-                return None
-
-        entity_info = self._get_entity_by_name(entity_name, table_name)
-
-        if not entity_info or len(entity_info) == 0:
-            self.logger.warning(f"No entity found for {entity_name} in {table_name}")
-
-            alternative_tables = [t for t in ['brokers', 'traders', 'assets', 'markets', 'accounts'] if t != table_name]
-
-            for alt_table in alternative_tables:
-                self.logger.info(f"Trying alternative table: {alt_table}")
-                alt_info = self._get_entity_by_name(entity_name, alt_table)
-                if alt_info and len(alt_info) > 0:
-                    self.logger.info(f"Found entity in alternative table: {alt_table}")
-                    entity_info = alt_info
-                    table_name = alt_table
-                    break
-
-        if not entity_info or len(entity_info) == 0:
-            self.logger.warning(f"No entity found for {entity_name} after all fallbacks")
-            return None
-
-        id_field = f"{table_name[:-1]}_id"
-        entity_id = entity_info[0].get(id_field)
-
-        if not entity_id:
-            self.logger.warning(f"No ID field {id_field} found in entity")
-            return {
-                "entity_type": table_name,
-                "entity_info": entity_info,
-                "related_info": {}
-            }
-
-        related_info = self._get_related_entities(entity_id, table_name)
-
-        result = {
-            "entity_type": table_name,
-            "entity_info": entity_info,
-            "related_info": related_info
-        }
-
-        return self._process_entity_result(result, nl_query)
-
-    def _process_entity_result(self, result, nl_query):
-        if not result:
-            return None
-
-        processed_result = {
-            "entity_type": result["entity_type"],
-            "entity_info": []
-        }
-
-        for item in result["entity_info"]:
-            processed_item = {}
-            for key, value in item.items():
-                if self._should_encrypt_field(key):
-                    processed_item[key] = f"[ENCRYPTED: {key}]"
-                else:
-                    processed_item[key] = value
-            processed_result["entity_info"].append(processed_item)
-
-        processed_related = {}
-        for relation_name, relation_items in result["related_info"].items():
-            processed_items = []
-            for item in relation_items:
-                processed_item = {}
-                for key, value in item.items():
-                    if self._should_encrypt_field(key):
-                        processed_item[key] = f"[ENCRYPTED: {key}]"
-                    else:
-                        processed_item[key] = value
-                processed_items.append(processed_item)
-            processed_related[relation_name] = processed_items
-
-        processed_result["related_info"] = processed_related
-        return processed_result
+        return any(pattern in field_name.lower() for pattern in sensitive_patterns)

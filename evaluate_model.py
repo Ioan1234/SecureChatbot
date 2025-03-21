@@ -159,15 +159,21 @@ def test_query_generation(db_connector, num_samples=10):
     return samples
 
 
-def test_query_processing(query_processor, samples):
+def test_query_processing(query_processor, samples, intent_classifier=None):
     results = []
 
     for query in samples:
-        sql = query_processor.natural_language_to_sql(query)
+        if intent_classifier:
+            intent_data = intent_classifier.classify_intent(query)
+        else:
+            intent_data = {"intent": "database_query_list", "confidence": 0.8}
+
+        processed_result = query_processor.process_query(query, intent_data)
 
         results.append({
             'query': query,
-            'sql': sql
+            'intent': intent_data,
+            'result': processed_result
         })
 
     return results
@@ -271,12 +277,12 @@ def main():
             logger.info(f"  {i + 1}. {sample}")
 
         logger.info("Testing query processing...")
-        processing_results = test_query_processing(query_processor, generated_samples[:5])
+        processing_results = test_query_processing(query_processor, generated_samples[:5], intent_classifier)
 
         logger.info("Query processing results:")
         for i, result in enumerate(processing_results):
             logger.info(f"  Query: {result['query']}")
-            logger.info(f"  SQL  : {result['sql']}")
+            logger.info(f"  Result: {result['result']}")
             logger.info("")
 
         test_texts = []

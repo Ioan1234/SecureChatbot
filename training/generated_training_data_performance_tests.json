@@ -1,0 +1,25 @@
+{
+  "tests": [
+    "Show me traders from 1 to 100",
+    "Get traders from 101 to 200",
+    "List accounts from 500 to 600",
+    "Show trades from 700 to 800",
+    "Display assets 900 to 1000",
+    "Sort all trades by price in descending order",
+    "Sort all accounts by balance in ascending order",
+    "List all assets sorted by name",
+    "Show all traders sorted by registration date",
+    "Calculate the average trade price across all trades",
+    "Find the total transaction amount for all accounts",
+    "What is the maximum account balance",
+    "Count all trades grouped by market",
+    "Show me traders with their accounts and total balance",
+    "List all assets with their complete price history",
+    "Display all trades with their corresponding orders",
+    "Show all markets with their trading volume",
+    "Find traders who registered in 2023 and have made more than 10 trades",
+    "Show assets with price above average",
+    "List accounts with balance over $10000",
+    "Find markets with location in 'New York'"
+  ]
+}

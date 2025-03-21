@@ -7,10 +7,11 @@ from collections import defaultdict
 
 class DatabaseQueryGenerator:
 
-    def __init__(self, db_connector, output_path="training/generated_training_data.json"):
+    def __init__(self, db_connector, output_path="training/generated_training_data.json", sample_size=50):
         self.logger = logging.getLogger(__name__)
         self.db_connector = db_connector
         self.output_path = output_path
+        self.sample_size = sample_size
 
         self.question_templates = {
             "list_all": [
@@ -92,6 +93,46 @@ class DatabaseQueryGenerator:
                 "Show {entities} from high to low by {attribute}",
                 "List {entities} in decreasing order of {attribute}",
                 "Display {entities} with {attribute} from largest to smallest"
+            ],
+            "pagination": [
+                "Show me the first 10 {entities}",
+                "Display page 2 of {entities}",
+                "List {entities} page 3",
+                "Show me {entities} 20 to 30",
+                "Get the next 50 {entities}"
+            ],
+            "date_range": [
+                "Show me {entities} between {start_date} and {end_date}",
+                "Find {entities} from {start_date} to {end_date}",
+                "List {entities} in date range {start_date} - {end_date}",
+                "Display {entities} created between {start_date} and {end_date}"
+            ],
+            "aggregation": [
+                "Calculate the total {attribute} of all {entities}",
+                "What is the average {attribute} for {entities}",
+                "Show me the sum of {attribute} across all {entities}",
+                "Calculate mean {attribute} of {entities}",
+                "Find the maximum {attribute} among all {entities}",
+                "What's the minimum {attribute} for {entities}"
+            ],
+            "group_by": [
+                "Group {entities} by {attribute}",
+                "Show {entities} counts grouped by {attribute}",
+                "Display {entities} statistics by {attribute}",
+                "List {entities} summarized by {attribute}"
+            ],
+            "multi_table": [
+                "Show {entities1} with their related {entities2}",
+                "List {entities1} and their corresponding {entities2}",
+                "Display {entities1} along with {entities2} information",
+                "Show me {entities1} joined with {entities2}"
+            ],
+            "complex_filter": [
+                "Find {entities} where {attribute1} is {value1}",
+                "Show {entities} with {attribute1} greater than {value1}",
+                "List {entities} with {attribute1} less than {value1}",
+                "Display {entities} where {attribute1} contains {value1}",
+                "Find {entities} with {attribute1} not equal to {value1}"
             ]
         }
 
@@ -123,11 +164,11 @@ class DatabaseQueryGenerator:
 
         self.essential_fields = {
             "markets": ["name", "location"],
-            "brokers": ["name"],
-            "traders": ["name", "registration_date"],
+            "brokers": ["name", "license_number"],
+            "traders": ["name", "registration_date", "email"],
             "assets": ["name", "asset_type"],
             "trades": ["trade_date", "quantity", "price"],
-            "accounts": ["account_type", "balance"],
+            "accounts": ["account_type", "balance", "creation_date"],
             "transactions": ["transaction_date", "transaction_type", "amount"],
             "orders": ["order_type", "order_date"],
             "order_status": ["status", "status_date"],
@@ -145,6 +186,40 @@ class DatabaseQueryGenerator:
             "orders": ["quantity", "value", "price"],
             "price_history": ["open_price", "close_price", "volume", "price_change"]
         }
+
+        self.date_fields = {
+            "traders": ["registration_date"],
+            "trades": ["trade_date"],
+            "accounts": ["creation_date"],
+            "transactions": ["transaction_date"],
+            "orders": ["order_date"],
+            "order_status": ["status_date"],
+            "price_history": ["price_date"]
+        }
+
+        self.table_relationships = {
+            "traders": ["accounts", "trades"],
+            "brokers": ["assets"],
+            "assets": ["trades", "price_history"],
+            "markets": ["trades"],
+            "trades": ["orders"],
+            "accounts": ["transactions"],
+            "orders": ["order_status"]
+        }
+
+        self.sensitive_fields = ["email", "phone", "license_number", "balance"]
+
+        try:
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            parent_dir = os.path.dirname(script_dir)
+            config_path = os.path.join(parent_dir, "config.json")
+            if os.path.exists(config_path):
+                with open(config_path, 'r') as f:
+                    config = json.load(f)
+                    if "security" in config and "sensitive_fields" in config["security"]:
+                        self.sensitive_fields = config["security"]["sensitive_fields"]
+        except Exception as e:
+            self.logger.warning(f"Could not load sensitive fields from config: {e}")
 
     def get_table_metadata(self):
         tables_metadata = {}
@@ -174,6 +249,7 @@ class DatabaseQueryGenerator:
                     continue
 
                 self.logger.info(f"Processing table: {table_name}")
+
                 schema_query = f"DESCRIBE {table_name}"
                 schema = self.db_connector.execute_query(schema_query)
                 self.db_connector.handle_unread_results()
@@ -182,13 +258,23 @@ class DatabaseQueryGenerator:
                     self.logger.warning(f"Could not get schema for table: {table_name}")
                     continue
 
-                sample_query = f"SELECT * FROM {table_name} LIMIT 10"
-                sample_data = self.db_connector.execute_query(sample_query)
+                count_query = f"SELECT COUNT(*) as count FROM {table_name}"
+                count_result = self.db_connector.execute_query(count_query)
+                self.db_connector.handle_unread_results()
 
+                row_count = 0
+                if count_result and isinstance(count_result[0], dict) and 'count' in count_result[0]:
+                    row_count = count_result[0]['count']
+
+                limit = min(self.sample_size, row_count) if row_count > 0 else self.sample_size
+
+                sample_query = f"SELECT * FROM {table_name} ORDER BY RAND() LIMIT {limit}"
+                sample_data = self.db_connector.execute_query(sample_query)
                 self.db_connector.handle_unread_results()
 
                 columns = []
                 primary_key = None
+                foreign_keys = []
 
                 for column_info in schema:
                     if not column_info:
@@ -197,33 +283,60 @@ class DatabaseQueryGenerator:
                     column_name = column_info.get('Field')
                     data_type = column_info.get('Type')
                     is_primary = column_info.get('Key') == 'PRI'
+                    is_foreign = column_info.get('Key') == 'MUL'
 
                     if column_name:
                         columns.append({
                             'name': column_name,
                             'type': data_type,
-                            'is_primary': is_primary
+                            'is_primary': is_primary,
+                            'is_foreign': is_foreign
                         })
 
                         if is_primary:
                             primary_key = column_name
 
+                        if is_foreign:
+                            foreign_keys.append(column_name)
+
                 column_values = {}
+                column_stats = {}
                 if sample_data:
-                    for col_name in columns:
-                        col_name = col_name['name']
+                    for col_info in columns:
+                        col_name = col_info['name']
                         column_values[col_name] = []
+
+                        if 'int' in col_info['type'].lower() or 'decimal' in col_info['type'].lower() or 'float' in \
+                                col_info['type'].lower():
+                            values = []
+                            for row in sample_data:
+                                if col_name in row and row[col_name] is not None:
+                                    values.append(float(row[col_name]))
+
+                            if values:
+                                column_stats[col_name] = {
+                                    'min': min(values),
+                                    'max': max(values),
+                                    'avg': sum(values) / len(values)
+                                }
 
                         for row in sample_data:
                             if col_name in row and row[col_name] is not None and row[col_name] != "":
                                 value = str(row[col_name])
-                                if value not in column_values[col_name]:
-                                    column_values[col_name].append(value)
+                                if col_name.lower() not in [f.lower() for f in self.sensitive_fields]:
+                                    if value not in column_values[col_name]:
+                                        column_values[col_name].append(value)
+                                        if len(column_values[
+                                                   col_name]) >= 10:
+                                            break
 
                 tables_metadata[table_name] = {
                     'columns': columns,
                     'primary_key': primary_key,
-                    'sample_values': column_values
+                    'foreign_keys': foreign_keys,
+                    'sample_values': column_values,
+                    'stats': column_stats,
+                    'row_count': row_count
                 }
 
             return tables_metadata
@@ -261,6 +374,15 @@ class DatabaseQueryGenerator:
             for template_type, template_list in additional_templates.items():
                 self.question_templates[template_type].extend(template_list)
 
+            date_ranges = [
+                ("2023-01-01", "2023-06-30"),
+                ("2023-07-01", "2023-12-31"),
+                ("2022-01-01", "2022-12-31"),
+                ("2021-01-01", "2023-12-31"),
+                ("last month", "today"),
+                ("last year", "now")
+            ]
+
             for table_name, metadata in tables_metadata.items():
                 if table_name not in self.entity_variations and table_name not in self.entity_singular:
                     self.entity_variations[table_name] = [table_name]
@@ -288,12 +410,25 @@ class DatabaseQueryGenerator:
                         queries.append(query)
                         labels.append("database_query_count")
 
+                row_count = metadata.get('row_count', 0)
+                if row_count > 100:
+                    for template in self.question_templates["pagination"]:
+                        for entity_name in entity_plural:
+                            query = template.format(entities=entity_name)
+                            queries.append(query)
+                            labels.append("database_query_pagination")
+
                 if not metadata.get('columns'):
                     continue
 
                 for column in metadata['columns']:
                     col_name = column.get('name')
-                    if col_name and col_name not in ['id', 'created_at', 'updated_at']:
+                    if not col_name:
+                        continue
+
+                    is_sensitive = col_name.lower() in [f.lower() for f in self.sensitive_fields]
+
+                    if col_name not in ['id', 'created_at', 'updated_at'] and not is_sensitive:
                         for template in self.question_templates["sort_by"]:
                             for entity_name in entity_plural:
                                 query = template.format(
@@ -321,38 +456,84 @@ class DatabaseQueryGenerator:
                                 queries.append(query)
                                 labels.append("database_query_sort_descending")
 
-                        numeric_types = ['int', 'float', 'decimal', 'double', 'numeric', 'tinyint', 'smallint',
-                                         'bigint']
-                        is_numeric = any(num_type in column.get('type', '').lower() for num_type in numeric_types)
-                        if is_numeric:
-                            for template in self.question_templates["comparative_highest"]:
-                                for entity_name in entity_plural:
-                                    query = template.format(
-                                        entities=entity_name,
-                                        attribute=col_name.replace('_', ' ')
-                                    )
-                                    queries.append(query)
-                                    labels.append("database_query_comparative_highest")
+                    if not is_sensitive and col_name not in ['id', 'created_at', 'updated_at']:
+                        for template in self.question_templates["group_by"]:
+                            for entity_name in entity_plural:
+                                query = template.format(
+                                    entities=entity_name,
+                                    attribute=col_name.replace('_', ' ')
+                                )
+                                queries.append(query)
+                                labels.append("database_query_group")
 
-                            for template in self.question_templates["comparative_lowest"]:
-                                for entity_name in entity_plural:
-                                    query = template.format(
-                                        entities=entity_name,
-                                        attribute=col_name.replace('_', ' ')
-                                    )
-                                    queries.append(query)
-                                    labels.append("database_query_comparative_lowest")
+                    numeric_types = ['int', 'float', 'decimal', 'double', 'numeric', 'tinyint', 'smallint', 'bigint']
+                    is_numeric = any(num_type in column.get('type', '').lower() for num_type in numeric_types)
 
-                            for template in self.question_templates["comparative_middle"]:
-                                for entity_name in entity_plural:
-                                    query = template.format(
-                                        entities=entity_name,
-                                        attribute=col_name.replace('_', ' ')
-                                    )
-                                    queries.append(query)
-                                    labels.append("database_query_comparative_middle")
+                    if is_numeric and not is_sensitive:
+                        for template in self.question_templates["aggregation"]:
+                            for entity_name in entity_plural:
+                                query = template.format(
+                                    entities=entity_name,
+                                    attribute=col_name.replace('_', ' ')
+                                )
+                                queries.append(query)
+                                labels.append("database_query_aggregation")
 
-                has_date_field = any('date' in col.get('name', '').lower() for col in metadata['columns'])
+                        for template in self.question_templates["comparative_highest"]:
+                            for entity_name in entity_plural:
+                                query = template.format(
+                                    entities=entity_name,
+                                    attribute=col_name.replace('_', ' ')
+                                )
+                                queries.append(query)
+                                labels.append("database_query_comparative_highest")
+
+                        for template in self.question_templates["comparative_lowest"]:
+                            for entity_name in entity_plural:
+                                query = template.format(
+                                    entities=entity_name,
+                                    attribute=col_name.replace('_', ' ')
+                                )
+                                queries.append(query)
+                                labels.append("database_query_comparative_lowest")
+
+                        for template in self.question_templates["comparative_middle"]:
+                            for entity_name in entity_plural:
+                                query = template.format(
+                                    entities=entity_name,
+                                    attribute=col_name.replace('_', ' ')
+                                )
+                                queries.append(query)
+                                labels.append("database_query_comparative_middle")
+
+                        if col_name in metadata.get('stats', {}):
+                            stats = metadata['stats'][col_name]
+                            for template in self.question_templates["complex_filter"]:
+                                if '{attribute1}' in template and '{value1}' in template:
+                                    for entity_name in entity_plural:
+                                        threshold = round(stats['avg'], 2)
+                                        query = template.format(
+                                            entities=entity_name,
+                                            attribute1=col_name.replace('_', ' '),
+                                            value1=threshold
+                                        )
+                                        queries.append(query)
+                                        labels.append("database_query_complex_filter")
+
+                if table_name in self.date_fields:
+                    date_field = self.date_fields[table_name][0]
+                    for start_date, end_date in date_ranges:
+                        for template in self.question_templates["date_range"]:
+                            for entity_name in entity_plural:
+                                query = template.format(
+                                    entities=entity_name,
+                                    start_date=start_date,
+                                    end_date=end_date
+                                )
+                                queries.append(query)
+                                labels.append("database_query_date_range")
+
+                has_date_field = table_name in self.date_fields
                 if has_date_field:
                     for template in self.question_templates["recent"]:
                         for entity_name in entity_plural:
@@ -363,8 +544,7 @@ class DatabaseQueryGenerator:
                 primary_key = metadata.get('primary_key')
                 if primary_key and 'sample_values' in metadata and primary_key in metadata['sample_values']:
                     sample_values = metadata['sample_values'].get(primary_key, [])
-
-                    sample_ids = sample_values[:3] if len(sample_values) > 3 else sample_values
+                    sample_ids = sample_values[:5] if len(sample_values) > 5 else sample_values
 
                     for id_value in sample_ids:
                         for template in self.question_templates["specific_id"]:
@@ -378,13 +558,15 @@ class DatabaseQueryGenerator:
                 for column in metadata['columns']:
                     column_name = column.get('name', '')
 
-                    if not column_name or column.get('is_primary') or column_name in ['created_at', 'updated_at']:
+                    if (not column_name or
+                            column.get('is_primary') or
+                            column_name in ['created_at', 'updated_at'] or
+                            column_name.lower() in [f.lower() for f in self.sensitive_fields]):
                         continue
 
                     if 'sample_values' in metadata and column_name in metadata['sample_values']:
                         sample_values = metadata['sample_values'].get(column_name, [])
-
-                        value_samples = sample_values[:2] if len(sample_values) > 2 else sample_values
+                        value_samples = sample_values[:3] if len(sample_values) > 3 else sample_values
 
                         for value in value_samples:
                             for template in self.question_templates["filter_by"]:
@@ -397,15 +579,17 @@ class DatabaseQueryGenerator:
                                     queries.append(query)
                                     labels.append("database_query_filter")
 
-            sensitive_data_queries = [
-                ("Show me broker emails", "database_query_sensitive"),
-                ("What are the license numbers for brokers", "database_query_sensitive"),
-                ("Show me trader contact information", "database_query_sensitive"),
-                ("What's the email address for trader 1", "database_query_sensitive"),
-                ("Show me sensitive data for brokers", "database_query_sensitive"),
-                ("Display all encrypted fields", "database_query_sensitive"),
-                ("Show me broker 1's license number", "database_query_sensitive")
-            ]
+                if table_name in self.table_relationships:
+                    related_tables = self.table_relationships[table_name]
+                    for related_table in related_tables:
+                        if related_table in tables_metadata:
+                            for template in self.question_templates["multi_table"]:
+                                query = template.format(
+                                    entities1=self.entity_variations[table_name][0],
+                                    entities2=self.entity_variations[related_table][0]
+                                )
+                                queries.append(query)
+                                labels.append("database_query_join")
 
             finance_queries = [
                 ("Show me trades with highest value", "database_query_comparative_highest"),
@@ -424,7 +608,32 @@ class DatabaseQueryGenerator:
                 ("List all buy orders", "database_query_filter"),
                 ("Show all sell orders", "database_query_filter"),
                 ("Sort assets by price from highest to lowest", "database_query_sort_descending"),
-                ("Order trades by date newest first", "database_query_sort_descending")
+                ("Order trades by date newest first", "database_query_sort_descending"),
+                ("Show me trades executed in the last month", "database_query_date_range"),
+                ("What was the average price of assets in Q1 2023", "database_query_aggregation"),
+                ("Group transactions by type and show the total value", "database_query_group"),
+                ("Compare trading volume across all markets", "database_query_comparative_highest"),
+                ("Show assets with price increase in the last quarter", "database_query_complex_filter"),
+                ("List the top 5 traders by transaction count", "database_query_comparative_highest"),
+                ("Which assets had the most price volatility", "database_query_comparative_highest"),
+                ("Show trading activity by market location", "database_query_group"),
+                ("Calculate the total commission earned per broker", "database_query_aggregation"),
+                ("Show me the distribution of order types", "database_query_group"),
+                ("Find trends in trading volume by month", "database_query_aggregation"),
+                ("Show me the correlation between account balance and trade frequency", "database_query_complex_filter")
+            ]
+
+            sensitive_data_queries = [
+                ("Show me broker emails", "database_query_sensitive"),
+                ("What are the license numbers for brokers", "database_query_sensitive"),
+                ("Show me trader contact information", "database_query_sensitive"),
+                ("What's the email address for trader 1", "database_query_sensitive"),
+                ("Show me sensitive data for brokers", "database_query_sensitive"),
+                ("Display all encrypted fields", "database_query_sensitive"),
+                ("Show me broker 1's license number", "database_query_sensitive"),
+                ("Export all trader contact details", "database_query_sensitive"),
+                ("Give me a list of all phone numbers", "database_query_sensitive"),
+                ("Show me accounts with balances over $100,000", "database_query_sensitive")
             ]
 
             for query, label in sensitive_data_queries:
@@ -504,7 +713,8 @@ class DatabaseQueryGenerator:
             self.logger.error(f"Error generating training data: {e}")
             return {"texts": [], "labels": []}
 
-    def enrich_existing_training_data(self, existing_path="training/training_data.json"):
+    def enrich_existing_training_data(self, existing_path="./generated_training_data.json"):
+
         try:
             new_data = self.generate_training_data()
 
@@ -551,13 +761,148 @@ class DatabaseQueryGenerator:
             self.logger.error(f"Error enriching training data: {e}")
             return {"texts": [], "labels": []}
 
+    def generate_bulk_test_queries(self, num_queries=100):
+
+        try:
+            all_queries, all_labels = self.generate_queries()
+
+            if not all_queries:
+                self.logger.warning("No queries generated for testing.")
+                return [], []
+
+            queries_by_label = defaultdict(list)
+            for query, label in zip(all_queries, all_labels):
+                queries_by_label[label].append(query)
+
+            test_queries = []
+            test_labels = []
+
+            priority_labels = [
+                "database_query_pagination",
+                "database_query_aggregation",
+                "database_query_group",
+                "database_query_join",
+                "database_query_sort_descending",
+                "database_query_complex_filter",
+                "database_query_date_range"
+            ]
+
+            for label in priority_labels:
+                if label in queries_by_label:
+                    sample_size = min(10, len(queries_by_label[label]))
+                    samples = random.sample(queries_by_label[label], sample_size)
+                    test_queries.extend(samples)
+                    test_labels.extend([label] * sample_size)
+
+            remaining_slots = num_queries - len(test_queries)
+            if remaining_slots > 0:
+                remaining_queries = []
+                remaining_labels = []
+
+                for label, queries in queries_by_label.items():
+                    if label not in priority_labels:
+                        remaining_queries.extend(queries)
+                        remaining_labels.extend([label] * len(queries))
+
+                if remaining_queries:
+                    indices = random.sample(range(len(remaining_queries)),
+                                            min(remaining_slots, len(remaining_queries)))
+
+                    for i in indices:
+                        test_queries.append(remaining_queries[i])
+                        test_labels.append(remaining_labels[i])
+
+            test_data = {
+                "texts": test_queries,
+                "labels": test_labels
+            }
+
+            test_path = self.output_path.replace('.json', '_test.json')
+            with open(test_path, 'w') as f:
+                json.dump(test_data, f, indent=2)
+
+            self.logger.info(f"Generated {len(test_queries)} test queries saved to {test_path}")
+
+            return test_queries, test_labels
+
+        except Exception as e:
+            self.logger.error(f"Error generating test queries: {e}")
+            return [], []
+
+    def generate_large_database_performance_tests(self):
+
+        try:
+            tables_metadata = self.get_table_metadata()
+
+            if not tables_metadata:
+                self.logger.warning("No table metadata available. Cannot generate performance tests.")
+                return []
+
+            performance_tests = []
+
+            pagination_tests = [
+                "Show me traders from 1 to 100",
+                "Get traders from 101 to 200",
+                "List accounts from 500 to 600",
+                "Show trades from 700 to 800",
+                "Display assets 900 to 1000"
+            ]
+            performance_tests.extend(pagination_tests)
+
+            sorting_tests = [
+                "Sort all trades by price in descending order",
+                "Sort all accounts by balance in ascending order",
+                "List all assets sorted by name",
+                "Show all traders sorted by registration date"
+            ]
+            performance_tests.extend(sorting_tests)
+
+            aggregation_tests = [
+                "Calculate the average trade price across all trades",
+                "Find the total transaction amount for all accounts",
+                "What is the maximum account balance",
+                "Count all trades grouped by market"
+            ]
+            performance_tests.extend(aggregation_tests)
+
+            join_tests = [
+                "Show me traders with their accounts and total balance",
+                "List all assets with their complete price history",
+                "Display all trades with their corresponding orders",
+                "Show all markets with their trading volume"
+            ]
+            performance_tests.extend(join_tests)
+
+            filter_tests = [
+                "Find traders who registered in 2023 and have made more than 10 trades",
+                "Show assets with price above average",
+                "List accounts with balance over $10000",
+                "Find markets with location in 'New York'"
+            ]
+            performance_tests.extend(filter_tests)
+
+            test_path = self.output_path.replace('.json', '_performance_tests.json')
+            with open(test_path, 'w') as f:
+                json.dump({"tests": performance_tests}, f, indent=2)
+
+            self.logger.info(f"Generated {len(performance_tests)} performance tests saved to {test_path}")
+
+            return performance_tests
+
+        except Exception as e:
+            self.logger.error(f"Error generating performance tests: {e}")
+            return []
+
 
 if __name__ == "__main__":
     from database_connector import DatabaseConnector
     import json
 
     try:
-        db_config = json.load(open("config.json"))["database"]
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        parent_dir = os.path.dirname(script_dir)
+        config_path = os.path.join(parent_dir, "config.json")
+        db_config = json.load(open(config_path))["database"]
         db_connector = DatabaseConnector(
             host=db_config["host"],
             user=db_config["user"],
@@ -566,13 +911,22 @@ if __name__ == "__main__":
         )
 
         if db_connector.connect():
-            generator = DatabaseQueryGenerator(db_connector)
+            generator = DatabaseQueryGenerator(
+                db_connector,
+                output_path="generated_training_data.json",
+                sample_size=500
+            )
 
             training_data = generator.generate_training_data()
+            print(f"Generated {len(training_data['texts'])} training examples")
+
+            test_queries, test_labels = generator.generate_bulk_test_queries(100)
+            print(f"Generated {len(test_queries)} test queries")
+
+            performance_tests = generator.generate_large_database_performance_tests()
+            print(f"Generated {len(performance_tests)} performance tests")
 
             combined_data = generator.enrich_existing_training_data()
-
-            print(f"Generated {len(training_data['texts'])} training examples")
             print(f"Combined training data with {len(combined_data['texts'])} examples")
         else:
             print("Failed to connect to database")

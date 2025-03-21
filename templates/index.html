@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Financial Chatbot</title>
+    <title>Financial Assistant</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -12,14 +12,17 @@
         <div class="chat-header">
             <div class="user-info">
                 <div class="avatar">
-                    <i class="fas fa-robot"></i>
+                    <i class="fas fa-database"></i>
                 </div>
                 <div class="name">
                     Financial Assistant
                 </div>
             </div>
             <div class="actions">
-                <button id="clear-chat" title="Clear chat history">
+                <button id="sql-mode" title="SQL Mode" class="action-button">
+                    <i class="fas fa-terminal"></i>
+                </button>
+                <button id="clear-chat" title="Clear chat" class="action-button">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
@@ -28,27 +31,25 @@
         <div class="chat-messages" id="chat-messages">
             <div class="message bot">
                 <div class="message-content">
-                    Hello! I'm your secure financial database assistant. I can show you information about markets, traders, assets, orders, and more.
+                    <p>👋 Hi there! I'm your Financial Database Assistant. Ask me anything about your financial data.</p>
 
-                    <p>My key features include:</p>
-                    <ul class="features-list">
-                        <li><span class="feature-highlight">Simplified Views</span> - I show only the most relevant fields by default</li>
-                        <li><span class="feature-highlight">Detailed Views</span> - Ask for "details" or "all information" when you need more</li>
-                        <li><span class="feature-highlight">Secure Data</span> - Sensitive information is encrypted and protected</li>
-                        <li><span class="feature-highlight">Smart Comparisons</span> - Ask for "highest", "lowest", or other comparisons</li>
+                    <p>Try asking me:</p>
+                    <ul class="suggestion-list">
+                        <li><button class="suggestion-btn">List all traders</button></li>
+                        <li><button class="suggestion-btn">Show me ETF assets</button></li>
+                        <li><button class="suggestion-btn">Find traders with highest account balance</button></li>
+                        <li><button class="suggestion-btn">Show me recent trades</button></li>
                     </ul>
-
-                    Try the example queries below or ask me a question!
                 </div>
                 <div class="message-time">Just now</div>
             </div>
         </div>
 
         <div class="chat-input">
-            <input type="text" id="user-input" placeholder="Type your question here or click the microphone..." autocomplete="off">
-            <button id="send-button">
-                <i class="fas fa-paper-plane"></i>
-            </button>
+           <input type="text" id="user-input" placeholder="Type a message..." autocomplete="off">
+    <button id="send-button">
+        <i class="fas fa-paper-plane"></i>
+    </button>
         </div>
     </div>
 
