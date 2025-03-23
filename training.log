@@ -5206,3 +5206,346 @@
 2025-03-23 16:44:42,281 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 16:44:42] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
 2025-03-23 16:44:42,293 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 16:44:42] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
 2025-03-23 16:44:42,295 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 16:44:42] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-23 17:30:20,608 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-23 17:30:20,609 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-23 17:30:20,609 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-23 17:30:20,609 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-23 17:30:20,609 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-23 17:30:20,610 - model.intent_classifier - INFO - Loaded 18 intent classes from models/intent_classifier\intent_classes.json
+2025-03-23 17:30:20,610 - model.intent_classifier - INFO - Using intent classes: ['database_query_aggregation', 'database_query_comparative', 'database_query_complex_filter', 'database_query_count', 'database_query_date_range', 'database_query_detailed', 'database_query_filter', 'database_query_group', 'database_query_join', 'database_query_list', 'database_query_pagination', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-23 17:30:20,611 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-23 17:30:21,718 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-23 17:30:21,718 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-23 17:30:21,721 - intent_processor - INFO - Loaded original intent examples
+2025-03-23 17:30:21,721 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-23 17:30:21,721 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-23 17:30:21,721 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-23 17:30:21,721 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-23 17:30:21,724 - __main__ - INFO - All components initialized successfully
+2025-03-23 17:30:23,783 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-23 17:30:23,783 - __main__ - INFO - Initializing speech recognition routes
+2025-03-23 17:30:23,787 - __main__ - INFO - Training API routes added successfully
+2025-03-23 17:30:23,787 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-23 17:30:23,807 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-23 17:30:23,807 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-23 17:30:23,810 - werkzeug - INFO -  * Restarting with stat
+2025-03-23 17:30:30,705 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-23 17:30:30,705 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-23 17:30:30,705 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-23 17:30:30,705 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-23 17:30:30,705 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-23 17:30:30,705 - model.intent_classifier - INFO - Loaded 18 intent classes from models/intent_classifier\intent_classes.json
+2025-03-23 17:30:30,705 - model.intent_classifier - INFO - Using intent classes: ['database_query_aggregation', 'database_query_comparative', 'database_query_complex_filter', 'database_query_count', 'database_query_date_range', 'database_query_detailed', 'database_query_filter', 'database_query_group', 'database_query_join', 'database_query_list', 'database_query_pagination', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-23 17:30:30,705 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-23 17:30:32,923 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-23 17:30:32,932 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-23 17:30:32,932 - intent_processor - INFO - Loaded original intent examples
+2025-03-23 17:30:32,932 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-23 17:30:32,932 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-23 17:30:32,932 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-23 17:30:32,932 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-23 17:30:32,938 - __main__ - INFO - All components initialized successfully
+2025-03-23 17:30:34,982 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-23 17:30:34,982 - __main__ - INFO - Initializing speech recognition routes
+2025-03-23 17:30:34,982 - __main__ - INFO - Training API routes added successfully
+2025-03-23 17:30:34,982 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-23 17:30:35,001 - werkzeug - WARNING -  * Debugger is active!
+2025-03-23 17:30:35,005 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-23 17:30:35,048 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:30:35] "GET / HTTP/1.1" 200 -
+2025-03-23 17:30:35,267 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:30:35] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-03-23 17:30:35,269 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:30:35] "GET /static/js/script.js HTTP/1.1" 200 -
+2025-03-23 17:30:35,275 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:30:35] "GET /static/js/speech.js HTTP/1.1" 200 -
+2025-03-23 17:30:35,458 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:30:35] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-03-23 17:30:41,094 - model.chatbot_engine - INFO - Processing user input: tell me about Andrew Davis
+2025-03-23 17:30:41,105 - model.chatbot_engine - INFO - No specialized handler, using intent classifier
+2025-03-23 17:30:47,370 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_detailed', 'confidence': 0.6182299852371216}
+2025-03-23 17:30:47,379 - database_connector - ERROR - Error executing query: 1146 (42S02): Table 'fm_database.none' doesn't exist
+2025-03-23 17:30:47,379 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:30:47] "POST /api/chat HTTP/1.1" 200 -
+2025-03-23 17:40:40,699 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-23 17:40:40,700 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-23 17:40:40,700 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-23 17:40:40,700 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-23 17:40:40,700 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-23 17:40:40,700 - model.intent_classifier - INFO - Loaded 18 intent classes from models/intent_classifier\intent_classes.json
+2025-03-23 17:40:40,700 - model.intent_classifier - INFO - Using intent classes: ['database_query_aggregation', 'database_query_comparative', 'database_query_complex_filter', 'database_query_count', 'database_query_date_range', 'database_query_detailed', 'database_query_filter', 'database_query_group', 'database_query_join', 'database_query_list', 'database_query_pagination', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-23 17:40:40,702 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-23 17:40:41,829 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-23 17:40:41,830 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-23 17:40:41,831 - intent_processor - INFO - Loaded original intent examples
+2025-03-23 17:40:41,831 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-23 17:40:41,831 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-23 17:40:41,831 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-23 17:40:41,831 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-23 17:40:41,836 - __main__ - INFO - All components initialized successfully
+2025-03-23 17:40:43,893 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-23 17:40:43,893 - __main__ - INFO - Initializing speech recognition routes
+2025-03-23 17:40:43,896 - __main__ - INFO - Training API routes added successfully
+2025-03-23 17:40:43,896 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-23 17:40:43,915 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-23 17:40:43,915 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-23 17:40:43,917 - werkzeug - INFO -  * Restarting with stat
+2025-03-23 17:40:51,285 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-23 17:40:51,285 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-23 17:40:51,285 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-23 17:40:51,286 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-23 17:40:51,286 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-23 17:40:51,286 - model.intent_classifier - INFO - Loaded 18 intent classes from models/intent_classifier\intent_classes.json
+2025-03-23 17:40:51,286 - model.intent_classifier - INFO - Using intent classes: ['database_query_aggregation', 'database_query_comparative', 'database_query_complex_filter', 'database_query_count', 'database_query_date_range', 'database_query_detailed', 'database_query_filter', 'database_query_group', 'database_query_join', 'database_query_list', 'database_query_pagination', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-23 17:40:51,288 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-23 17:40:53,425 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-23 17:40:53,427 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-23 17:40:53,429 - intent_processor - INFO - Loaded original intent examples
+2025-03-23 17:40:53,429 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-23 17:40:53,429 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-23 17:40:53,429 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-23 17:40:53,431 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-23 17:40:53,435 - __main__ - INFO - All components initialized successfully
+2025-03-23 17:40:55,471 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-23 17:40:55,471 - __main__ - INFO - Initializing speech recognition routes
+2025-03-23 17:40:55,473 - __main__ - INFO - Training API routes added successfully
+2025-03-23 17:40:55,473 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-23 17:40:55,484 - werkzeug - WARNING -  * Debugger is active!
+2025-03-23 17:40:55,491 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-23 17:40:55,538 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:40:55] "GET / HTTP/1.1" 200 -
+2025-03-23 17:40:55,716 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:40:55] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-23 17:40:55,716 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:40:55] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-23 17:40:55,724 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:40:55] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-23 17:41:08,078 - model.chatbot_engine - INFO - Processing user input: tell me about Joshua Rodriguez
+2025-03-23 17:41:08,082 - model.chatbot_engine - ERROR - Error processing user input: 'ChatbotEngine' object has no attribute '_handle_entity_query'
+2025-03-23 17:41:08,082 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:41:08] "POST /api/chat HTTP/1.1" 200 -
+2025-03-23 17:45:33,685 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-23 17:45:33,685 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-23 17:45:33,685 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-23 17:45:33,685 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-23 17:45:33,685 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-23 17:45:33,687 - model.intent_classifier - INFO - Loaded 18 intent classes from models/intent_classifier\intent_classes.json
+2025-03-23 17:45:33,687 - model.intent_classifier - INFO - Using intent classes: ['database_query_aggregation', 'database_query_comparative', 'database_query_complex_filter', 'database_query_count', 'database_query_date_range', 'database_query_detailed', 'database_query_filter', 'database_query_group', 'database_query_join', 'database_query_list', 'database_query_pagination', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-23 17:45:33,688 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-23 17:45:34,633 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-23 17:45:34,634 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-23 17:45:34,635 - intent_processor - INFO - Loaded original intent examples
+2025-03-23 17:45:34,635 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-23 17:45:34,635 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-23 17:45:34,636 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-23 17:45:34,636 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-23 17:45:34,638 - __main__ - INFO - All components initialized successfully
+2025-03-23 17:45:36,701 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-23 17:45:36,702 - __main__ - INFO - Initializing speech recognition routes
+2025-03-23 17:45:36,703 - __main__ - INFO - Training API routes added successfully
+2025-03-23 17:45:36,704 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-23 17:45:36,714 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-23 17:45:36,714 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-23 17:45:36,717 - werkzeug - INFO -  * Restarting with stat
+2025-03-23 17:45:41,236 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-23 17:45:41,236 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-23 17:45:41,236 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-23 17:45:41,237 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-23 17:45:41,237 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-23 17:45:41,237 - model.intent_classifier - INFO - Loaded 18 intent classes from models/intent_classifier\intent_classes.json
+2025-03-23 17:45:41,237 - model.intent_classifier - INFO - Using intent classes: ['database_query_aggregation', 'database_query_comparative', 'database_query_complex_filter', 'database_query_count', 'database_query_date_range', 'database_query_detailed', 'database_query_filter', 'database_query_group', 'database_query_join', 'database_query_list', 'database_query_pagination', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-23 17:45:41,238 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-23 17:45:42,904 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-23 17:45:42,905 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-23 17:45:42,906 - intent_processor - INFO - Loaded original intent examples
+2025-03-23 17:45:42,906 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-23 17:45:42,907 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-23 17:45:42,907 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-23 17:45:42,907 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-23 17:45:42,911 - __main__ - INFO - All components initialized successfully
+2025-03-23 17:45:44,976 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-23 17:45:44,976 - __main__ - INFO - Initializing speech recognition routes
+2025-03-23 17:45:44,979 - __main__ - INFO - Training API routes added successfully
+2025-03-23 17:45:44,979 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-23 17:45:44,993 - werkzeug - WARNING -  * Debugger is active!
+2025-03-23 17:45:44,999 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-23 17:45:45,036 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:45:45] "GET / HTTP/1.1" 200 -
+2025-03-23 17:45:45,195 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:45:45] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-23 17:45:45,209 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:45:45] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-23 17:45:45,211 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:45:45] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-23 17:45:50,516 - model.chatbot_engine - INFO - Processing user input: show me futures assets
+2025-03-23 17:45:50,528 - model.chatbot_engine - INFO - No specialized handler, using intent classifier
+2025-03-23 17:45:56,825 - model.chatbot_engine - INFO - Classified intent: {'intent': 'help', 'confidence': 0.4266502559185028}
+2025-03-23 17:45:56,825 - query_processor - INFO - Processing query with intent: {'intent': 'help', 'confidence': 0.4266502559185028}
+2025-03-23 17:45:56,827 - query_processor - INFO - Generated SQL: SELECT assets.asset_id, assets.name, assets.asset_type, assets.broker_id FROM assets ORDER BY assets.asset_id DESC LIMIT 100
+2025-03-23 17:45:56,832 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:45:56] "POST /api/chat HTTP/1.1" 200 -
+2025-03-23 17:49:23,456 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-23 17:49:23,456 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-23 17:49:23,457 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-23 17:49:23,457 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-23 17:49:23,457 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-23 17:49:23,457 - model.intent_classifier - INFO - Loaded 18 intent classes from models/intent_classifier\intent_classes.json
+2025-03-23 17:49:23,458 - model.intent_classifier - INFO - Using intent classes: ['database_query_aggregation', 'database_query_comparative', 'database_query_complex_filter', 'database_query_count', 'database_query_date_range', 'database_query_detailed', 'database_query_filter', 'database_query_group', 'database_query_join', 'database_query_list', 'database_query_pagination', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-23 17:49:23,459 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-23 17:49:24,500 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-23 17:49:24,501 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-23 17:49:24,502 - intent_processor - INFO - Loaded original intent examples
+2025-03-23 17:49:24,502 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-23 17:49:24,502 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-23 17:49:24,502 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-23 17:49:24,502 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-23 17:49:24,505 - __main__ - INFO - All components initialized successfully
+2025-03-23 17:49:26,566 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-23 17:49:26,566 - __main__ - INFO - Initializing speech recognition routes
+2025-03-23 17:49:26,568 - __main__ - INFO - Training API routes added successfully
+2025-03-23 17:49:26,568 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-23 17:49:26,584 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-23 17:49:26,584 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-23 17:49:26,586 - werkzeug - INFO -  * Restarting with stat
+2025-03-23 17:49:31,228 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-23 17:49:31,228 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-23 17:49:31,229 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-23 17:49:31,229 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-23 17:49:31,229 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-23 17:49:31,229 - model.intent_classifier - INFO - Loaded 18 intent classes from models/intent_classifier\intent_classes.json
+2025-03-23 17:49:31,229 - model.intent_classifier - INFO - Using intent classes: ['database_query_aggregation', 'database_query_comparative', 'database_query_complex_filter', 'database_query_count', 'database_query_date_range', 'database_query_detailed', 'database_query_filter', 'database_query_group', 'database_query_join', 'database_query_list', 'database_query_pagination', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-23 17:49:31,230 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-23 17:49:33,037 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-23 17:49:33,038 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-23 17:49:33,039 - intent_processor - INFO - Loaded original intent examples
+2025-03-23 17:49:33,039 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-23 17:49:33,039 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-23 17:49:33,039 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-23 17:49:33,040 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-23 17:49:33,043 - __main__ - INFO - All components initialized successfully
+2025-03-23 17:49:35,105 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-23 17:49:35,105 - __main__ - INFO - Initializing speech recognition routes
+2025-03-23 17:49:35,110 - __main__ - INFO - Training API routes added successfully
+2025-03-23 17:49:35,110 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-23 17:49:35,125 - werkzeug - WARNING -  * Debugger is active!
+2025-03-23 17:49:35,132 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-23 17:49:38,787 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:49:38] "GET / HTTP/1.1" 200 -
+2025-03-23 17:49:38,951 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:49:38] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-23 17:49:38,955 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:49:38] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-23 17:49:38,958 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:49:38] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-23 17:49:40,490 - model.chatbot_engine - INFO - Processing user input: Tell me about Andrew Davis
+2025-03-23 17:49:40,491 - model.chatbot_engine - INFO - Searching for entity: andrew davis
+2025-03-23 17:49:40,507 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:49:40] "POST /api/chat HTTP/1.1" 200 -
+2025-03-23 17:56:11,827 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-23 17:56:11,828 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-23 17:56:11,828 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-23 17:56:11,828 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-23 17:56:11,828 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-23 17:56:11,829 - model.intent_classifier - INFO - Loaded 18 intent classes from models/intent_classifier\intent_classes.json
+2025-03-23 17:56:11,829 - model.intent_classifier - INFO - Using intent classes: ['database_query_aggregation', 'database_query_comparative', 'database_query_complex_filter', 'database_query_count', 'database_query_date_range', 'database_query_detailed', 'database_query_filter', 'database_query_group', 'database_query_join', 'database_query_list', 'database_query_pagination', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-23 17:56:11,830 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-23 17:56:12,768 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-23 17:56:12,769 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-23 17:56:12,770 - intent_processor - INFO - Loaded original intent examples
+2025-03-23 17:56:12,770 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-23 17:56:12,770 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-23 17:56:12,770 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-23 17:56:12,770 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-23 17:56:12,773 - __main__ - INFO - All components initialized successfully
+2025-03-23 17:56:14,830 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-23 17:56:14,831 - __main__ - INFO - Initializing speech recognition routes
+2025-03-23 17:56:14,832 - __main__ - INFO - Training API routes added successfully
+2025-03-23 17:56:14,832 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-23 17:56:14,844 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-23 17:56:14,844 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-23 17:56:14,846 - werkzeug - INFO -  * Restarting with stat
+2025-03-23 17:56:19,255 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-23 17:56:19,255 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-23 17:56:19,255 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-23 17:56:19,256 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-23 17:56:19,256 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-23 17:56:19,256 - model.intent_classifier - INFO - Loaded 18 intent classes from models/intent_classifier\intent_classes.json
+2025-03-23 17:56:19,256 - model.intent_classifier - INFO - Using intent classes: ['database_query_aggregation', 'database_query_comparative', 'database_query_complex_filter', 'database_query_count', 'database_query_date_range', 'database_query_detailed', 'database_query_filter', 'database_query_group', 'database_query_join', 'database_query_list', 'database_query_pagination', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-23 17:56:19,257 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-23 17:56:20,892 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-23 17:56:20,893 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-23 17:56:20,894 - intent_processor - INFO - Loaded original intent examples
+2025-03-23 17:56:20,894 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-23 17:56:20,894 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-23 17:56:20,894 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-23 17:56:20,894 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-23 17:56:20,897 - __main__ - INFO - All components initialized successfully
+2025-03-23 17:56:22,956 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-23 17:56:22,956 - __main__ - INFO - Initializing speech recognition routes
+2025-03-23 17:56:22,958 - __main__ - INFO - Training API routes added successfully
+2025-03-23 17:56:22,958 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-23 17:56:22,971 - werkzeug - WARNING -  * Debugger is active!
+2025-03-23 17:56:22,977 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-23 17:56:23,014 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:56:23] "GET / HTTP/1.1" 200 -
+2025-03-23 17:56:23,190 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:56:23] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-23 17:56:23,191 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:56:23] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-23 17:56:23,193 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:56:23] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-23 17:56:37,267 - model.chatbot_engine - INFO - Processing user input: show me all cryptoci
+2025-03-23 17:56:37,284 - model.chatbot_engine - INFO - No specialized handler, using intent classifier
+2025-03-23 17:56:42,966 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_list', 'confidence': 0.9995512366294861}
+2025-03-23 17:56:42,968 - database_connector - ERROR - Error executing query: 1146 (42S02): Table 'fm_database.none' doesn't exist
+2025-03-23 17:56:42,969 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:56:42] "POST /api/chat HTTP/1.1" 200 -
+2025-03-23 17:56:47,783 - model.chatbot_engine - INFO - Processing user input: show me all cryptocurrency assets
+2025-03-23 17:56:47,783 - model.chatbot_engine - INFO - No specialized handler, using intent classifier
+2025-03-23 17:56:47,894 - model.chatbot_engine - INFO - Classified intent: {'intent': 'database_query_list', 'confidence': 0.9999892711639404}
+2025-03-23 17:56:47,898 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 17:56:47] "POST /api/chat HTTP/1.1" 200 -
+2025-03-23 18:07:18,157 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-23 18:07:18,158 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-23 18:07:18,158 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-23 18:07:18,158 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-23 18:07:18,158 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-23 18:07:18,159 - model.intent_classifier - INFO - Loaded 18 intent classes from models/intent_classifier\intent_classes.json
+2025-03-23 18:07:18,159 - model.intent_classifier - INFO - Using intent classes: ['database_query_aggregation', 'database_query_comparative', 'database_query_complex_filter', 'database_query_count', 'database_query_date_range', 'database_query_detailed', 'database_query_filter', 'database_query_group', 'database_query_join', 'database_query_list', 'database_query_pagination', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-23 18:07:18,160 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-23 18:07:19,142 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-23 18:07:19,143 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-23 18:07:19,144 - intent_processor - INFO - Loaded original intent examples
+2025-03-23 18:07:19,144 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-23 18:07:19,144 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-23 18:07:19,144 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-23 18:07:19,144 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-23 18:07:19,148 - __main__ - INFO - All components initialized successfully
+2025-03-23 18:07:21,205 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-23 18:07:21,205 - __main__ - INFO - Initializing speech recognition routes
+2025-03-23 18:07:21,207 - __main__ - INFO - Training API routes added successfully
+2025-03-23 18:07:21,207 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-23 18:07:21,220 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.171:5000
+2025-03-23 18:07:21,220 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-03-23 18:07:21,221 - werkzeug - INFO -  * Restarting with stat
+2025-03-23 18:07:25,899 - encryption_manager - INFO - Homomorphic encryption context initialized
+2025-03-23 18:07:25,900 - __main__ - INFO - Loading intent classifier model from models/intent_classifier
+2025-03-23 18:07:25,900 - model.intent_classifier - INFO - Loading model from directory: models/intent_classifier
+2025-03-23 18:07:25,900 - model.intent_classifier - INFO - Loaded model configuration from models/intent_classifier\model_config.json
+2025-03-23 18:07:25,900 - model.intent_classifier - INFO - Configuration: vocab_size=10000, embedding_dim=150, max_sequence_length=50, use_post_processor=True
+2025-03-23 18:07:25,900 - model.intent_classifier - INFO - Loaded 18 intent classes from models/intent_classifier\intent_classes.json
+2025-03-23 18:07:25,901 - model.intent_classifier - INFO - Using intent classes: ['database_query_aggregation', 'database_query_comparative', 'database_query_complex_filter', 'database_query_count', 'database_query_date_range', 'database_query_detailed', 'database_query_filter', 'database_query_group', 'database_query_join', 'database_query_list', 'database_query_pagination', 'database_query_recent', 'database_query_sensitive', 'database_query_sort', 'database_query_specific_id', 'goodbye', 'greeting', 'help']
+2025-03-23 18:07:25,901 - model.intent_classifier - INFO - Loaded tokenizer from models/intent_classifier\tokenizer.json
+2025-03-23 18:07:27,564 - model.intent_classifier - INFO - Loaded model from models/intent_classifier\model.h5
+2025-03-23 18:07:27,565 - intent_processor - INFO - Loaded 5 intent mappings
+2025-03-23 18:07:27,566 - intent_processor - INFO - Loaded original intent examples
+2025-03-23 18:07:27,566 - model.intent_classifier - INFO - Initialized intent post-processor
+2025-03-23 18:07:27,566 - model.intent_classifier - INFO - Model, tokenizer, and intent classes successfully loaded
+2025-03-23 18:07:27,566 - speech.speech_recognition - INFO - Secure speech recognition module initialized
+2025-03-23 18:07:27,566 - __main__ - INFO - Speech recognition initialized successfully
+2025-03-23 18:07:27,569 - __main__ - INFO - All components initialized successfully
+2025-03-23 18:07:29,616 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-23 18:07:29,616 - __main__ - INFO - Initializing speech recognition routes
+2025-03-23 18:07:29,618 - __main__ - INFO - Training API routes added successfully
+2025-03-23 18:07:29,619 - api.flask_api - INFO - Starting server on 0.0.0.0:5000
+2025-03-23 18:07:29,627 - werkzeug - WARNING -  * Debugger is active!
+2025-03-23 18:07:29,630 - werkzeug - INFO -  * Debugger PIN: 103-700-790
+2025-03-23 18:07:29,654 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 18:07:29] "GET / HTTP/1.1" 200 -
+2025-03-23 18:07:29,753 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 18:07:29] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-03-23 18:07:29,758 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 18:07:29] "[36mGET /static/js/speech.js HTTP/1.1[0m" 304 -
+2025-03-23 18:07:29,760 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 18:07:29] "[36mGET /static/js/script.js HTTP/1.1[0m" 304 -
+2025-03-23 18:07:31,839 - model.chatbot_engine - INFO - Processing user input: show me all cryptocurrency assets
+2025-03-23 18:07:31,842 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 18:07:31] "POST /api/chat HTTP/1.1" 200 -
+2025-03-23 18:07:42,021 - model.chatbot_engine - INFO - Processing user input: show me all futures assets
+2025-03-23 18:07:42,024 - werkzeug - INFO - 127.0.0.1 - - [23/Mar/2025 18:07:42] "POST /api/chat HTTP/1.1" 200 -

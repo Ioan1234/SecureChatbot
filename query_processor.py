@@ -54,6 +54,16 @@ class QueryProcessor:
 
         intent = intent_data.get('intent') if intent_data else None
 
+        if "cryptocurrency" in nl_query.lower() or "crypto" in nl_query.lower():
+            sql = """
+            SELECT * FROM assets 
+            WHERE asset_type = 'Cryptocurrency'
+            ORDER BY asset_id
+            """
+            self.logger.info(f"Executing cryptocurrency query: {sql}")
+            result = self._execute_and_process_query(sql)
+            return result
+
         if "trader" in nl_query.lower() and "balance" in nl_query.lower():
             sort_order = "DESC"
             if "lowest" in nl_query.lower():
@@ -85,9 +95,24 @@ class QueryProcessor:
             return self._handle_date_range_query(nl_query, intent_data)
 
         tables = self._extract_tables(nl_query)
-        if not tables:
-            self.logger.warning("No tables identified in the query")
-            return None
+
+        if not tables or 'none' in tables:
+            if "crypto" in nl_query.lower() or "cryptocurrency" in nl_query.lower() or "asset" in nl_query.lower():
+                tables = ["assets"]
+            elif "trader" in nl_query.lower() or "account" in nl_query.lower():
+                tables = ["traders"]
+            elif "trade" in nl_query.lower() or "transaction" in nl_query.lower():
+                tables = ["trades"]
+            elif "market" in nl_query.lower() or "exchange" in nl_query.lower():
+                tables = ["markets"]
+            elif "broker" in nl_query.lower():
+                tables = ["brokers"]
+            elif "order" in nl_query.lower():
+                tables = ["orders"]
+            else:
+                tables = ["traders"]
+
+            self.logger.info(f"No tables identified in the query, using default: {tables[0]}")
 
         fields = self._extract_fields(nl_query, tables)
 
@@ -95,13 +120,25 @@ class QueryProcessor:
         from_clause = f"FROM {tables[0]}"
 
         join_clauses = self._generate_joins_for_tables(tables)
-        join_clause = " JOIN ".join(join_clauses)
+        join_clause = " ".join(join_clauses)
         if join_clause:
-            from_clause = f"{from_clause} JOIN {join_clause}"
+            from_clause = f"{from_clause} {join_clause}"
 
         where_clause = self._generate_where_clause(nl_query, tables[0])
+        if where_clause:
+            from_clause = f"{from_clause} {where_clause}"
+
+        if "crypto" in nl_query.lower() or "cryptocurrency" in nl_query.lower():
+            if tables[0] == "assets":
+                crypto_condition = "WHERE asset_type = 'Cryptocurrency' OR asset_type LIKE '%crypto%'"
+                if "WHERE" in from_clause:
+                    from_clause = from_clause.replace("WHERE", f"{crypto_condition} AND")
+                else:
+                    from_clause = f"{from_clause} {crypto_condition}"
 
         order_clause = self._generate_order_clause(nl_query, tables[0])
+        if order_clause:
+            from_clause = f"{from_clause} {order_clause}"
 
         limit_clause = "LIMIT 100"
 
@@ -178,40 +215,57 @@ class QueryProcessor:
         id_column = f"{table}.{table[:-1]}_id" if table.endswith('s') else f"{table}.{table}_id"
         return f"ORDER BY {id_column} DESC"
 
-    def _extract_fields(self, query, tables):
-        if not tables:
-            return ["*"]
-
+    def _extract_tables(self, query):
         query_lower = query.lower()
-        selected_fields = []
 
-        for table in tables:
-            if table in self.schema:
-                table_fields = self.schema[table]
+        table_indicators = {
+            "traders": ["trader", "traders", "person", "people", "user", "users", "customer", "customers", "client",
+                        "clients"],
+            "assets": ["asset", "assets", "etf", "stock", "stocks", "bond", "bonds",
+                       "cryptocurrency", "crypto", "bitcoin", "ethereum", "litecoin",
+                       "commodity", "commodities", "option", "options", "security", "securities"],
+            "markets": ["market", "markets", "exchange", "exchanges", "trading platform", "trading platforms"],
+            "trades": ["trade", "trades", "trading", "buy", "sell", "bought", "sold", "purchase", "purchased"],
+            "accounts": ["account", "accounts", "balance", "balances", "fund", "funds", "money", "portfolio",
+                         "portfolios"],
+            "transactions": ["transaction", "transactions", "transfer", "transfers", "deposit", "deposits",
+                             "withdrawal", "withdrawals", "payment", "payments"],
+            "orders": ["order", "orders", "request", "requests"],
+            "brokers": ["broker", "brokers", "dealer", "dealers", "brokerage", "brokerages"],
+            "price_history": ["price history", "historical price", "price", "prices", "price data", "historical data",
+                              "history", "trend", "trends"]
+        }
 
-                for field in table_fields:
-                    field_name = field.replace('_', ' ')
-                    if field_name in query_lower or field in query_lower:
-                        selected_fields.append(f"{table}.{field}")
+        if "crypto" in query_lower or "cryptocurrency" in query_lower or "bitcoin" in query_lower or "litecoin" in query_lower or "ethereum" in query_lower:
+            return ["assets"]
 
-        if not selected_fields:
-            for table in tables:
-                if table in self.schema:
-                    for field in self.schema[table]:
-                        if field.endswith('_id') or field == 'name':
-                            selected_fields.append(f"{table}.{field}")
+        detected_tables = []
 
-                        if table == 'assets' and field in ['asset_type', 'price']:
-                            selected_fields.append(f"{table}.{field}")
-                        elif table == 'accounts' and field == 'balance':
-                            selected_fields.append(f"{table}.{field}")
-                        elif table == 'trades' and field in ['quantity', 'price', 'trade_date']:
-                            selected_fields.append(f"{table}.{field}")
+        for table, indicators in table_indicators.items():
+            if any(indicator in query_lower for indicator in indicators):
+                detected_tables.append(table)
 
-        if not selected_fields:
-            return ["*"]
+        if len(detected_tables) > 1:
+            table_relevance = {}
+            for table in detected_tables:
+                count = 0
+                for indicator in table_indicators[table]:
+                    count += query_lower.count(indicator)
+                table_relevance[table] = count
 
-        return selected_fields
+            detected_tables.sort(key=lambda t: table_relevance[t], reverse=True)
+
+        if not detected_tables:
+            if "asset" in query_lower or "price" in query_lower or "value" in query_lower:
+                return ["assets"]
+            elif "account" in query_lower or "balance" in query_lower or "money" in query_lower:
+                return ["accounts"]
+            elif "trade" in query_lower or "buy" in query_lower or "sell" in query_lower:
+                return ["trades"]
+            else:
+                return ["traders"]
+
+        return detected_tables
 
     def _generate_joins_for_tables(self, tables):
         if len(tables) <= 1:

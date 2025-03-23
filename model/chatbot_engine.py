@@ -24,7 +24,6 @@ class ChatbotEngine:
         }
 
     def process_user_input(self, user_input):
-
         try:
             self.current_query = user_input
             self.logger.info(f"Processing user input: {user_input}")
@@ -32,6 +31,19 @@ class ChatbotEngine:
             specialized_result = self._check_specialized_queries(user_input)
             if specialized_result:
                 return specialized_result
+
+            entity_patterns = [
+                r'(?:tell me|info|information|details)(?:\s+\w+)?\s+(?:about|on|for)\s+([\w\s]+)',
+                r'(?:who|what)(?:\s+\w+)?\s+(?:is|are)\s+([\w\s]+)',
+                r'(?:show|display|get)(?:\s+\w+)?\s+(?:info|information|details)(?:\s+\w+)?\s+(?:about|on|for)\s+([\w\s]+)',
+                r'(?:lookup|find|search for)\s+([\w\s]+)'
+            ]
+
+            for pattern in entity_patterns:
+                if re.search(pattern, user_input.lower()):
+                    entity_result = self._handle_entity_query(user_input)
+                    if entity_result:
+                        return entity_result
 
             self.logger.info("No specialized handler, using intent classifier")
             intent_data = self.intent_classifier.classify_intent(user_input)
@@ -232,9 +244,118 @@ class ChatbotEngine:
                 "response": f"No {main_table} found {result_description}."
             }
 
-
     def _check_specialized_queries(self, user_input):
         query_lower = user_input.lower()
+
+        if (
+                "show" in query_lower or "list" in query_lower or "all" in query_lower or "get" in query_lower) and "asset" in query_lower:
+
+            if "crypto" in query_lower or "cryptocurrency" in query_lower or "bitcoin" in query_lower or "litecoin" in query_lower or "ethereum" in query_lower:
+                sql = """
+                SELECT * FROM assets 
+                WHERE asset_type = 'Cryptocurrency'
+                ORDER BY asset_id
+                """
+                result = self.query_processor.db_connector.execute_query(sql)
+                if result and len(result) > 0:
+                    return {
+                        "response": f"Found {len(result)} cryptocurrency assets in the database:",
+                        "data": result
+                    }
+                else:
+                    sql = """
+                    SELECT * FROM assets 
+                    WHERE asset_type LIKE '%crypto%' OR asset_type LIKE '%Crypto%'
+                    ORDER BY asset_id
+                    """
+                    result = self.query_processor.db_connector.execute_query(sql)
+                    if result and len(result) > 0:
+                        return {
+                            "response": f"Found {len(result)} cryptocurrency assets in the database:",
+                            "data": result
+                        }
+                    else:
+                        return {
+                            "response": "No cryptocurrency assets found in the database."
+                        }
+
+            elif "etf" in query_lower:
+                return self._handle_etf_assets_query()
+
+            elif any(asset_type in query_lower for asset_type in
+                     ["stock", "bond", "option", "commodity", "future", "forex"]):
+                asset_types = {
+                    "stock": "Stock",
+                    "bond": "Bond",
+                    "option": "Options",
+                    "commodity": "Commodity",
+                    "future": "Futures",
+                    "forex": "Forex"
+                }
+
+                asset_type = None
+                for key, value in asset_types.items():
+                    if key in query_lower:
+                        asset_type = value
+                        break
+
+                sql = f"""
+                SELECT * FROM assets 
+                WHERE asset_type = '{asset_type}'
+                ORDER BY asset_id
+                """
+
+                result = self.query_processor.db_connector.execute_query(sql)
+
+                if result and len(result) > 0:
+                    return {
+                        "response": f"Found {len(result)} {asset_type.lower()} assets in the database:",
+                        "data": result
+                    }
+                else:
+
+                    sql = f"""
+                    SELECT * FROM assets 
+                    WHERE asset_type LIKE '%{asset_type}%'
+                    ORDER BY asset_id
+                    """
+
+                    result = self.query_processor.db_connector.execute_query(sql)
+
+                    if result and len(result) > 0:
+                        return {
+                            "response": f"Found {len(result)} {asset_type.lower()} assets in the database:",
+                            "data": result
+                        }
+                    else:
+                        return {
+                            "response": f"No {asset_type.lower()} assets found in the database."
+                        }
+
+        if re.search(r'(?i)etf\s+assets', user_input) or re.search(r'(?i)show\s+me\s+etf', user_input):
+            return self._handle_etf_assets_query()
+
+        if re.search(r'(?i)completed\s+orders', user_input):
+            return self._handle_completed_orders_query()
+
+        if re.search(r'(?i)etf\s+assets', user_input) or re.search(r'(?i)show\s+me\s+etf', user_input):
+            return self._handle_etf_assets_query()
+
+        if re.search(r'(?i)completed\s+orders', user_input):
+            return self._handle_completed_orders_query()
+
+        entity_patterns = [
+            r'(?:tell me|info|information|details)(?:\s+\w+)?\s+(?:about|on|for)\s+([\w\s]+)(?:\?)?$',
+            r'(?:who|what)(?:\s+\w+)?\s+(?:is|are)\s+([\w\s]+)(?:\?)?$',
+            r'(?:show|display|get)(?:\s+\w+)?\s+(?:info|information|details)(?:\s+\w+)?\s+(?:about|on|for)\s+([\w\s]+)(?:\?)?$',
+            r'(?:lookup|find|search for)\s+([\w\s]+)(?:\?)?$'
+        ]
+
+        for pattern in entity_patterns:
+            if re.search(pattern, user_input.lower()):
+                entity_result = self._handle_entity_query(user_input)
+                if entity_result:
+                    return entity_result
 
         if re.search(r'(?i)etf\s+assets', user_input) or re.search(r'(?i)show\s+me\s+etf', user_input):
             return self._handle_etf_assets_query()
@@ -323,12 +444,239 @@ class ChatbotEngine:
                                                                                    user_input):
             return self._handle_count_traders_query()
 
+        if 'about' in query_lower and len(query_lower.split()) <= 8:
+            entity_result = self._handle_entity_query(user_input)
+            if entity_result and 'data' in entity_result:
+                return entity_result
+
         return None
 
-    def _handle_etf_assets_query(self):
-        sql = """
+    def _get_entity_details(self, entity_type, entity_data):
+
+        entity_id_field = f"{entity_type[:-1]}_id"
+        entity_id = entity_data.get(entity_id_field)
+
+        if not entity_id:
+            return {"response": f"Found entity but couldn't retrieve its ID", "data": entity_data}
+
+        response = {
+            "response": f"Here's information about {entity_data.get('name')}:",
+            "data": entity_data,
+            "related_data": {}
+        }
+
+        try:
+            if entity_type == "traders":
+                accounts_sql = f"""
+                SELECT * FROM accounts 
+                WHERE trader_id = {entity_id}
+                """
+                accounts = self.query_processor.db_connector.execute_query(accounts_sql)
+
+                if accounts and len(accounts) > 0:
+                    response["related_data"]["accounts"] = accounts
+
+                    if accounts and len(accounts) > 0:
+                        account_ids = ", ".join([str(acc["account_id"]) for acc in accounts])
+                        transactions_sql = f"""
+                        SELECT * FROM transactions 
+                        WHERE account_id IN ({account_ids})
+                        ORDER BY transaction_date DESC
+                        LIMIT 10
+                        """
+                        transactions = self.query_processor.db_connector.execute_query(transactions_sql)
+                        if transactions and len(transactions) > 0:
+                            response["related_data"]["recent_transactions"] = transactions
+
+                trades_sql = f"""
+                SELECT t.*, a.name as asset_name, m.name as market_name 
+                FROM trades t
+                JOIN assets a ON t.asset_id = a.asset_id
+                JOIN markets m ON t.market_id = m.market_id
+                WHERE t.trader_id = {entity_id}
+                ORDER BY t.trade_date DESC
+                LIMIT 10
+                """
+                trades = self.query_processor.db_connector.execute_query(trades_sql)
+
+                if trades and len(trades) > 0:
+                    response["related_data"]["recent_trades"] = trades
+
+            elif entity_type == "assets":
+                price_sql = f"""
+                SELECT * FROM price_history 
+                WHERE asset_id = {entity_id}
+                ORDER BY price_date DESC
+                LIMIT 10
+                """
+                prices = self.query_processor.db_connector.execute_query(price_sql)
+
+                if prices and len(prices) > 0:
+                    response["related_data"]["price_history"] = prices
+
+                trades_sql = f"""
+                SELECT t.*, tr.name as trader_name, m.name as market_name 
+                FROM trades t
+                JOIN traders tr ON t.trader_id = tr.trader_id
+                JOIN markets m ON t.market_id = m.market_id
+                WHERE t.asset_id = {entity_id}
+                ORDER BY t.trade_date DESC
+                LIMIT 10
+                """
+                trades = self.query_processor.db_connector.execute_query(trades_sql)
+
+                if trades and len(trades) > 0:
+                    response["related_data"]["recent_trades"] = trades
+
+                if entity_data.get('broker_id'):
+                    broker_sql = f"""
+                    SELECT * FROM brokers 
+                    WHERE broker_id = {entity_data.get('broker_id')}
+                    """
+                    broker = self.query_processor.db_connector.execute_query(broker_sql)
+
+                    if broker and len(broker) > 0:
+                        response["related_data"]["broker"] = broker[0]
+
+            elif entity_type == "markets":
+                trades_sql = f"""
+                SELECT t.*, tr.name as trader_name, a.name as asset_name 
+                FROM trades t
+                JOIN traders tr ON t.trader_id = tr.trader_id
+                JOIN assets a ON t.asset_id = a.asset_id
+                WHERE t.market_id = {entity_id}
+                ORDER BY t.trade_date DESC
+                LIMIT 10
+                """
+                trades = self.query_processor.db_connector.execute_query(trades_sql)
+
+                if trades and len(trades) > 0:
+                    response["related_data"]["recent_trades"] = trades
+
+            elif entity_type == "brokers":
+                assets_sql = f"""
+                SELECT * FROM assets 
+                WHERE broker_id = {entity_id}
+                """
+                assets = self.query_processor.db_connector.execute_query(assets_sql)
+
+                if assets and len(assets) > 0:
+                    response["related_data"]["assets"] = assets
+
+        except Exception as e:
+            self.logger.error(f"Error getting related data for {entity_type}.{entity_id_field}={entity_id}: {e}")
+            response["response"] += " (Note: Some related information could not be retrieved.)"
+
+        return response
+    def _extract_entity_name(self, query):
+        import re
+
+        patterns = [
+            r'(?:tell me|info|information|details)(?:\s+\w+)?\s+(?:about|on|for)\s+([\w\s]+)(?:\?)?$',
+            r'(?:who|what)(?:\s+\w+)?\s+(?:is|are)\s+([\w\s]+)(?:\?)?$',
+            r'(?:show|display|get)(?:\s+\w+)?\s+(?:info|information|details)(?:\s+\w+)?\s+(?:about|on|for)\s+([\w\s]+)(?:\?)?$',
+            r'(?:lookup|find|search for)\s+([\w\s]+)(?:\?)?$'
+        ]
+
+        for pattern in patterns:
+            match = re.search(pattern, query.lower())
+            if match:
+                return match.group(1).strip()
+
+        prepositions = ["about", "on", "for", "regarding"]
+        for prep in prepositions:
+            if f" {prep} " in query.lower():
+                parts = query.lower().split(f" {prep} ", 1)
+                if len(parts) > 1:
+                    return parts[1].strip().rstrip('?')
+
+        return None
+
+    def _handle_entity_query(self, user_input):
+        entity_name = self._extract_entity_name(user_input)
+        if not entity_name:
+            return None
+
+        self.logger.info(f"Searching for entity: {entity_name}")
+
+        tables_to_check = ["traders", "brokers", "assets", "markets"]
+
+        for table in tables_to_check:
+            sql = f"""
+            SELECT * FROM {table} 
+            WHERE name = '{entity_name}'
+            LIMIT 1
+            """
+
+            try:
+                result = self.query_processor.db_connector.execute_query(sql)
+
+                if not result or len(result) == 0:
+                    sql = f"""
+                    SELECT * FROM {table} 
+                    WHERE name LIKE '%{entity_name}%'
+                    LIMIT 1
+                    """
+                    result = self.query_processor.db_connector.execute_query(sql)
+
+                if result and len(result) > 0:
+                    return self._get_entity_details(table, result[0])
+
+            except Exception as e:
+                self.logger.error(f"Error searching for entity in {table}: {e}")
+
+        return {"response": f"I couldn't find any information about '{entity_name}' in our database."}
+
+    def _handle_asset_type_query(self, user_input):
+        query_lower = user_input.lower()
+
+        asset_type_mappings = {
+            'etf': ['etf', 'etfs', 'exchange traded fund', 'exchange-traded fund', 'exchange traded funds'],
+            'stock': ['stock', 'stocks', 'equity', 'equities', 'share', 'shares'],
+            'bond': ['bond', 'bonds', 'fixed income', 'debt security', 'debt securities'],
+            'futures': ['future', 'futures', 'futures contract', 'futures contracts'],
+            'option': ['option', 'options', 'stock option', 'stock options'],
+            'cryptocurrency': ['crypto', 'cryptocurrency', 'cryptocurrencies', 'digital currency', 'digital currencies',
+                               'bitcoin', 'ethereum', 'altcoin', 'altcoins'],
+            'forex': ['forex', 'foreign exchange', 'currency pair', 'currency pairs', 'fx'],
+            'commodity': ['commodity', 'commodities', 'gold', 'silver', 'oil', 'natural gas'],
+            'mutual fund': ['mutual fund', 'mutual funds', 'fund', 'funds'],
+            'reit': ['reit', 'reits', 'real estate investment trust', 'real estate investment trusts']
+        }
+
+        asset_type = None
+        for type_key, variations in asset_type_mappings.items():
+            if any(variation in query_lower for variation in variations):
+                asset_type = type_key.upper()
+                break
+
+        if not asset_type and (
+                'asset type' in query_lower or 'asset types' in query_lower or 'types of asset' in query_lower):
+            sql = """
+            SELECT asset_type, COUNT(*) as count
+            FROM assets
+            GROUP BY asset_type
+            ORDER BY count DESC
+            """
+
+            result = self.query_processor.db_connector.execute_query(sql)
+
+            if result and len(result) > 0:
+                return {
+                    "response": f"Here are the different types of assets in the database:",
+                    "data": result
+                }
+            else:
+                return {
+                    "response": "No asset type information found in the database."
+                }
+
+        if not asset_type:
+            asset_type = 'ETF'
+
+        sql = f"""
         SELECT * FROM assets 
-        WHERE asset_type = 'ETF'
+        WHERE asset_type = '{asset_type}'
         ORDER BY asset_id
         """
 
@@ -336,12 +684,198 @@ class ChatbotEngine:
 
         if result and len(result) > 0:
             return {
-                "response": f"Found {len(result)} ETF assets in the database:",
+                "response": f"Found {len(result)} {asset_type.lower()} assets in the database:",
+                "data": result
+            }
+        else:
+            sql = f"""
+            SELECT * FROM assets 
+            WHERE asset_type LIKE '%{asset_type}%'
+            ORDER BY asset_id
+            """
+
+            result = self.query_processor.db_connector.execute_query(sql)
+
+            if result and len(result) > 0:
+                return {
+                    "response": f"Found {len(result)} {asset_type.lower()} assets in the database:",
+                    "data": result
+                }
+            else:
+                return {
+                    "response": f"No {asset_type.lower()} assets found in the database."
+                }
+
+    def _handle_etf_assets_query(self):
+
+        return self._handle_asset_type_query("show me ETF assets")
+
+    def _handle_asset_by_broker_query(self, user_input):
+        query_lower = user_input.lower()
+
+        broker_patterns = [
+            r'(?:by|from|of|with)\s+([a-zA-Z0-9\s]+)(?:broker)?',
+            r'([a-zA-Z0-9\s]+)(?:broker|brokerage|firm)\'s\s+assets'
+        ]
+
+        broker_name = None
+        for pattern in broker_patterns:
+            match = re.search(pattern, query_lower)
+            if match:
+                broker_name = match.group(1).strip()
+                break
+
+        if not broker_name:
+            sql = """
+            SELECT b.broker_id, b.name, COUNT(a.asset_id) as asset_count
+            FROM brokers b
+            LEFT JOIN assets a ON b.broker_id = a.broker_id
+            GROUP BY b.broker_id, b.name
+            ORDER BY asset_count DESC
+            """
+
+            result = self.query_processor.db_connector.execute_query(sql)
+
+            if result and len(result) > 0:
+                return {
+                    "response": f"Here are the brokers and the number of assets they manage:",
+                    "data": result
+                }
+            else:
+                return {
+                    "response": "No broker information found in the database."
+                }
+
+        sql = f"""
+        SELECT a.*, b.name as broker_name
+        FROM assets a
+        JOIN brokers b ON a.broker_id = b.broker_id
+        WHERE b.name = '{broker_name}'
+        ORDER BY a.asset_id
+        """
+
+        result = self.query_processor.db_connector.execute_query(sql)
+
+        if not result or len(result) == 0:
+            sql = f"""
+            SELECT a.*, b.name as broker_name
+            FROM assets a
+            JOIN brokers b ON a.broker_id = b.broker_id
+            WHERE b.name LIKE '%{broker_name}%'
+            ORDER BY a.asset_id
+            """
+
+            result = self.query_processor.db_connector.execute_query(sql)
+
+        if result and len(result) > 0:
+            broker_name_display = result[0].get('broker_name', broker_name)
+            return {
+                "response": f"Found {len(result)} assets managed by {broker_name_display}:",
                 "data": result
             }
         else:
             return {
-                "response": "No ETF assets found in the database."
+                "response": f"No assets found for broker '{broker_name}'."
+            }
+
+    def _handle_asset_performance_query(self, user_input):
+        query_lower = user_input.lower()
+
+        sort_direction = "DESC"
+        if any(term in query_lower for term in ["worst", "lowest", "poorest", "bottom", "least"]):
+            sort_direction = "ASC"
+
+        try:
+            sql = f"""
+            WITH latest_prices AS (
+                SELECT 
+                    asset_id,
+                    close_price,
+                    price_date,
+                    ROW_NUMBER() OVER (PARTITION BY asset_id ORDER BY price_date DESC) as rn
+                FROM price_history
+                WHERE close_price > 0
+            ),
+            oldest_prices AS (
+                SELECT 
+                    asset_id,
+                    close_price,
+                    price_date,
+                    ROW_NUMBER() OVER (PARTITION BY asset_id ORDER BY price_date ASC) as rn
+                FROM price_history
+                WHERE close_price > 0
+            )
+            SELECT 
+                a.asset_id,
+                a.name,
+                a.asset_type,
+                latest.close_price as current_price,
+                oldest.close_price as starting_price,
+                latest.price_date as latest_date,
+                oldest.price_date as starting_date,
+                ((latest.close_price - oldest.close_price) / oldest.close_price * 100) as percent_change
+            FROM assets a
+            JOIN latest_prices latest ON a.asset_id = latest.asset_id AND latest.rn = 1
+            JOIN oldest_prices oldest ON a.asset_id = oldest.asset_id AND oldest.rn = 1
+            WHERE oldest.close_price > 0
+            ORDER BY percent_change {sort_direction}
+            LIMIT 20
+            """
+
+            result = self.query_processor.db_connector.execute_query(sql)
+
+            if result and len(result) > 0:
+                performance_term = "best" if sort_direction == "DESC" else "worst"
+                return {
+                    "response": f"Here are the {performance_term} performing assets based on price change:",
+                    "data": result
+                }
+        except Exception as e:
+            self.logger.error(f"Error in asset performance query: {e}")
+
+        sql = f"""
+        SELECT a.*, p.close_price as current_price, p.price_date
+        FROM assets a
+        JOIN (
+            SELECT asset_id, close_price, price_date,
+                   ROW_NUMBER() OVER (PARTITION BY asset_id ORDER BY price_date DESC) as rn
+            FROM price_history
+        ) p ON a.asset_id = p.asset_id AND p.rn = 1
+        ORDER BY current_price {sort_direction}
+        LIMIT 20
+        """
+
+        try:
+            result = self.query_processor.db_connector.execute_query(sql)
+
+            if result and len(result) > 0:
+                price_term = "highest" if sort_direction == "DESC" else "lowest"
+                return {
+                    "response": f"Here are the assets with the {price_term} current prices:",
+                    "data": result
+                }
+            else:
+                sql = f"""
+                SELECT * FROM assets
+                ORDER BY asset_id
+                LIMIT 20
+                """
+
+                result = self.query_processor.db_connector.execute_query(sql)
+
+                if result and len(result) > 0:
+                    return {
+                        "response": f"Here are some assets from the database (performance data not available):",
+                        "data": result
+                    }
+                else:
+                    return {
+                        "response": "No asset information found in the database."
+                    }
+        except Exception as e:
+            self.logger.error(f"Error in fallback asset query: {e}")
+            return {
+                "response": "Could not retrieve asset performance information due to an error."
             }
 
     def _handle_completed_orders_query(self):
@@ -751,14 +1285,68 @@ class ChatbotEngine:
             }
 
     def _execute_list_query(self, query):
+        query_lower = query.lower()
+
+        if "asset" in query_lower:
+            table = "assets"
+
+            if "crypto" in query_lower or "cryptocurrency" in query_lower:
+                sql = """
+                SELECT * FROM assets 
+                WHERE asset_type = 'Cryptocurrency'
+                ORDER BY asset_id
+                """
+            elif "etf" in query_lower:
+                sql = """
+                SELECT * FROM assets 
+                WHERE asset_type = 'ETF'
+                ORDER BY asset_id
+                """
+            elif "stock" in query_lower:
+                sql = """
+                SELECT * FROM assets 
+                WHERE asset_type = 'Stock'
+                ORDER BY asset_id
+                """
+            elif "bond" in query_lower:
+                sql = """
+                SELECT * FROM assets 
+                WHERE asset_type = 'Bond'
+                ORDER BY asset_id
+                """
+            elif "commodity" in query_lower:
+                sql = """
+                SELECT * FROM assets 
+                WHERE asset_type = 'Commodity'
+                ORDER BY asset_id
+                """
+            elif "option" in query_lower:
+                sql = """
+                SELECT * FROM assets 
+                WHERE asset_type = 'Options'
+                ORDER BY asset_id
+                """
+            else:
+                sql = """
+                SELECT * FROM assets
+                ORDER BY asset_id
+                """
+
+            self.logger.info(f"Executing asset query: {sql}")
+            return self.query_processor.db_connector.execute_query(sql)
+
         query_context = self._analyze_query_context(query)
         table = query_context.get('table', 'traders')
+
+        if not table or table == 'none':
+            table = 'traders'
 
         sql = f"""
         SELECT * FROM {table}
         LIMIT 100
         """
 
+        self.logger.info(f"Executing list query: {sql}")
         return self.query_processor.db_connector.execute_query(sql)
 
     def _execute_comparative_query(self, query, sub_intent):
@@ -809,7 +1397,9 @@ class ChatbotEngine:
 
         table_keywords = {
             "traders": ["trader", "traders"],
-            "assets": ["asset", "assets", "stock", "stocks", "security", "securities"],
+            "assets": ["asset", "assets", "etf", "etfs", "stock", "stocks", "bond", "bonds",
+                       "cryptocurrency", "crypto", "bitcoin", "ethereum", "commodity", "commodities",
+                       "option", "options", "security", "securities"],
             "markets": ["market", "markets", "exchange", "exchanges"],
             "accounts": ["account", "accounts"],
             "trades": ["trade", "trades", "transaction", "transactions"],
@@ -821,6 +1411,16 @@ class ChatbotEngine:
             if any(keyword in query_lower for keyword in keywords):
                 result["table"] = table
                 break
+
+        if any(term in query_lower for term in ["crypto", "cryptocurrency", "bitcoin", "ethereum", "litecoin"]):
+            result["table"] = "assets"
+            result["attribute"] = "asset_type"
+        elif "etf" in query_lower:
+            result["table"] = "assets"
+            result["attribute"] = "asset_type"
+        elif any(term in query_lower for term in ["stock", "equity", "share"]):
+            result["table"] = "assets"
+            result["attribute"] = "asset_type"
 
         attribute_keywords = {
             "balance": ["balance", "money", "funds", "account balance"],
