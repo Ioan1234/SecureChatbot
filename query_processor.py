@@ -68,6 +68,8 @@ class QueryProcessor:
             sort_order = "DESC"
             if "lowest" in nl_query.lower():
                 sort_order = "ASC"
+            elif "median" in nl_query.lower() or "middle" in nl_query.lower() or "average" in nl_query.lower():
+                return self._handle_median_balance_query(nl_query)
 
             sql = f"""
             SELECT 
@@ -148,6 +150,84 @@ class QueryProcessor:
         self.logger.info(f"Generated SQL: {sql}")
         return self._execute_and_process_query(sql)
 
+
+    def _handle_lowest_balance_query(self):
+        try:
+            sql = """
+            SELECT t.trader_id, t.name, t.email, a.account_id, a.balance, a.account_type
+            FROM traders t
+            JOIN accounts a ON t.trader_id = a.trader_id
+            ORDER BY a.balance ASC
+            LIMIT 10
+            """
+
+            result = self.query_processor.db_connector.execute_query(sql)
+
+            if result and len(result) > 0:
+                return {
+                    "response": "Traders with lowest account balances:",
+                    "data": result
+                }
+            else:
+                return {
+                    "response": "No account balance information found."
+                }
+        except Exception as e:
+            self.logger.error(f"Error in lowest balance query: {e}")
+            return {
+                "response": "Could not retrieve trader balance information due to an error."
+            }
+
+    def _handle_median_balance_query(self):
+        try:
+            median_sql = """
+            SELECT AVG(balance) as median_balance
+            FROM (
+                SELECT a.balance
+                FROM accounts a
+                ORDER BY a.balance
+                LIMIT 2 - (SELECT COUNT(*) FROM accounts) % 2
+                OFFSET (SELECT (COUNT(*) - 1) / 2 FROM accounts)
+            ) AS t
+            """
+
+            median_result = self.query_processor.db_connector.execute_query(median_sql)
+
+            if not median_result or median_result[0]['median_balance'] is None:
+                median_sql = """
+                SELECT AVG(balance) as median_balance
+                FROM accounts
+                """
+                median_result = self.query_processor.db_connector.execute_query(median_sql)
+
+            if median_result and median_result[0]['median_balance'] is not None:
+                median_balance = median_result[0]['median_balance']
+
+                sql = f"""
+                SELECT t.trader_id, t.name, t.email, a.account_id, a.balance, a.account_type
+                FROM traders t
+                JOIN accounts a ON t.trader_id = a.trader_id
+                ORDER BY ABS(a.balance - {median_balance})
+                LIMIT 10
+                """
+
+                result = self.query_processor.db_connector.execute_query(sql)
+
+                if result and len(result) > 0:
+                    return {
+                        "response": f"Traders with balances close to the median (${median_balance:.2f}):",
+                        "data": result
+                    }
+
+            return {
+                "response": "No account balance information found."
+            }
+        except Exception as e:
+            self.logger.error(f"Error in median balance query: {e}")
+            return {
+                "response": "Could not retrieve trader balance information due to an error."
+            }
+
     def _generate_where_clause(self, query, table):
         query_lower = query.lower()
         where_conditions = []
@@ -214,6 +294,19 @@ class QueryProcessor:
 
         id_column = f"{table}.{table[:-1]}_id" if table.endswith('s') else f"{table}.{table}_id"
         return f"ORDER BY {id_column} DESC"
+
+    def _extract_fields(self, query, tables):
+
+        all_fields = []
+        for table in tables:
+            if table in self.schema:
+                for field in self.schema[table]:
+                    all_fields.append(f"{table}.{field}")
+
+        if all_fields:
+            return all_fields
+
+        return ["*"]
 
     def _extract_tables(self, query):
         query_lower = query.lower()

@@ -644,6 +644,33 @@ class DatabaseQueryGenerator:
                 queries.append(query)
                 labels.append(label)
 
+            asset_type_queries = [
+                ("Show me all stocks", "database_query_asset_type"),
+                ("List all stocks", "database_query_asset_type"),
+                ("Show stocks assets", "database_query_asset_type"),
+                ("Display all stock assets", "database_query_asset_type"),
+
+                ("Show me all bonds", "database_query_asset_type"),
+                ("List all bonds", "database_query_asset_type"),
+                ("Show bond assets", "database_query_asset_type"),
+
+                ("Show me all ETFs", "database_query_asset_type"),
+                ("List all ETFs", "database_query_asset_type"),
+                ("Show ETF assets", "database_query_asset_type"),
+
+                ("Show me all futures", "database_query_asset_type"),
+                ("List all futures contracts", "database_query_asset_type"),
+                ("Show futures assets", "database_query_asset_type"),
+
+                ("Show me all cryptocurrencies", "database_query_asset_type"),
+                ("List all crypto assets", "database_query_asset_type"),
+                ("Show cryptocurrency assets", "database_query_asset_type")
+            ]
+
+            for query, label in asset_type_queries:
+                queries.append(query)
+                labels.append(label)
+
             unique_queries = []
             unique_labels = []
             seen_queries = set()
@@ -673,7 +700,9 @@ class DatabaseQueryGenerator:
                 "greeting": [
                     "Hello", "Hi there", "Good morning", "Hey", "Greetings",
                     "Hi chatbot", "Hello there", "Morning", "Good afternoon",
-                    "How are you", "Nice to meet you", "Start", "Begin"
+                    "How are you", "Nice to meet you", "Start", "Begin",
+                    "Hello bot", "Hi there chatbot", "Howdy", "Hey there",
+                    "Just saying hello", "What's up", "Yo"
                 ],
                 "help": [
                     "Help", "I need help", "What can you do", "How do I use this",

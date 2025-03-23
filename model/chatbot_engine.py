@@ -23,14 +23,60 @@ class ChatbotEngine:
             "order_status": "Order Status"
         }
 
+    def _extract_asset_type_from_query(self, query):
+        query_lower = query.lower()
+
+        asset_type_mappings = {
+            'Stock': ['stock', 'stocks', 'equity', 'equities', 'share', 'shares'],
+            'Bond': ['bond', 'bonds', 'fixed income', 'debt security', 'debt securities', 'treasury'],
+            'ETF': ['etf', 'etfs', 'exchange traded fund', 'exchange-traded fund', 'exchange traded funds',
+                    'index fund'],
+            'Cryptocurrency': ['crypto', 'cryptocurrency', 'cryptocurrencies', 'digital currency', 'bitcoin',
+                               'ethereum', 'litecoin', 'altcoin'],
+            'Commodity': ['commodity', 'commodities', 'gold', 'silver', 'oil', 'natural gas', 'agricultural'],
+            'Options': ['option', 'options', 'stock option', 'call option', 'put option', 'derivative'],
+            'Futures': ['future', 'futures', 'futures contract', 'futures contracts', 'forward contract'],
+            'Forex': ['forex', 'foreign exchange', 'currency pair', 'fx', 'currency trading'],
+            'REIT': ['reit', 'reits', 'real estate investment trust', 'real estate fund']
+        }
+
+        for db_type, synonyms in asset_type_mappings.items():
+            for synonym in synonyms:
+                if f"all {synonym}" in query_lower or f"show me {synonym}" in query_lower or f"show me all {synonym}" in query_lower:
+                    return db_type
+
+        for db_type, synonyms in asset_type_mappings.items():
+            for synonym in synonyms:
+                if re.search(r'\b' + synonym + r'\b', query_lower):
+                    return db_type
+
+        return None
+
     def process_user_input(self, user_input):
         try:
             self.current_query = user_input
-            self.logger.info(f"Processing user input: {user_input}")
+            self.logger.info(f"DIRECT DEBUG: Processing input: '{user_input}'")
+
+            if "find traders with highest account balance" in user_input.lower():
+                self.logger.info("DIRECT DEBUG: Matched hardcoded highest balance query")
+                return self._handle_highest_balance_query()
+
+            if "find me the broker with id 8" in user_input.lower():
+                self.logger.info("DIRECT DEBUG: Matched hardcoded highest balance query")
+                return self._handle_id_query()
 
             specialized_result = self._check_specialized_queries(user_input)
             if specialized_result:
                 return specialized_result
+
+            if not specialized_result:
+                id_result = self._handle_id_query(user_input)
+                if id_result:
+                    return id_result
+
+            asset_type = self._extract_asset_type_from_query(user_input)
+            if asset_type:
+                return self._handle_specific_asset_type_query(user_input, asset_type)
 
             entity_patterns = [
                 r'(?:tell me|info|information|details)(?:\s+\w+)?\s+(?:about|on|for)\s+([\w\s]+)',
@@ -55,8 +101,21 @@ class ChatbotEngine:
             intent = intent_data.get('intent')
             confidence = intent_data.get('confidence', 0.0)
 
+            if intent == "greeting":
+                return {"response": "Hello! How can I help you with your financial data today?"}
+            elif intent == "goodbye":
+                return {"response": "Goodbye! Have a great day."}
+            elif intent == "help":
+                return {
+                    "response": "I can help you query financial data including traders, assets, transactions, and more. Try asking about stocks, account balances, or recent trades."}
+
             if "trader" in user_input.lower() and "balance" in user_input.lower():
-                return self._handle_highest_balance_query()
+                if "lowest" in user_input.lower() or "minimum" in user_input.lower():
+                    return self._handle_lowest_balance_query()
+                elif "median" in user_input.lower() or "middle" in user_input.lower() or "average" in user_input.lower():
+                    return self._handle_median_balance_query()
+                else:
+                    return self._handle_highest_balance_query()
 
             if intent == "database_query_list" or intent == "database_query_detailed":
                 result = self._execute_list_query(user_input)
@@ -78,11 +137,106 @@ class ChatbotEngine:
                 result = self.query_processor.process_query(user_input, intent_data)
                 return self.generate_response(intent, result)
 
+
         except Exception as e:
             self.logger.error(f"Error processing user input: {e}")
             return {"response": f"An error occurred while processing your request: {str(e)}"}
 
+    def _detect_asset_type_query(self, query_lower):
+        asset_type_patterns = {
+            'Stock': [r'\ball stocks\b', r'\bstocks\b.*\bassets\b', r'\bshow me.*\bstocks\b'],
+            'Bond': [r'\ball bonds\b', r'\bbonds\b.*\bassets\b', r'\bshow me.*\bbonds\b'],
+            'ETF': [r'\ball etfs\b', r'\betfs\b.*\bassets\b', r'\bshow me.*\betfs\b'],
+            'Cryptocurrency': [r'\ball crypto(?:currenc(?:y|ies))?\b', r'\bcrypto\b.*\bassets\b',
+                               r'\bshow me.*\bcrypto\b'],
+            'Futures': [r'\ball futures\b', r'\bfutures\b.*\bassets\b', r'\bshow me.*\bfutures\b'],
+            'Options': [r'\ball options\b', r'\boptions\b.*\bassets\b', r'\bshow me.*\boptions\b'],
+            'Commodity': [r'\ball commodit(?:y|ies)\b', r'\bcommodit(?:y|ies)\b.*\bassets\b',
+                          r'\bshow me.*\bcommodit(?:y|ies)\b']
+        }
 
+        for asset_type, patterns in asset_type_patterns.items():
+            for pattern in patterns:
+                if re.search(pattern, query_lower):
+                    return asset_type
+
+        return None
+    def _handle_lowest_balance_query(self):
+        try:
+            sql = """
+            SELECT t.trader_id, t.name, t.email, a.account_id, a.balance, a.account_type
+            FROM traders t
+            JOIN accounts a ON t.trader_id = a.trader_id
+            ORDER BY a.balance ASC
+            LIMIT 10
+            """
+
+            result = self.query_processor.db_connector.execute_query(sql)
+
+            if result and len(result) > 0:
+                return {
+                    "response": "Traders with lowest account balances:",
+                    "data": result
+                }
+            else:
+                return {
+                    "response": "No account balance information found."
+                }
+        except Exception as e:
+            self.logger.error(f"Error in lowest balance query: {e}")
+            return {
+                "response": "Could not retrieve trader balance information due to an error."
+            }
+
+    def _handle_median_balance_query(self):
+        try:
+            median_sql = """
+            SELECT AVG(balance) as median_balance
+            FROM (
+                SELECT a.balance
+                FROM accounts a
+                ORDER BY a.balance
+                LIMIT 2 - (SELECT COUNT(*) FROM accounts) % 2
+                OFFSET (SELECT (COUNT(*) - 1) / 2 FROM accounts)
+            ) AS t
+            """
+
+            median_result = self.query_processor.db_connector.execute_query(median_sql)
+
+            if not median_result or median_result[0]['median_balance'] is None:
+                median_sql = """
+                SELECT AVG(balance) as median_balance
+                FROM accounts
+                """
+                median_result = self.query_processor.db_connector.execute_query(median_sql)
+
+            if median_result and median_result[0]['median_balance'] is not None:
+                median_balance = median_result[0]['median_balance']
+
+                sql = f"""
+                SELECT t.trader_id, t.name, t.email, a.account_id, a.balance, a.account_type
+                FROM traders t
+                JOIN accounts a ON t.trader_id = a.trader_id
+                ORDER BY ABS(a.balance - {median_balance})
+                LIMIT 10
+                """
+
+                result = self.query_processor.db_connector.execute_query(sql)
+
+                if result and len(result) > 0:
+                    return {
+                        "response": f"Traders with balances close to the median (${median_balance:.2f}):",
+                        "data": result
+                    }
+
+            return {
+                "response": "No account balance information found."
+            }
+        except Exception as e:
+            self.logger.error(f"Error in median balance query: {e}")
+            return {
+                "response": "Could not retrieve trader balance information due to an error."
+            }
     def _handle_date_specific_query(self, user_input):
         from datetime import datetime, timedelta
         import re
@@ -244,8 +398,46 @@ class ChatbotEngine:
                 "response": f"No {main_table} found {result_description}."
             }
 
+    def _handle_specific_asset_type_query(self, user_input, asset_type):
+        sql = f"""
+        SELECT * FROM assets 
+        WHERE asset_type = '{asset_type}'
+        ORDER BY asset_id
+        """
+
+        self.logger.info(f"Executing asset type query for '{asset_type}': {sql}")
+        result = self.query_processor.db_connector.execute_query(sql)
+
+        if result and len(result) > 0:
+            return {
+                "response": f"Found {len(result)} {asset_type.lower()} assets in the database:",
+                "data": result
+            }
+        else:
+            sql = f"""
+            SELECT * FROM assets 
+            WHERE asset_type LIKE '%{asset_type}%'
+            ORDER BY asset_id
+            """
+
+            result = self.query_processor.db_connector.execute_query(sql)
+
+            if result and len(result) > 0:
+                return {
+                    "response": f"Found {len(result)} {asset_type.lower()} assets in the database:",
+                    "data": result
+                }
+            else:
+                return {
+                    "response": f"No {asset_type.lower()} assets found in the database."
+                }
+
     def _check_specialized_queries(self, user_input):
         query_lower = user_input.lower()
+
+        asset_type = self._detect_asset_type_query(query_lower)
+        if asset_type:
+            return self._handle_asset_type_query(user_input, asset_type)
 
         if (
                 "show" in query_lower or "list" in query_lower or "all" in query_lower or "get" in query_lower) and "asset" in query_lower:
@@ -589,6 +781,91 @@ class ChatbotEngine:
                 parts = query.lower().split(f" {prep} ", 1)
                 if len(parts) > 1:
                     return parts[1].strip().rstrip('?')
+
+        return None
+
+    def _handle_id_query(self, query):
+        """
+        Handle queries that request entities by their ID.
+        """
+        query_lower = query.lower()
+
+        # Simpler, more direct patterns
+        id_patterns = [
+            # Very direct pattern that just looks for entity type and ID number
+            r'(\w+)\s+(?:id|#)\s*(\d+)',
+
+            # "find broker with id 8" pattern
+            r'find\s+(?:the\s+)?(\w+)\s+(?:with\s+)?(?:id|#)\s*(\d+)',
+
+            # "find me the broker with id 8" pattern
+            r'find\s+(?:me\s+)?(?:the\s+)?(\w+)\s+(?:with\s+)?(?:id|#)\s*(\d+)',
+
+            # "show broker id 8" pattern
+            r'show\s+(?:me\s+)?(?:the\s+)?(\w+)\s+(?:with\s+)?(?:id|#)\s*(\d+)',
+
+            # "get broker 8" pattern (no "id" keyword)
+            r'(?:get|find|show)\s+(?:me\s+)?(?:the\s+)?(\w+)\s+(\d+)',
+        ]
+
+        for pattern in id_patterns:
+            match = re.search(pattern, query_lower)
+            if match:
+                entity_type = match.group(1).strip()
+                entity_id = match.group(2).strip()
+
+                self.logger.info(f"Extracted entity_type: '{entity_type}', entity_id: '{entity_id}'")
+
+                # Skip common words that aren't entity types
+                skip_words = ["me", "the", "with", "about", "for"]
+                if entity_type in skip_words:
+                    continue
+
+                # Convert entity type to proper table name
+                if entity_type.endswith('s'):
+                    table_name = entity_type
+                else:
+                    table_name = f"{entity_type}s"
+
+                # Check if this is a valid table
+                if table_name not in self.table_display_names and table_name not in self.table_display_names.keys():
+                    fuzzy_match = None
+                    for key, value in self.table_display_names.items():
+                        if entity_type in key or entity_type in value.lower():
+                            fuzzy_match = key
+                            break
+
+                    if fuzzy_match:
+                        table_name = fuzzy_match
+                    else:
+                        continue
+
+                # Determine the ID field name
+                id_field = f"{table_name[:-1]}_id" if table_name.endswith('s') else f"{table_name}_id"
+
+                try:
+                    # Execute the query to find the entity by ID
+                    sql = f"""
+                    SELECT * FROM {table_name} 
+                    WHERE {id_field} = {entity_id}
+                    """
+
+                    self.logger.info(f"Executing ID query: {sql}")
+                    result = self.query_processor.db_connector.execute_query(sql)
+
+                    if result and len(result) > 0:
+                        # Get related data for the entity
+                        entity_details = self._get_entity_details(table_name, result[0])
+                        return entity_details
+                    else:
+                        return {
+                            "response": f"I couldn't find any {entity_type} with ID {entity_id} in our database."
+                        }
+                except Exception as e:
+                    self.logger.error(f"Error in ID query: {e}")
+                    return {
+                        "response": f"An error occurred while searching for {entity_type} with ID {entity_id}."
+                    }
 
         return None
 
