@@ -1,5 +1,6 @@
 import logging
 import re
+import base64
 from datetime import datetime, timedelta
 
 
@@ -59,24 +60,27 @@ class ChatbotEngine:
 
             if "find traders with highest account balance" in user_input.lower():
                 self.logger.info("DIRECT DEBUG: Matched hardcoded highest balance query")
-                return self._handle_highest_balance_query()
+                result = self._handle_highest_balance_query()
+                return self._process_response_for_json(result)
 
             if "find me the broker with id 8" in user_input.lower():
                 self.logger.info("DIRECT DEBUG: Matched hardcoded highest balance query")
-                return self._handle_id_query()
+                result = self._handle_id_query()
+                return self._process_response_for_json(result)
 
             specialized_result = self._check_specialized_queries(user_input)
             if specialized_result:
-                return specialized_result
+                return self._process_response_for_json(specialized_result)
 
             if not specialized_result:
                 id_result = self._handle_id_query(user_input)
                 if id_result:
-                    return id_result
+                    return self._process_response_for_json(id_result)
 
             asset_type = self._extract_asset_type_from_query(user_input)
             if asset_type:
-                return self._handle_specific_asset_type_query(user_input, asset_type)
+                result = self._handle_specific_asset_type_query(user_input, asset_type)
+                return self._process_response_for_json(result)
 
             entity_patterns = [
                 r'(?:tell me|info|information|details)(?:\s+\w+)?\s+(?:about|on|for)\s+([\w\s]+)',
@@ -89,7 +93,7 @@ class ChatbotEngine:
                 if re.search(pattern, user_input.lower()):
                     entity_result = self._handle_entity_query(user_input)
                     if entity_result:
-                        return entity_result
+                        return self._process_response_for_json(entity_result)
 
             self.logger.info("No specialized handler, using intent classifier")
             intent_data = self.intent_classifier.classify_intent(user_input)
@@ -111,36 +115,73 @@ class ChatbotEngine:
 
             if "trader" in user_input.lower() and "balance" in user_input.lower():
                 if "lowest" in user_input.lower() or "minimum" in user_input.lower():
-                    return self._handle_lowest_balance_query()
+                    result = self._handle_lowest_balance_query()
                 elif "median" in user_input.lower() or "middle" in user_input.lower() or "average" in user_input.lower():
-                    return self._handle_median_balance_query()
+                    result = self._handle_median_balance_query()
                 else:
-                    return self._handle_highest_balance_query()
+                    result = self._handle_highest_balance_query()
+                return self._process_response_for_json(result)
 
             if intent == "database_query_list" or intent == "database_query_detailed":
                 result = self._execute_list_query(user_input)
-                return self.generate_response(intent, result, intent_data.get('sub_intent'))
+                response = self.generate_response(intent, result, intent_data.get('sub_intent'))
+                return self._process_response_for_json(response)
 
             elif intent == "database_query_count":
-                return self._handle_count_query(user_input)
+                result = self._handle_count_query(user_input)
+                return self._process_response_for_json(result)
 
             elif intent == "database_query_comparative":
                 sub_intent = intent_data.get('sub_intent')
                 if sub_intent == "database_query_comparative_highest":
                     if "balance" in user_input.lower():
-                        return self._handle_highest_balance_query()
+                        result = self._handle_highest_balance_query()
                     elif "price" in user_input.lower():
-                        return self._handle_highest_price_query()
-                return self._execute_comparative_query(user_input, sub_intent)
+                        result = self._handle_highest_price_query()
+                    else:
+                        result = self._execute_comparative_query(user_input, sub_intent)
+                else:
+                    result = self._execute_comparative_query(user_input, sub_intent)
+                return self._process_response_for_json(result)
 
             else:
                 result = self.query_processor.process_query(user_input, intent_data)
-                return self.generate_response(intent, result)
-
+                response = self.generate_response(intent, result)
+                return self._process_response_for_json(response)
 
         except Exception as e:
             self.logger.error(f"Error processing user input: {e}")
             return {"response": f"An error occurred while processing your request: {str(e)}"}
+
+    def _process_response_for_json(self, response):
+        if isinstance(response, dict):
+            processed = {}
+            for key, value in response.items():
+                if key.endswith("_encrypted"):
+                    continue
+                processed[key] = self._process_value_for_json(value)
+            return processed
+        elif isinstance(response, list):
+            return [self._process_value_for_json(item) for item in response]
+        else:
+            return self._process_value_for_json(response)
+
+    def _process_value_for_json(self, value):
+        if isinstance(value, bytes):
+            return "[ENCRYPTED BINARY DATA]"
+        elif isinstance(value, dict):
+            processed_dict = {}
+            for k, v in value.items():
+                if k.endswith("_encrypted"):
+                    continue
+                processed_dict[k] = self._process_value_for_json(v)
+            return processed_dict
+        elif isinstance(value, list):
+            return [self._process_value_for_json(item) for item in value]
+        elif hasattr(value, '__dict__'):  # Handle custom objects
+            return self._process_value_for_json(value.__dict__)
+        else:
+            return value
 
     def _detect_asset_type_query(self, query_lower):
         asset_type_patterns = {

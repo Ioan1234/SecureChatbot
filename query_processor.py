@@ -506,7 +506,7 @@ class QueryProcessor:
                 year = today.year - 1
             elif relative_year == "next":
                 year = today.year + 1
-            else:  # "this"
+            else:
                 year = today.year
 
             days_in_month = calendar.monthrange(year, month)[1]
@@ -560,9 +560,9 @@ class QueryProcessor:
             elif unit in ['week', 'weeks']:
                 start_date = today - timedelta(weeks=num)
             elif unit in ['month', 'months']:
-                start_date = today - timedelta(days=num * 30)  # Approximate
+                start_date = today - timedelta(days=num * 30)
             elif unit in ['year', 'years']:
-                start_date = today - timedelta(days=num * 365)  # Approximate
+                start_date = today - timedelta(days=num * 365)
 
             return start_date.strftime('%Y-%m-%d'), today.strftime('%Y-%m-%d')
 
@@ -1021,8 +1021,11 @@ class QueryProcessor:
             for item in result:
                 processed_item = {}
                 for key, value in item.items():
+                    if key.endswith("_encrypted"):
+                        continue
+
                     if self._should_encrypt_field(key):
-                        processed_item[key] = f"[ENCRYPTED: {key}]"
+                        processed_item[key] = value
                     else:
                         processed_item[key] = value
                 processed_result.append(processed_item)

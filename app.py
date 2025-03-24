@@ -7,6 +7,7 @@ from pathlib import Path
 from datetime import datetime
 import importlib.util
 
+from secure_database_connector import SecureDatabaseConnector
 from database_connector import DatabaseConnector
 from encryption_manager import HomomorphicEncryptionManager
 from model.intent_classifier import EnhancedIntentClassifier
@@ -86,7 +87,13 @@ class SecureChatbotApplication:
                     "database": "secure_chatbot"
                 },
                 "encryption": {
-                    "key_size": 2048
+                    "key_size": 2048,
+                    "context_parameters": {
+                        "poly_modulus_degree": 8192,
+                        "coeff_mod_bit_sizes": [60, 40, 40, 60],
+                        "scale_bits": 40
+                    },
+                    "keys_dir": "encryption_keys"
                 },
                 "model": {
                     "path": "models/intent_classifier"
@@ -99,14 +106,16 @@ class SecureChatbotApplication:
                     "port": 5000,
                     "debug": False
                 },
-                "speech": {
-                    "enabled": True,
-                    "use_encryption": True,
-                    "model_path": "models/speech_recognition"
-                },
                 "logging": {
                     "level": "INFO",
                     "file": "chatbot.log"
+                },
+                "security": {
+                    "sensitive_fields": {
+                        "traders": ["email", "phone"],
+                        "brokers": ["license_number", "contact_email"],
+                        "accounts": ["balance"]
+                    }
                 }
             }
 
@@ -138,19 +147,27 @@ class SecureChatbotApplication:
 
     def initialize_components(self):
         try:
-            db_config = self.config.get("database", {})
-            self.components["db_connector"] = DatabaseConnector(
-                host=db_config.get("host", "localhost"),
-                user=db_config.get("user", "root"),
-                password=db_config.get("password", ""),
-                database=db_config.get("database", "secure_chatbot")
-            )
-
             enc_config = self.config.get("encryption", {})
             self.components["encryption_manager"] = HomomorphicEncryptionManager(
                 key_size=enc_config.get("key_size", 2048),
-                context_params=enc_config.get("context_parameters", {})
+                context_params=enc_config.get("context_parameters", {}),
+                keys_dir=enc_config.get("keys_dir", "encryption_keys")
             )
+            self.logger.info("Homomorphic encryption manager initialized")
+
+            db_config = self.config.get("database", {})
+            self.components["db_connector"] = SecureDatabaseConnector(
+                host=db_config.get("host", "localhost"),
+                user=db_config.get("user", "root"),
+                password=db_config.get("password", ""),
+                database=db_config.get("database", "secure_chatbot"),
+                encryption_manager=self.components["encryption_manager"]
+            )
+            connected = self.components["db_connector"].connect()
+            if not connected:
+                self.logger.error("Failed to connect to database")
+                return False
+            self.logger.info("Secure database connector initialized and connected")
 
             if TRAINING_AVAILABLE:
                 self._check_and_update_model()
