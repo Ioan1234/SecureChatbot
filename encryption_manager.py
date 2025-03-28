@@ -73,20 +73,17 @@ class HomomorphicEncryptionManager:
             with open(key_path, 'rb') as f:
                 private_key_data = f.read()
 
-            self.secret_context = ts.context_from(serialized_context)
-
             try:
                 self.secret_context = ts.context_from(private_key_data)
+
                 if not self.secret_context.is_private():
-                    self.logger.error("Loaded secret context is not private")
-                    return False
-            except:
-                self.logger.warning("Could not load private key with modern approach, trying legacy method")
-                try:
-                    self.secret_context.make_context_private(private_key_data)
-                except:
-                    self.logger.error("Failed to apply private key to context")
-                    return False
+                    self.logger.warning("Secret context not marked as private, creating new one")
+
+                    return self._setup_new_encryption()
+
+            except Exception as e:
+                self.logger.warning(f"Error loading secret context: {e}")
+                return self._setup_new_encryption()
 
             self.logger.info("Successfully loaded encryption context and private key")
             return True
