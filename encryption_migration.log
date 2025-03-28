@@ -1,0 +1,429 @@
+2025-03-27 15:41:45,631 - encryption_manager - INFO - Homomorphic encryption context initialized successfully
+2025-03-27 15:41:46,653 - encryption_manager - INFO - Loaded existing encryption keys and context
+2025-03-27 15:41:48,717 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-27 15:41:48,737 - database_connector - INFO - Encryption schema check completed
+2025-03-27 15:41:48,737 - __main__ - INFO - Starting migration for table traders...
+2025-03-27 15:42:43,424 - __main__ - INFO - Migration complete for table traders. Processed 1000 records in 54.67 seconds. Success: 2000, Failures: 0
+2025-03-27 15:42:43,424 - __main__ - INFO - Starting migration for table brokers...
+2025-03-27 15:43:35,968 - __main__ - INFO - Migration complete for table brokers. Processed 1000 records in 52.53 seconds. Success: 2000, Failures: 0
+2025-03-27 15:43:35,968 - __main__ - INFO - Starting migration for table accounts...
+2025-03-27 15:44:01,489 - __main__ - INFO - Migration complete for table accounts. Processed 1000 records in 25.52 seconds. Success: 1000, Failures: 0
+2025-03-27 15:44:01,492 - __main__ - INFO - Migration statistics: {'traders': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 2000, 'failed_encryptions': 0, 'elapsed_time': 54.67179250717163}, 'brokers': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 2000, 'failed_encryptions': 0, 'elapsed_time': 52.53318786621094}, 'accounts': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 1000, 'failed_encryptions': 0, 'elapsed_time': 25.51614737510681}}
+2025-03-27 15:44:01,495 - database_connector - ERROR - Error executing query: 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ', phone_encrypted IS NOT NULL
+        LIMIT 10' at line 3
+2025-03-27 15:44:01,495 - __main__ - WARNING - No encrypted records found in table traders
+2025-03-27 15:44:01,495 - __main__ - WARNING - No verification results for table traders
+2025-03-27 15:44:01,498 - database_connector - ERROR - Error executing query: 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ', contact_email_encrypted IS NOT NULL
+        LIMIT 10' at line 3
+2025-03-27 15:44:01,498 - __main__ - WARNING - No encrypted records found in table brokers
+2025-03-27 15:44:01,498 - __main__ - WARNING - No verification results for table brokers
+2025-03-27 15:44:01,529 - encryption_manager - ERROR - Error in numeric decryption: the current context of the tensor doesn't hold a secret_key, please provide one as argument
+2025-03-27 15:44:01,532 - encryption_manager - ERROR - Error in numeric decryption: the current context of the tensor doesn't hold a secret_key, please provide one as argument
+2025-03-27 15:44:01,532 - encryption_manager - ERROR - Error in numeric decryption: the current context of the tensor doesn't hold a secret_key, please provide one as argument
+2025-03-27 15:44:01,532 - encryption_manager - ERROR - Error in numeric decryption: the current context of the tensor doesn't hold a secret_key, please provide one as argument
+2025-03-27 15:44:01,532 - encryption_manager - ERROR - Error in numeric decryption: the current context of the tensor doesn't hold a secret_key, please provide one as argument
+2025-03-27 15:44:01,532 - encryption_manager - ERROR - Error in numeric decryption: the current context of the tensor doesn't hold a secret_key, please provide one as argument
+2025-03-27 15:44:01,543 - encryption_manager - ERROR - Error in numeric decryption: the current context of the tensor doesn't hold a secret_key, please provide one as argument
+2025-03-27 15:44:01,544 - encryption_manager - ERROR - Error in numeric decryption: the current context of the tensor doesn't hold a secret_key, please provide one as argument
+2025-03-27 15:44:01,544 - encryption_manager - ERROR - Error in numeric decryption: the current context of the tensor doesn't hold a secret_key, please provide one as argument
+2025-03-27 15:44:01,547 - encryption_manager - ERROR - Error in numeric decryption: the current context of the tensor doesn't hold a secret_key, please provide one as argument
+2025-03-27 15:44:01,547 - __main__ - INFO - Verification for accounts: 0/10 successful
+2025-03-27 15:59:59,082 - encryption_manager - INFO - Creating TenSEAL CKKS context...
+2025-03-27 15:59:59,082 - encryption_manager - INFO - Parameters: poly_modulus_degree=8192, coeff_mod_bit_sizes=[60, 40, 40, 60], scale_bits=40
+2025-03-27 15:59:59,299 - encryption_manager - INFO - Generating Galois keys...
+2025-03-27 15:59:59,548 - encryption_manager - INFO - Creating secret context copy...
+2025-03-27 16:00:00,004 - encryption_manager - INFO - Successfully extracted secret key from context
+2025-03-27 16:00:00,004 - encryption_manager - INFO - Creating public context...
+2025-03-27 16:00:00,004 - encryption_manager - INFO - Homomorphic encryption context initialized successfully
+2025-03-27 16:00:00,854 - encryption_manager - INFO - Loaded existing encryption keys and context
+2025-03-27 16:00:02,923 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-27 16:00:02,931 - database_connector - INFO - Encryption schema check completed
+2025-03-27 16:00:02,931 - __main__ - INFO - Starting migration for table traders...
+2025-03-27 16:01:05,269 - __main__ - INFO - Migration complete for table traders. Processed 1000 records in 62.33 seconds. Success: 2000, Failures: 0
+2025-03-27 16:01:05,269 - __main__ - INFO - Starting migration for table brokers...
+2025-03-27 16:02:10,295 - __main__ - INFO - Migration complete for table brokers. Processed 1000 records in 65.01 seconds. Success: 2000, Failures: 0
+2025-03-27 16:02:10,295 - __main__ - INFO - Starting migration for table accounts...
+2025-03-27 16:02:39,988 - __main__ - INFO - Migration complete for table accounts. Processed 1000 records in 29.69 seconds. Success: 1000, Failures: 0
+2025-03-27 16:02:39,989 - __main__ - INFO - Migration statistics: {'traders': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 2000, 'failed_encryptions': 0, 'elapsed_time': 62.33143877983093}, 'brokers': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 2000, 'failed_encryptions': 0, 'elapsed_time': 65.01239228248596}, 'accounts': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 1000, 'failed_encryptions': 0, 'elapsed_time': 29.68617010116577}}
+2025-03-27 16:02:40,041 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,041 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,041 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,041 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,041 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,041 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,041 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,041 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,041 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,041 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,041 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,041 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,046 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,046 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,046 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,046 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,047 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,047 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,047 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,048 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,048 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,048 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,048 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,049 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,049 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,049 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,049 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,049 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,049 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,050 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,051 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,051 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,051 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,051 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,052 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,052 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,052 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,052 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,053 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,053 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,055 - __main__ - INFO - Verification for traders: 0/20 successful
+2025-03-27 16:02:40,129 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,129 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,129 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,129 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,131 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,131 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,131 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,131 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,131 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,131 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,132 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,132 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,132 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,133 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,133 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,133 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,133 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,133 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,133 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,133 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,134 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,134 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,134 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,134 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,135 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,135 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,135 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,135 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,135 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,135 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,135 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,135 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,135 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,135 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,136 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,136 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,136 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,136 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,136 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,136 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,137 - __main__ - INFO - Verification for brokers: 0/20 successful
+2025-03-27 16:02:40,168 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,168 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,168 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,168 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,168 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,170 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,170 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,171 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,171 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,171 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,171 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,171 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,171 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,172 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,172 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,172 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,172 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,172 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,172 - encryption_manager - ERROR - Secret context does not have a private key
+2025-03-27 16:02:40,172 - encryption_manager - ERROR - Cannot decrypt without a private key
+2025-03-27 16:02:40,172 - __main__ - INFO - Verification for accounts: 0/10 successful
+2025-03-27 16:04:36,445 - encryption_manager - INFO - Encryption files not found, need to create new ones
+2025-03-27 16:04:36,445 - encryption_manager - INFO - Creating new encryption context and keys
+2025-03-27 16:04:36,445 - encryption_manager - INFO - Creating new TenSEAL CKKS context
+2025-03-27 16:04:38,185 - encryption_manager - INFO - Encryption data saved successfully
+2025-03-27 16:04:38,185 - encryption_manager - INFO - Successfully created and saved new encryption context and keys
+2025-03-27 16:04:40,258 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-27 16:04:40,279 - database_connector - INFO - Encryption schema check completed
+2025-03-27 16:04:40,279 - __main__ - INFO - Starting migration for table traders...
+2025-03-27 16:05:43,733 - __main__ - INFO - Migration complete for table traders. Processed 1000 records in 63.44 seconds. Success: 2000, Failures: 0
+2025-03-27 16:05:43,733 - __main__ - INFO - Starting migration for table brokers...
+2025-03-27 16:06:46,608 - __main__ - INFO - Migration complete for table brokers. Processed 1000 records in 62.87 seconds. Success: 2000, Failures: 0
+2025-03-27 16:06:46,608 - __main__ - INFO - Starting migration for table accounts...
+2025-03-27 16:07:15,975 - __main__ - INFO - Migration complete for table accounts. Processed 1000 records in 29.36 seconds. Success: 1000, Failures: 0
+2025-03-27 16:07:15,975 - __main__ - INFO - Migration statistics: {'traders': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 2000, 'failed_encryptions': 0, 'elapsed_time': 63.441890716552734}, 'brokers': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 2000, 'failed_encryptions': 0, 'elapsed_time': 62.86812448501587}, 'accounts': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 1000, 'failed_encryptions': 0, 'elapsed_time': 29.35938549041748}}
+2025-03-27 16:07:16,129 - __main__ - INFO - Verification for traders: 20/20 successful
+2025-03-27 16:07:16,261 - __main__ - INFO - Verification for brokers: 20/20 successful
+2025-03-27 16:07:16,328 - __main__ - INFO - Verification for accounts: 0/10 successful
+2025-03-27 16:08:34,427 - encryption_manager - INFO - Loading encryption context from file
+2025-03-27 16:08:34,930 - encryption_manager - INFO - Loading private key
+2025-03-27 16:08:35,697 - encryption_manager - ERROR - Loaded secret context is not private
+2025-03-27 16:08:35,700 - encryption_manager - INFO - Creating new encryption context and keys
+2025-03-27 16:08:35,700 - encryption_manager - INFO - Creating new TenSEAL CKKS context
+2025-03-27 16:08:36,933 - encryption_manager - INFO - Encryption data saved successfully
+2025-03-27 16:08:36,933 - encryption_manager - INFO - Successfully created and saved new encryption context and keys
+2025-03-27 16:08:39,015 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-27 16:08:39,025 - database_connector - INFO - Encryption schema check completed
+2025-03-27 16:08:39,025 - __main__ - INFO - Starting migration for table traders...
+2025-03-27 16:09:41,904 - __main__ - INFO - Migration complete for table traders. Processed 1000 records in 62.87 seconds. Success: 2000, Failures: 0
+2025-03-27 16:09:41,904 - __main__ - INFO - Starting migration for table brokers...
+2025-03-27 16:10:45,486 - __main__ - INFO - Migration complete for table brokers. Processed 1000 records in 63.57 seconds. Success: 2000, Failures: 0
+2025-03-27 16:10:45,486 - __main__ - INFO - Starting migration for table accounts...
+2025-03-27 16:11:14,559 - __main__ - INFO - Migration complete for table accounts. Processed 1000 records in 29.06 seconds. Success: 1000, Failures: 0
+2025-03-27 16:11:14,559 - __main__ - INFO - Migration statistics: {'traders': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 2000, 'failed_encryptions': 0, 'elapsed_time': 62.87186551094055}, 'brokers': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 2000, 'failed_encryptions': 0, 'elapsed_time': 63.57015514373779}, 'accounts': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 1000, 'failed_encryptions': 0, 'elapsed_time': 29.06484627723694}}
+2025-03-27 16:11:14,661 - __main__ - INFO - Verification for traders: 20/20 successful
+2025-03-27 16:11:14,760 - __main__ - INFO - Verification for brokers: 20/20 successful
+2025-03-27 16:11:14,799 - encryption_manager - INFO - Encrypted value length: 334399 bytes
+2025-03-27 16:11:14,799 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xaf\xb4\x14^\xa1\x10\x04\x00\x02\x00\x00/\x1a\x05\x00\x00'
+2025-03-27 16:11:14,808 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:11:14,808 - encryption_manager - INFO - Decrypted values: [50107.86000000014]
+2025-03-27 16:11:14,808 - encryption_manager - INFO - Encrypted value length: 334294 bytes
+2025-03-27 16:11:14,808 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xc6\xb3\x14^\xa1\x10\x04\x00\x02\x00\x00\xc6\x19\x05\x00\x00'
+2025-03-27 16:11:14,810 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:11:14,810 - encryption_manager - INFO - Decrypted values: [53589.539999999695]
+2025-03-27 16:11:14,813 - encryption_manager - INFO - Encrypted value length: 334487 bytes
+2025-03-27 16:11:14,813 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\x87\xb5\x14^\xa1\x10\x04\x00\x02\x00\x00\x87\x1a\x05\x00\x00'
+2025-03-27 16:11:14,816 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:11:14,818 - encryption_manager - INFO - Decrypted values: [39357.4600000004]
+2025-03-27 16:11:14,818 - encryption_manager - INFO - Encrypted value length: 334494 bytes
+2025-03-27 16:11:14,818 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\x8e\xb5\x14^\xa1\x10\x04\x00\x02\x00\x00\x8e\x1a\x05\x00\x00'
+2025-03-27 16:11:14,820 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:11:14,820 - encryption_manager - INFO - Decrypted values: [92525.92999999906]
+2025-03-27 16:11:14,820 - encryption_manager - INFO - Encrypted value length: 334299 bytes
+2025-03-27 16:11:14,820 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xcb\xb3\x14^\xa1\x10\x04\x00\x02\x00\x00\xcb\x19\x05\x00\x00'
+2025-03-27 16:11:14,823 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:11:14,826 - encryption_manager - INFO - Decrypted values: [11911.859999998567]
+2025-03-27 16:11:14,826 - encryption_manager - INFO - Encrypted value length: 334302 bytes
+2025-03-27 16:11:14,826 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xce\xb3\x14^\xa1\x10\x04\x00\x02\x00\x00\xce\x19\x05\x00\x00'
+2025-03-27 16:11:14,827 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:11:14,827 - encryption_manager - INFO - Decrypted values: [87022.32000000073]
+2025-03-27 16:11:14,827 - encryption_manager - INFO - Encrypted value length: 334172 bytes
+2025-03-27 16:11:14,827 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xcc\xb2\x14^\xa1\x10\x04\x00\x02\x00\x00L\x19\x05\x00\x00'
+2025-03-27 16:11:14,827 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:11:14,832 - encryption_manager - INFO - Decrypted values: [45136.93000000418]
+2025-03-27 16:11:14,832 - encryption_manager - INFO - Encrypted value length: 334507 bytes
+2025-03-27 16:11:14,832 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\x9b\xb5\x14^\xa1\x10\x04\x00\x02\x00\x00\x9b\x1a\x05\x00\x00'
+2025-03-27 16:11:14,832 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:11:14,837 - encryption_manager - INFO - Decrypted values: [4333.310000000829]
+2025-03-27 16:11:14,837 - encryption_manager - INFO - Encrypted value length: 334388 bytes
+2025-03-27 16:11:14,837 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xa4\xb4\x14^\xa1\x10\x04\x00\x02\x00\x00$\x1a\x05\x00\x00'
+2025-03-27 16:11:14,839 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:11:14,840 - encryption_manager - INFO - Decrypted values: [27813.12999999965]
+2025-03-27 16:11:14,840 - encryption_manager - INFO - Encrypted value length: 334317 bytes
+2025-03-27 16:11:14,840 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xdd\xb3\x14^\xa1\x10\x04\x00\x02\x00\x00\xdd\x19\x05\x00\x00'
+2025-03-27 16:11:14,842 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:11:14,844 - encryption_manager - INFO - Decrypted values: [71410.5799999989]
+2025-03-27 16:11:14,845 - __main__ - INFO - Verification for accounts: 0/10 successful
+2025-03-27 16:13:28,653 - encryption_manager - INFO - Loading encryption context from file
+2025-03-27 16:13:28,978 - encryption_manager - INFO - Loading private key
+2025-03-27 16:13:29,556 - encryption_manager - ERROR - Loaded secret context is not private
+2025-03-27 16:13:29,562 - encryption_manager - INFO - Creating new encryption context and keys
+2025-03-27 16:13:29,562 - encryption_manager - INFO - Creating new TenSEAL CKKS context
+2025-03-27 16:13:30,783 - encryption_manager - INFO - Encryption data saved successfully
+2025-03-27 16:13:30,783 - encryption_manager - INFO - Successfully created and saved new encryption context and keys
+2025-03-27 16:13:32,863 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-27 16:13:32,896 - database_connector - INFO - Encryption schema check completed
+2025-03-27 16:13:32,897 - __main__ - INFO - Starting migration for table traders...
+2025-03-27 16:14:35,340 - __main__ - INFO - Migration complete for table traders. Processed 1000 records in 62.44 seconds. Success: 2000, Failures: 0
+2025-03-27 16:14:35,340 - __main__ - INFO - Starting migration for table brokers...
+2025-03-27 16:15:36,583 - __main__ - INFO - Migration complete for table brokers. Processed 1000 records in 61.23 seconds. Success: 2000, Failures: 0
+2025-03-27 16:15:36,583 - __main__ - INFO - Starting migration for table accounts...
+2025-03-27 16:16:05,283 - __main__ - INFO - Migration complete for table accounts. Processed 1000 records in 28.69 seconds. Success: 1000, Failures: 0
+2025-03-27 16:16:05,285 - __main__ - INFO - Migration statistics: {'traders': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 2000, 'failed_encryptions': 0, 'elapsed_time': 62.4350848197937}, 'brokers': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 2000, 'failed_encryptions': 0, 'elapsed_time': 61.23445177078247}, 'accounts': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 1000, 'failed_encryptions': 0, 'elapsed_time': 28.690701246261597}}
+2025-03-27 16:16:05,390 - __main__ - INFO - Verification for traders: 20/20 successful
+2025-03-27 16:16:05,504 - __main__ - INFO - Verification for brokers: 20/20 successful
+2025-03-27 16:16:05,536 - encryption_manager - INFO - Encrypted value length: 334125 bytes
+2025-03-27 16:16:05,536 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\x9d\xb2\x14^\xa1\x10\x04\x00\x02\x00\x00\x1d\x19\x05\x00\x00'
+2025-03-27 16:16:05,536 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:16:05,539 - encryption_manager - INFO - Decrypted values: [50107.86000000015]
+2025-03-27 16:16:05,539 - encryption_manager - INFO - Encrypted value length: 334404 bytes
+2025-03-27 16:16:05,539 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xb4\xb4\x14^\xa1\x10\x04\x00\x02\x00\x004\x1a\x05\x00\x00'
+2025-03-27 16:16:05,539 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:16:05,544 - encryption_manager - INFO - Decrypted values: [53589.53999999873]
+2025-03-27 16:16:05,544 - encryption_manager - INFO - Encrypted value length: 334170 bytes
+2025-03-27 16:16:05,544 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xca\xb2\x14^\xa1\x10\x04\x00\x02\x00\x00J\x19\x05\x00\x00'
+2025-03-27 16:16:05,544 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:16:05,547 - encryption_manager - INFO - Decrypted values: [39357.460000002444]
+2025-03-27 16:16:05,547 - encryption_manager - INFO - Encrypted value length: 334130 bytes
+2025-03-27 16:16:05,547 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xa2\xb2\x14^\xa1\x10\x04\x00\x02\x00\x00"\x19\x05\x00\x00'
+2025-03-27 16:16:05,549 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:16:05,550 - encryption_manager - INFO - Decrypted values: [92525.92999999893]
+2025-03-27 16:16:05,551 - encryption_manager - INFO - Encrypted value length: 334286 bytes
+2025-03-27 16:16:05,551 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xbe\xb3\x14^\xa1\x10\x04\x00\x02\x00\x00\xbe\x19\x05\x00\x00'
+2025-03-27 16:16:05,552 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:16:05,554 - encryption_manager - INFO - Decrypted values: [11911.85999999731]
+2025-03-27 16:16:05,554 - encryption_manager - INFO - Encrypted value length: 334476 bytes
+2025-03-27 16:16:05,554 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xfc\xb4\x14^\xa1\x10\x04\x00\x02\x00\x00|\x1a\x05\x00\x00'
+2025-03-27 16:16:05,554 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:16:05,557 - encryption_manager - INFO - Decrypted values: [87022.32000000066]
+2025-03-27 16:16:05,557 - encryption_manager - INFO - Encrypted value length: 334097 bytes
+2025-03-27 16:16:05,557 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\x81\xb2\x14^\xa1\x10\x04\x00\x02\x00\x00\x01\x19\x05\x00\x00'
+2025-03-27 16:16:05,558 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:16:05,560 - encryption_manager - INFO - Decrypted values: [45136.93000000099]
+2025-03-27 16:16:05,560 - encryption_manager - INFO - Encrypted value length: 334380 bytes
+2025-03-27 16:16:05,560 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\x9c\xb4\x14^\xa1\x10\x04\x00\x02\x00\x00\x1c\x1a\x05\x00\x00'
+2025-03-27 16:16:05,562 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:16:05,562 - encryption_manager - INFO - Decrypted values: [4333.30999999493]
+2025-03-27 16:16:05,562 - encryption_manager - INFO - Encrypted value length: 334419 bytes
+2025-03-27 16:16:05,562 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xc3\xb4\x14^\xa1\x10\x04\x00\x02\x00\x00C\x1a\x05\x00\x00'
+2025-03-27 16:16:05,562 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:16:05,562 - encryption_manager - INFO - Decrypted values: [27813.129999998535]
+2025-03-27 16:16:05,562 - encryption_manager - INFO - Encrypted value length: 334444 bytes
+2025-03-27 16:16:05,562 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xdc\xb4\x14^\xa1\x10\x04\x00\x02\x00\x00\\\x1a\x05\x00\x00'
+2025-03-27 16:16:05,562 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:16:05,569 - encryption_manager - INFO - Decrypted values: [71410.57999999882]
+2025-03-27 16:16:05,569 - __main__ - INFO - Verification for accounts: 0/10 successful
+2025-03-27 16:17:15,355 - encryption_manager - INFO - Loading encryption context from file
+2025-03-27 16:17:15,793 - encryption_manager - INFO - Loading private key
+2025-03-27 16:17:16,605 - encryption_manager - ERROR - Loaded secret context is not private
+2025-03-27 16:17:16,606 - encryption_manager - INFO - Creating new encryption context and keys
+2025-03-27 16:17:16,606 - encryption_manager - INFO - Creating new TenSEAL CKKS context
+2025-03-27 16:17:17,831 - encryption_manager - INFO - Encryption data saved successfully
+2025-03-27 16:17:17,831 - encryption_manager - INFO - Successfully created and saved new encryption context and keys
+2025-03-27 16:17:19,895 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-27 16:17:19,919 - database_connector - INFO - Encryption schema check completed
+2025-03-27 16:17:19,921 - __main__ - INFO - Starting migration for table traders...
+2025-03-27 16:18:22,529 - __main__ - INFO - Migration complete for table traders. Processed 1000 records in 62.60 seconds. Success: 2000, Failures: 0
+2025-03-27 16:18:22,529 - __main__ - INFO - Starting migration for table brokers...
+2025-03-27 16:19:24,144 - __main__ - INFO - Migration complete for table brokers. Processed 1000 records in 61.60 seconds. Success: 2000, Failures: 0
+2025-03-27 16:19:24,144 - __main__ - INFO - Starting migration for table accounts...
+2025-03-27 16:19:52,859 - __main__ - INFO - Migration complete for table accounts. Processed 1000 records in 28.71 seconds. Success: 1000, Failures: 0
+2025-03-27 16:19:52,859 - __main__ - INFO - Migration statistics: {'traders': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 2000, 'failed_encryptions': 0, 'elapsed_time': 62.60247325897217}, 'brokers': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 2000, 'failed_encryptions': 0, 'elapsed_time': 61.604787826538086}, 'accounts': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 1000, 'failed_encryptions': 0, 'elapsed_time': 28.707474946975708}}
+2025-03-27 16:19:52,963 - __main__ - INFO - Verification results for traders: 20/20 successful
+2025-03-27 16:19:52,963 - __main__ - INFO - Verification for traders: 20/20 successful
+2025-03-27 16:19:53,072 - __main__ - INFO - Verification results for brokers: 20/20 successful
+2025-03-27 16:19:53,072 - __main__ - INFO - Verification for brokers: 20/20 successful
+2025-03-27 16:19:53,101 - encryption_manager - INFO - Encrypted value length: 334328 bytes
+2025-03-27 16:19:53,101 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xe8\xb3\x14^\xa1\x10\x04\x00\x02\x00\x00\xe8\x19\x05\x00\x00'
+2025-03-27 16:19:53,102 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:19:53,105 - encryption_manager - INFO - Decrypted values: [50107.86000000047]
+2025-03-27 16:19:53,105 - encryption_manager - INFO - Encrypted value length: 334283 bytes
+2025-03-27 16:19:53,105 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xbb\xb3\x14^\xa1\x10\x04\x00\x02\x00\x00\xbb\x19\x05\x00\x00'
+2025-03-27 16:19:53,106 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:19:53,107 - encryption_manager - INFO - Decrypted values: [53589.54000000015]
+2025-03-27 16:19:53,107 - encryption_manager - INFO - Encrypted value length: 334235 bytes
+2025-03-27 16:19:53,107 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\x8b\xb3\x14^\xa1\x10\x04\x00\x02\x00\x00\x8b\x19\x05\x00\x00'
+2025-03-27 16:19:53,109 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:19:53,109 - encryption_manager - INFO - Decrypted values: [39357.45999999841]
+2025-03-27 16:19:53,111 - encryption_manager - INFO - Encrypted value length: 334425 bytes
+2025-03-27 16:19:53,111 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xc9\xb4\x14^\xa1\x10\x04\x00\x02\x00\x00I\x1a\x05\x00\x00'
+2025-03-27 16:19:53,111 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:19:53,113 - encryption_manager - INFO - Decrypted values: [92525.929999999]
+2025-03-27 16:19:53,113 - encryption_manager - INFO - Encrypted value length: 334365 bytes
+2025-03-27 16:19:53,113 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\x8d\xb4\x14^\xa1\x10\x04\x00\x02\x00\x00\r\x1a\x05\x00\x00'
+2025-03-27 16:19:53,115 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:19:53,117 - encryption_manager - INFO - Decrypted values: [11911.8600000005]
+2025-03-27 16:19:53,117 - encryption_manager - INFO - Encrypted value length: 334217 bytes
+2025-03-27 16:19:53,117 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xf9\xb2\x14^\xa1\x10\x04\x00\x02\x00\x00y\x19\x05\x00\x00'
+2025-03-27 16:19:53,118 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:19:53,118 - encryption_manager - INFO - Decrypted values: [87022.31999999874]
+2025-03-27 16:19:53,118 - encryption_manager - INFO - Encrypted value length: 334364 bytes
+2025-03-27 16:19:53,118 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\x8c\xb4\x14^\xa1\x10\x04\x00\x02\x00\x00\x0c\x1a\x05\x00\x00'
+2025-03-27 16:19:53,122 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:19:53,124 - encryption_manager - INFO - Decrypted values: [45136.930000001295]
+2025-03-27 16:19:53,124 - encryption_manager - INFO - Encrypted value length: 333851 bytes
+2025-03-27 16:19:53,124 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\x8b\xb0\x14^\xa1\x10\x04\x00\x02\x00\x00\x0b\x18\x05\x00\x00'
+2025-03-27 16:19:53,126 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:19:53,126 - encryption_manager - INFO - Decrypted values: [4333.30999999874]
+2025-03-27 16:19:53,126 - encryption_manager - INFO - Encrypted value length: 334199 bytes
+2025-03-27 16:19:53,126 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xe7\xb2\x14^\xa1\x10\x04\x00\x02\x00\x00g\x19\x05\x00\x00'
+2025-03-27 16:19:53,128 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:19:53,130 - encryption_manager - INFO - Decrypted values: [27813.13000000092]
+2025-03-27 16:19:53,130 - encryption_manager - INFO - Encrypted value length: 334481 bytes
+2025-03-27 16:19:53,130 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\x81\xb5\x14^\xa1\x10\x04\x00\x02\x00\x00\x81\x1a\x05\x00\x00'
+2025-03-27 16:19:53,132 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:19:53,134 - encryption_manager - INFO - Decrypted values: [71410.57999999929]
+2025-03-27 16:19:53,134 - __main__ - INFO - Verification results for accounts: 0/10 successful
+2025-03-27 16:19:53,134 - __main__ - INFO - Verification for accounts: 0/10 successful
+2025-03-27 16:20:54,398 - encryption_manager - INFO - Loading encryption context from file
+2025-03-27 16:20:54,860 - encryption_manager - INFO - Loading private key
+2025-03-27 16:20:55,578 - encryption_manager - ERROR - Loaded secret context is not private
+2025-03-27 16:20:55,583 - encryption_manager - INFO - Creating new encryption context and keys
+2025-03-27 16:20:55,583 - encryption_manager - INFO - Creating new TenSEAL CKKS context
+2025-03-27 16:20:56,800 - encryption_manager - INFO - Encryption data saved successfully
+2025-03-27 16:20:56,800 - encryption_manager - INFO - Successfully created and saved new encryption context and keys
+2025-03-27 16:20:58,872 - database_connector - INFO - Connected to MySQL database: fm_database
+2025-03-27 16:20:58,896 - database_connector - INFO - Encryption schema check completed
+2025-03-27 16:20:58,900 - __main__ - INFO - Starting migration for table traders...
+2025-03-27 16:22:00,907 - __main__ - INFO - Migration complete for table traders. Processed 1000 records in 62.00 seconds. Success: 2000, Failures: 0
+2025-03-27 16:22:00,907 - __main__ - INFO - Starting migration for table brokers...
+2025-03-27 16:23:02,088 - __main__ - INFO - Migration complete for table brokers. Processed 1000 records in 61.17 seconds. Success: 2000, Failures: 0
+2025-03-27 16:23:02,088 - __main__ - INFO - Starting migration for table accounts...
+2025-03-27 16:23:30,699 - __main__ - INFO - Migration complete for table accounts. Processed 1000 records in 28.60 seconds. Success: 1000, Failures: 0
+2025-03-27 16:23:30,699 - __main__ - INFO - Migration statistics: {'traders': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 2000, 'failed_encryptions': 0, 'elapsed_time': 62.00216341018677}, 'brokers': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 2000, 'failed_encryptions': 0, 'elapsed_time': 61.169188499450684}, 'accounts': {'total_records': 1000, 'processed_records': 1000, 'successful_encryptions': 1000, 'failed_encryptions': 0, 'elapsed_time': 28.603145837783813}}
+2025-03-27 16:23:30,804 - __main__ - INFO - Verification results for traders: 20/20 successful
+2025-03-27 16:23:30,804 - __main__ - INFO - Verification for traders: 20/20 successful
+2025-03-27 16:23:30,904 - __main__ - INFO - Verification results for brokers: 20/20 successful
+2025-03-27 16:23:30,904 - __main__ - INFO - Verification for brokers: 20/20 successful
+2025-03-27 16:23:30,938 - encryption_manager - INFO - Encrypted value length: 334189 bytes
+2025-03-27 16:23:30,938 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xdd\xb2\x14^\xa1\x10\x04\x00\x02\x00\x00]\x19\x05\x00\x00'
+2025-03-27 16:23:30,945 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:23:30,947 - encryption_manager - INFO - Decrypted values: [50107.85999999999]
+2025-03-27 16:23:30,948 - __main__ - INFO - ACCOUNT BALANCE: original=50107.86 (<class 'decimal.Decimal'>), decrypted=50107.85999999999 (<class 'float'>)
+2025-03-27 16:23:30,948 - __main__ - INFO - COMPARISON: original=50107.86, decrypted=50107.85999999999, relative_diff=0.000000, is_match=True
+2025-03-27 16:23:30,948 - encryption_manager - INFO - Encrypted value length: 334123 bytes
+2025-03-27 16:23:30,948 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\x9b\xb2\x14^\xa1\x10\x04\x00\x02\x00\x00\x1b\x19\x05\x00\x00'
+2025-03-27 16:23:30,949 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:23:30,949 - encryption_manager - INFO - Decrypted values: [53589.53999999996]
+2025-03-27 16:23:30,949 - __main__ - INFO - ACCOUNT BALANCE: original=53589.54 (<class 'decimal.Decimal'>), decrypted=53589.53999999996 (<class 'float'>)
+2025-03-27 16:23:30,949 - __main__ - INFO - COMPARISON: original=53589.54, decrypted=53589.53999999996, relative_diff=0.000000, is_match=True
+2025-03-27 16:23:30,949 - encryption_manager - INFO - Encrypted value length: 333956 bytes
+2025-03-27 16:23:30,949 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xf4\xb0\x14^\xa1\x10\x04\x00\x02\x00\x00t\x18\x05\x00\x00'
+2025-03-27 16:23:30,953 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:23:30,955 - encryption_manager - INFO - Decrypted values: [39357.45999999986]
+2025-03-27 16:23:30,955 - __main__ - INFO - ACCOUNT BALANCE: original=39357.46 (<class 'decimal.Decimal'>), decrypted=39357.45999999986 (<class 'float'>)
+2025-03-27 16:23:30,955 - __main__ - INFO - COMPARISON: original=39357.46, decrypted=39357.45999999986, relative_diff=0.000000, is_match=True
+2025-03-27 16:23:30,955 - encryption_manager - INFO - Encrypted value length: 334399 bytes
+2025-03-27 16:23:30,955 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xaf\xb4\x14^\xa1\x10\x04\x00\x02\x00\x00/\x1a\x05\x00\x00'
+2025-03-27 16:23:30,956 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:23:30,956 - encryption_manager - INFO - Decrypted values: [92525.93000000002]
+2025-03-27 16:23:30,959 - __main__ - INFO - ACCOUNT BALANCE: original=92525.93 (<class 'decimal.Decimal'>), decrypted=92525.93000000002 (<class 'float'>)
+2025-03-27 16:23:30,959 - __main__ - INFO - COMPARISON: original=92525.93, decrypted=92525.93000000002, relative_diff=0.000000, is_match=True
+2025-03-27 16:23:30,959 - encryption_manager - INFO - Encrypted value length: 334429 bytes
+2025-03-27 16:23:30,959 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xcd\xb4\x14^\xa1\x10\x04\x00\x02\x00\x00M\x1a\x05\x00\x00'
+2025-03-27 16:23:30,960 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:23:30,962 - encryption_manager - INFO - Decrypted values: [11911.85999999988]
+2025-03-27 16:23:30,962 - __main__ - INFO - ACCOUNT BALANCE: original=11911.86 (<class 'decimal.Decimal'>), decrypted=11911.85999999988 (<class 'float'>)
+2025-03-27 16:23:30,962 - __main__ - INFO - COMPARISON: original=11911.86, decrypted=11911.85999999988, relative_diff=0.000000, is_match=True
+2025-03-27 16:23:30,962 - encryption_manager - INFO - Encrypted value length: 334382 bytes
+2025-03-27 16:23:30,962 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\x9e\xb4\x14^\xa1\x10\x04\x00\x02\x00\x00\x1e\x1a\x05\x00\x00'
+2025-03-27 16:23:30,964 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:23:30,964 - encryption_manager - INFO - Decrypted values: [87022.32000000005]
+2025-03-27 16:23:30,964 - __main__ - INFO - ACCOUNT BALANCE: original=87022.32 (<class 'decimal.Decimal'>), decrypted=87022.32000000005 (<class 'float'>)
+2025-03-27 16:23:30,964 - __main__ - INFO - COMPARISON: original=87022.32, decrypted=87022.32000000005, relative_diff=0.000000, is_match=True
+2025-03-27 16:23:30,964 - encryption_manager - INFO - Encrypted value length: 334481 bytes
+2025-03-27 16:23:30,964 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\x81\xb5\x14^\xa1\x10\x04\x00\x02\x00\x00\x81\x1a\x05\x00\x00'
+2025-03-27 16:23:30,967 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:23:30,967 - encryption_manager - INFO - Decrypted values: [45136.92999999991]
+2025-03-27 16:23:30,967 - __main__ - INFO - ACCOUNT BALANCE: original=45136.93 (<class 'decimal.Decimal'>), decrypted=45136.92999999991 (<class 'float'>)
+2025-03-27 16:23:30,967 - __main__ - INFO - COMPARISON: original=45136.93, decrypted=45136.92999999991, relative_diff=0.000000, is_match=True
+2025-03-27 16:23:30,970 - encryption_manager - INFO - Encrypted value length: 333846 bytes
+2025-03-27 16:23:30,970 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\x86\xb0\x14^\xa1\x10\x04\x00\x02\x00\x00\x06\x18\x05\x00\x00'
+2025-03-27 16:23:30,971 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:23:30,973 - encryption_manager - INFO - Decrypted values: [4333.310000000081]
+2025-03-27 16:23:30,973 - __main__ - INFO - ACCOUNT BALANCE: original=4333.31 (<class 'decimal.Decimal'>), decrypted=4333.310000000081 (<class 'float'>)
+2025-03-27 16:23:30,973 - __main__ - INFO - COMPARISON: original=4333.31, decrypted=4333.310000000081, relative_diff=0.000000, is_match=True
+2025-03-27 16:23:30,973 - encryption_manager - INFO - Encrypted value length: 334469 bytes
+2025-03-27 16:23:30,973 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xf5\xb4\x14^\xa1\x10\x04\x00\x02\x00\x00u\x1a\x05\x00\x00'
+2025-03-27 16:23:30,976 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:23:30,978 - encryption_manager - INFO - Decrypted values: [27813.130000000234]
+2025-03-27 16:23:30,978 - __main__ - INFO - ACCOUNT BALANCE: original=27813.13 (<class 'decimal.Decimal'>), decrypted=27813.130000000234 (<class 'float'>)
+2025-03-27 16:23:30,978 - __main__ - INFO - COMPARISON: original=27813.13, decrypted=27813.130000000234, relative_diff=0.000000, is_match=True
+2025-03-27 16:23:30,978 - encryption_manager - INFO - Encrypted value length: 334073 bytes
+2025-03-27 16:23:30,978 - encryption_manager - INFO - Encrypted value preview: b'\n\x01\x01\x12\xe9\xb1\x14^\xa1\x10\x04\x00\x02\x00\x00\xe9\x18\x05\x00\x00'
+2025-03-27 16:23:30,978 - encryption_manager - INFO - Successfully deserialized encrypted vector
+2025-03-27 16:23:30,978 - encryption_manager - INFO - Decrypted values: [71410.58000000041]
+2025-03-27 16:23:30,978 - __main__ - INFO - ACCOUNT BALANCE: original=71410.58 (<class 'decimal.Decimal'>), decrypted=71410.58000000041 (<class 'float'>)
+2025-03-27 16:23:30,978 - __main__ - INFO - COMPARISON: original=71410.58, decrypted=71410.58000000041, relative_diff=0.000000, is_match=True
+2025-03-27 16:23:30,978 - __main__ - INFO - Verification results for accounts: 10/10 successful
+2025-03-27 16:23:30,978 - __main__ - INFO - Verification for accounts: 10/10 successful
