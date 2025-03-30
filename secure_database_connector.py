@@ -1,6 +1,8 @@
 import logging
 import mysql.connector
 from mysql.connector import Error
+import decimal
+import tenseal as ts
 from typing import Dict, List, Any, Optional, Union, Tuple
 import json
 from database_connector import DatabaseConnector
@@ -14,10 +16,19 @@ class SecureDatabaseConnector(DatabaseConnector):
 
         self.encryption_manager = encryption_manager
 
+        # in SecureDatabaseConnector.__init__:
         self.sensitive_fields = {
-            "traders": ["email", "phone"],
-            "brokers": ["license_number", "contact_email"],
-            "accounts": ["balance"],
+            "traders": {
+                "email": "string",
+                "phone": "string",
+            },
+            "brokers": {
+                "license_number": "string",
+                "contact_email": "string",
+            },
+            "accounts": {
+                "balance": "numeric",
+            },
         }
 
         self.field_mapping = self._build_field_mapping()
@@ -35,6 +46,20 @@ class SecureDatabaseConnector(DatabaseConnector):
             for field in fields:
                 mapping[f"{table}.{field}"] = f"{table}.{field}"
                 mapping[field] = f"{table}.{field}"
+        # after the existing mapping loop:
+        mapping.update({
+            # when you alias t.email AS trader_email
+            "trader_email": "traders.email",
+            # when you alias b.contact_email AS contact_email (if you do)
+            "contact_email": "brokers.contact_email",
+
+            # in your account‐types query:
+            "avg_balance": "accounts.balance",
+            "min_balance": "accounts.balance",
+            "max_balance": "accounts.balance",
+            "total_balance": "accounts.balance",
+            # (COUNT(*) AS count is not sensitive, so you can skip it)
+        })
 
         return mapping
 
@@ -105,7 +130,7 @@ class SecureDatabaseConnector(DatabaseConnector):
         return result
 
     def execute_encrypted_query(self, query_type, tables, fields=None, conditions=None, order_by=None, limit=None):
-
+        self.logger.info(f"HE-TRIPWIRE: execute_encrypted_query called for {query_type} on tables {tables}")
         try:
             if query_type.upper() == "SELECT":
                 return self._execute_encrypted_select(tables, fields, conditions, order_by, limit)
@@ -120,170 +145,159 @@ class SecureDatabaseConnector(DatabaseConnector):
             self.logger.error(f"Error executing encrypted query: {e}")
             return None
 
+    def execute_encrypted_raw(self, sql: str) -> Optional[list]:
+        """
+        Execute an arbitrary SELECT SQL string under HE tripwire, then
+        decrypt any sensitive columns in the result rows.
+        """
+        self.logger.info(f"HE-TRIPWIRE: execute_encrypted_raw called for SQL: {sql}")
+        try:
+            # run the query
+            if not self.connection or not self.connection.is_connected():
+                self.connect()
+            cursor = self.connection.cursor(dictionary=True)
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+            cursor.close()
+
+            # decrypt sensitive fields
+            decrypted_rows = []
+            for row in rows:
+                new_row = {}
+                for col, val in row.items():
+                    dec_val = val
+                    fq = self.field_mapping.get(col, col)  # e.g. "traders.email"
+                    # only attempt HE on actual encrypted bytes
+                    if "." in fq and isinstance(val, (bytes, bytearray)):
+                        table, field = fq.split(".", 1)
+                        ftype = self.sensitive_fields.get(table, {}).get(field)
+                        if ftype:
+                            snippet = f"{repr(val)[:50]}{'…' if len(repr(val)) > 50 else ''}"
+                            self.logger.info(f"HE: decrypting '{col}' ({fq}) ciphertext: {snippet}")
+                            try:
+                                # delegate both string & numeric to your manager
+                                dec_val = self.encryption_manager.decrypt_value(val, fq)
+                            except Exception as e:
+                                self.logger.error(f"HE: decryption error for {fq}: {e}")
+                                # return None (→ JSON null) rather than raw bytes
+                                dec_val = None
+                    new_row[col] = dec_val
+                decrypted_rows.append(new_row)
+            return decrypted_rows
+
+        except Exception as e:
+            self.logger.error(f"Error executing encrypted raw SQL: {e}")
+            return None
+
+
     def _execute_encrypted_select(self, tables, fields=None, conditions=None, order_by=None, limit=None):
-
-        main_table = tables[0]
-
         encrypted_conditions = []
         regular_conditions = []
-
-        if conditions:
-            for condition in conditions:
-                field = condition.get("field")
-                operation = condition.get("operation")
-                value = condition.get("value")
-
-                is_sensitive = False
-                for table in tables:
-                    if table in self.sensitive_fields and field in self.sensitive_fields[table]:
-                        is_sensitive = True
-                        break
-
-                if is_sensitive:
-                    encrypted_conditions.append({
-                        "field": field,
-                        "operation": operation,
-                        "value": value,
-                        "table": main_table
-                    })
-                else:
-                    regular_conditions.append(condition)
+        for cond in conditions or []:
+            tbl, fld = cond.get("field").split('.', 1) if '.' in cond.get("field") else (None, cond.get("field"))
+            if tbl in self.sensitive_fields and fld in self.sensitive_fields[tbl]:
+                encrypted_conditions.append(cond)
+            else:
+                regular_conditions.append(cond)
 
         sql_fields = []
         field_mapping = {}
-
-        if not fields:
-            table_schema_query = f"DESCRIBE {main_table}"
-            table_schema = self.execute_query(table_schema_query)
-
-            fields = [field["Field"] for field in table_schema]
-
-        for field in fields:
-            for table in tables:
-                if field.endswith('_encrypted'):
+        for table in tables:
+            schema = self.execute_query(f"DESCRIBE `{table}`")
+            cols = [r["Field"] for r in schema]
+            for col in cols:
+                if col.endswith("_encrypted"):
                     continue
 
-                if table in self.sensitive_fields and field in self.sensitive_fields[table]:
-                    encrypted_field = f"{table}.{field}_encrypted"
-                    sql_fields.append(encrypted_field)
-                    field_mapping[encrypted_field] = f"{table}.{field}"
-
-                    sql_fields.append(f"NULL as {table}_{field}")
-                    field_mapping[f"{table}_{field}"] = f"{table}.{field}"
+                if table in self.sensitive_fields and col in self.sensitive_fields[table]:
+                    sql_fields.append(f"{table}.{col}_encrypted")
+                    field_mapping[f"{table}.{col}_encrypted"] = (table, col)
+                    sql_fields.append(f"NULL AS {table}_{col}")
+                    field_mapping[f"{table}_{col}"] = (table, col)
                 else:
-                    sql_fields.append(f"{table}.{field}")
+                    sql_fields.append(f"{table}.{col}")
 
         sql_fields = list(dict.fromkeys(sql_fields))
 
-        sql = f"SELECT {', '.join(sql_fields)} FROM {' JOIN '.join(tables)}"
-
-        where_clauses = []
+        sql = f"SELECT {', '.join(sql_fields)} FROM " + " JOIN ".join(tables)
         params = []
+        where_clauses = []
 
-        for condition in regular_conditions:
-            field = condition.get("field")
-            operation = condition.get("operation")
-            value = condition.get("value")
+        for cond in regular_conditions:
+            field = cond["field"]
+            op = cond["operation"].upper()
+            val = cond["value"]
 
-            if operation in ["=", ">", "<", ">=", "<=", "<>"]:
-                where_clauses.append(f"{field} {operation} %s")
-                params.append(value)
-            elif operation.upper() == "LIKE":
+            if op in ("=", ">", "<", ">=", "<=", "<>"):
+                where_clauses.append(f"{field} {op} %s")
+                params.append(val)
+            elif op == "LIKE":
                 where_clauses.append(f"{field} LIKE %s")
-                params.append(f"%{value}%")
-            elif operation.upper() == "IN":
-                placeholders = ", ".join(["%s"] * len(value))
+                params.append(f"%{val}%")
+            elif op == "IN" and isinstance(val, (list, tuple)):
+                placeholders = ", ".join(["%s"] * len(val))
                 where_clauses.append(f"{field} IN ({placeholders})")
-                params.extend(value)
+                params.extend(val)
 
         if where_clauses:
             sql += " WHERE " + " AND ".join(where_clauses)
-
         if order_by:
             sql += f" ORDER BY {order_by}"
-
         if limit:
             sql += f" LIMIT {limit}"
 
-        results = self.execute_query(sql, params)
-
-        if not results:
+        raw = self.execute_query(sql, params)
+        if not raw:
             return []
 
-        processed_results = []
-
-        for row in results:
-            processed_row = {}
-
-            for key, value in row.items():
-                if key.startswith(tuple(tables)) and key.split('_', 1)[1] in [f for table in tables for f in
-                                                                              self.sensitive_fields.get(table, [])]:
-                    continue
-
+        results = []
+        for row in raw:
+            record = {}
+            for key, val in row.items():
                 if key.endswith("_encrypted"):
-                    parts = key.split('.')
-                    if len(parts) > 1:
-                        table = parts[0]
-                        field = parts[1].replace("_encrypted", "")
+                    tbl, fld = field_mapping[key]
+                    if val is not None:
+                        blob = bytes(val) if isinstance(val, (memoryview, bytearray)) else val
+                        record[fld] = self.encryption_manager.decrypt_value(blob, f"{tbl}.{fld}")
                     else:
-                        field = key.replace("_encrypted", "")
-                        table = None
-
-                        for t in tables:
-                            if t in self.sensitive_fields and field in self.sensitive_fields[t]:
-                                table = t
-                                break
-
-                    if table and field:
-                        if value is not None:
-                            if isinstance(value, (memoryview, bytearray)):
-                                encrypted_bytes = bytes(value)
-                            else:
-                                encrypted_bytes = value
-
-                            decrypted_value = self.encryption_manager.decrypt_value(
-                                encrypted_bytes,
-                                f"{table}.{field}"
-                            )
-
-                            processed_row[field] = decrypted_value
-                        else:
-                            processed_row[field] = None
+                        record[fld] = None
+                elif key in field_mapping and field_mapping[key][1] in self.sensitive_fields.get(field_mapping[key][0],
+                                                                                                 []):
+                    continue
                 else:
-                    processed_row[key] = value
+                    record[key] = val
 
-            matches_encrypted_conditions = True
+            passed = True
+            for cond in encrypted_conditions:
+                fld = cond["field"].split('.', 1)[-1]
+                op = cond["operation"].upper()
+                val = cond["value"]
+                actual = record.get(fld)
 
-            for condition in encrypted_conditions:
-                field = condition.get("field")
-                operation = condition.get("operation")
-                value = condition.get("value")
-                table = condition.get("table")
+                if op == "=" and not (actual == val):
+                    passed = False
+                elif op == ">" and not (actual > val):
+                    passed = False
+                elif op == "<" and not (actual < val):
+                    passed = False
+                elif op == ">=" and not (actual >= val):
+                    passed = False
+                elif op == "<=" and not (actual <= val):
+                    passed = False
+                elif op == "<>" and not (actual != val):
+                    passed = False
+                elif op == "LIKE" and val not in str(actual):
+                    passed = False
+                elif op == "IN" and actual not in val:
+                    passed = False
 
-                decrypted_value = processed_row.get(field)
-
-                if decrypted_value is None:
-                    matches_encrypted_conditions = False
+                if not passed:
                     break
 
-                if operation == "=":
-                    result = decrypted_value == value
-                elif operation == ">":
-                    result = decrypted_value > value
-                elif operation == "<":
-                    result = decrypted_value < value
-                else:
-                    self.logger.warning(f"Unsupported operation '{operation}' for field {field}")
-                    result = False
+            if passed:
+                results.append(record)
 
-                if not result:
-                    matches_encrypted_conditions = False
-                    break
-
-            if matches_encrypted_conditions:
-                processed_results.append(processed_row)
-
-        return processed_results
+        return results
 
     def _execute_encrypted_insert(self, table, fields):
 
@@ -506,14 +520,17 @@ class SecureDatabaseConnector(DatabaseConnector):
     def insert_with_encryption(self, table, data):
 
         return self._execute_encrypted_insert(table, data)
+        self.logger.info("Inserting data with encryption");
 
     def update_with_encryption(self, table, data, conditions):
 
         return self._execute_encrypted_update(table, data, conditions)
+        self.logger.info("Updating data with encryption");
 
     def select_with_decryption(self, tables, fields=None, conditions=None, order_by=None, limit=None):
 
         return self._execute_encrypted_select(tables, fields, conditions, order_by, limit)
+        self.logger.info("Selecting data with decryption");
 
     def perform_encrypted_aggregation(self, table, field, operation, conditions=None):
 

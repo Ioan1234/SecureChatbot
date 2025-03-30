@@ -9,6 +9,16 @@ import gc
 import concurrent.futures
 import threading
 
+import mysql.connector
+
+
+DB_CONFIG = {
+     "host":     "localhost",
+    "user":     "root",
+    "password": "stud",
+    "database": "fm_database"
+}
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -19,6 +29,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+def load_asset_ids():
+    conn = mysql.connector.connect(**DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("SELECT asset_id FROM assets")
+    ids = [row[0] for row in cursor.fetchall()]
+    cursor.close()
+    conn.close()
+    return ids
 
 class ThreadSafeCounter:
 
@@ -56,8 +74,6 @@ class MultiThreadedDatabaseGenerator:
 
         self.start_ids = start_ids or {
             "traders": 1,
-            "brokers": 1,
-            "assets": 1,
             "markets": 1,
             "trades": 1,
             "accounts": 1,
@@ -74,6 +90,10 @@ class MultiThreadedDatabaseGenerator:
         self.email_lock = threading.Lock()
         self.license_lock = threading.Lock()
         self.market_name_lock = threading.Lock()
+
+        self.asset_ids = load_asset_ids()
+        if not self.asset_ids:
+            raise RuntimeError("No asset_ids found in database; generate assets first.")
 
         self._cache_common_values()
 
@@ -298,8 +318,6 @@ class MultiThreadedDatabaseGenerator:
     def _generate_chunk(self, table_name, start_idx, chunk_size, counter=None):
         workers = {
             "traders": self._generate_traders_chunk,
-            "brokers": self._generate_brokers_chunk,
-            "assets": self._generate_assets_chunk,
             "markets": self._generate_markets_chunk_realistic,
             "trades": self._generate_trades_chunk,
             "accounts": self._generate_accounts_chunk,
@@ -331,48 +349,6 @@ class MultiThreadedDatabaseGenerator:
 
         return values
 
-    def _generate_brokers_chunk(self, start_idx, chunk_size, counter=None):
-        values = []
-        end_idx = start_idx + chunk_size
-
-        for i in range(start_idx, end_idx):
-            name = f"{random.choice(self.broker_prefixes)} {random.choice(self.broker_suffixes)}"
-            license_num = self.random_license()
-            email = f"{name.lower().replace(' ', '')}@broker.com"
-
-            values.append(f"('{name}', '{license_num}', '{email}')")
-
-            if counter:
-                counter.increment()
-
-        return values
-
-    def _generate_assets_chunk(self, start_idx, chunk_size, counter=None):
-        values = []
-        end_idx = start_idx + chunk_size
-
-        for i in range(start_idx, end_idx):
-            asset_type = random.choice(self.asset_types)
-
-            if asset_type == "Stock":
-                name = f"{random.choice(self.stock_prefixes)} {random.choice(self.stock_suffixes)}"
-            elif asset_type == "Bond":
-                name = f"{random.choice(self.stock_prefixes)} {random.choice(self.stock_suffixes)} Bond {random.randint(1, 30)}yr"
-            elif asset_type == "ETF":
-                name = f"{random.choice(['S&P', 'NASDAQ', 'DOW'])} {random.choice(['Total', 'Select', 'Prime'])} ETF"
-            elif asset_type == "Cryptocurrency":
-                name = f"{random.choice(['Bit', 'Eth', 'Lite'])}coin"
-            else:
-                name = f"{random.choice(self.stock_prefixes)} {asset_type}"
-
-            broker_id = random.randint(1, self.start_ids["brokers"] + min(i, self.num_entries - 1))
-
-            values.append(f"('{name}', '{asset_type}', {broker_id})")
-
-            if counter:
-                counter.increment()
-
-        return values
 
     def _generate_markets_chunk_realistic(self, start_idx, chunk_size, counter=None):
         values = []
@@ -459,13 +435,13 @@ class MultiThreadedDatabaseGenerator:
 
         for i in range(start_idx, end_idx):
             trader_id = random.randint(1, self.start_ids["traders"] + min(i, self.num_entries - 1))
-            asset_id = random.randint(1, self.start_ids["assets"] + min(i, self.num_entries - 1))
             market_id = random.randint(1, self.start_ids["markets"] + min(i, self.num_entries - 1))
 
             trade_date = self.random_date(datetime(2023, 1, 1), datetime(2024, 12, 31)).strftime('%Y-%m-%d')
             quantity = random.randint(1, 1000)
             price = self.random_decimal(10, 1000)
 
+            asset_id = random.choice(self.asset_ids)
             values.append(f"({trader_id}, {asset_id}, {market_id}, '{trade_date}', {quantity}, {price})")
 
             if counter:
@@ -548,7 +524,6 @@ class MultiThreadedDatabaseGenerator:
         end_idx = start_idx + chunk_size
 
         for i in range(start_idx, end_idx):
-            asset_id = random.randint(1, self.start_ids["assets"] + min(i, self.num_entries - 1))
             price_date = self.random_date(datetime(2020, 1, 1), datetime(2024, 12, 31)).strftime('%Y-%m-%d')
 
             base_price = self.random_decimal(10, 1000)
@@ -564,6 +539,7 @@ class MultiThreadedDatabaseGenerator:
             open_price = round(open_price, 2)
             close_price = round(close_price, 2)
 
+            asset_id = random.choice(self.asset_ids)
             values.append(f"({asset_id}, '{price_date}', {open_price}, {close_price})")
 
             if counter:
@@ -579,8 +555,6 @@ class MultiThreadedDatabaseGenerator:
 
         headers = {
             "traders": "INSERT INTO traders (name, email, phone, registration_date) VALUES\n",
-            "brokers": "INSERT INTO brokers (name, license_number, contact_email) VALUES\n",
-            "assets": "INSERT INTO assets (name, asset_type, broker_id) VALUES\n",
             "markets": "INSERT INTO markets (name, location, opening_time, closing_time) VALUES\n",
             "trades": "INSERT INTO trades (trader_id, asset_id, market_id, trade_date, quantity, price) VALUES\n",
             "accounts": "INSERT INTO accounts (trader_id, balance, account_type, creation_date) VALUES\n",
@@ -636,11 +610,11 @@ class MultiThreadedDatabaseGenerator:
         os.makedirs(self.output_dir, exist_ok=True)
 
         if tables_to_generate is None:
-            tables_to_generate = ["traders", "brokers", "assets", "markets", "trades",
+            tables_to_generate = ["traders", "markets", "trades",
                                   "accounts", "transactions", "orders", "order_status", "price_history"]
 
         valid_tables = [t for t in tables_to_generate if t in [
-            "traders", "brokers", "assets", "markets", "trades",
+            "traders", "markets", "trades",
             "accounts", "transactions", "orders", "order_status", "price_history"
         ]]
 
@@ -710,8 +684,6 @@ def main():
 
     start_ids = {
         "traders": args.start_id,
-        "brokers": args.start_id,
-        "assets": args.start_id,
         "markets": args.start_id,
         "trades": args.start_id,
         "accounts": args.start_id,

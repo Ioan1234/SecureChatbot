@@ -124,7 +124,23 @@ class QueryProcessor:
                 r'securities?',
                 r'cryptocurrenc(?:y|ies)',
                 r'commodit(?:y|ies)'
-            ]
+            ],
+
+            "trade_price_range": {
+                "patterns": [
+                    r'price range for trades',
+                    r'trade price range',
+                    r'price range of trades'
+                ],
+                "sql_template": """
+              SELECT
+                MIN(price)   AS min_price,
+                MAX(price)   AS max_price,
+                AVG(price)   AS avg_price,
+                STDDEV(price) AS price_stddev
+              FROM trades
+            """
+            }
         }
 
         compiled_patterns = {}
@@ -506,25 +522,73 @@ class QueryProcessor:
     def process_query(self, nl_query, intent_data=None):
         self.logger.info(f"Processing query: {nl_query}")
 
-        analytical_query = self._match_analytical_pattern(nl_query)
-        if analytical_query:
-            self.logger.info(f"Matched analytical query: {analytical_query['name']}")
-            return self._execute_analytical_query(analytical_query, nl_query)
+        analytical = self._match_analytical_pattern(nl_query)
+        if analytical:
+            return self._execute_analytical_query(analytical, nl_query)
+
+        intent = intent_data.get("intent")
+        sub_intent = intent_data.get("sub_intent")
+        entities = self._extract_entities(nl_query)
+        tables = entities.get("tables", [])
+
+        if intent_data and intent_data.get("intent") == "database_query_comparative":
+            result = self._execute_generic_comparative(nl_query)
+            if result is not None:
+                return result
+
 
         query_type = self._determine_query_type(nl_query)
-        self.logger.info(f"Determined query type: {query_type}")
-
-        entities = self._extract_entities(nl_query)
-        self.logger.info(f"Extracted entities: {entities}")
-
-        sql = self._generate_sql(query_type, entities, nl_query)
-        self.logger.info(f"Generated SQL: {sql}")
-
-        if sql:
-            result = self._execute_and_process_query(sql)
-            return result
-        else:
+        entities    = self._extract_entities(nl_query)
+        sql         = self._generate_sql(query_type, entities, nl_query)
+        if not sql:
             return None
+        return self._execute_and_process_query(sql)
+
+    def _execute_generic_comparative(self, nl_query: str):
+        main_table = None
+        for tbl in self.schema:
+            if re.search(rf"\b{tbl}\b", nl_query, re.IGNORECASE):
+                main_table = tbl
+                break
+        if not main_table:
+            return None
+
+        related = None
+        pk_main = pk_rel = None
+        for (t1, t2), (k1, k2) in self.relationships.items():
+            if t1 == main_table:
+                related, pk_main, pk_rel = t2, k1, k2
+                break
+            if t2 == main_table:
+                related, pk_main, pk_rel = t1, k2, k1
+                break
+        if not related:
+            return None
+
+        sql = f"""
+             SELECT
+               m.{pk_main}     AS id,
+               m.name          AS name,
+               COUNT(r.{pk_rel}) AS count
+             FROM {main_table} m
+             JOIN {related} r
+               ON m.{pk_main} = r.{pk_rel}
+             GROUP BY m.{pk_main}, m.name
+             ORDER BY count DESC
+             LIMIT 1
+           """
+
+        result = self.db_connector.execute_encrypted_query(
+            "SELECT", [main_table, related], fields=None, conditions=None,
+            order_by=None, limit=1
+        )
+        if not result:
+            return None
+
+        return {
+            "response": f"Top {main_table.rstrip('s').capitalize()}: {result[0]['name']} ({result[0]['count']} records)",
+            "data": result
+        }
 
     def _match_analytical_pattern(self, nl_query):
         for name, pattern_data in self.analytical_patterns.items():
@@ -729,7 +793,7 @@ class QueryProcessor:
             elif "date" in self.schema.get(tables[0], []):
                 return f"{tables[0]}.date"
 
-        return "created_at"  # Fallback
+        return "created_at"
 
     def _get_numeric_field(self, tables, query):
         numeric_fields = {
@@ -810,6 +874,8 @@ class QueryProcessor:
         main_table = entities["tables"][0]
 
         sql_parts = []
+
+        is_assets_table = "assets" in entities["tables"]
 
         if query_type == "count":
             sql_parts.append("SELECT COUNT(*) as count")
@@ -914,19 +980,30 @@ class QueryProcessor:
         elif query_type == "time":
             if "earliest" in nl_query or "oldest" in nl_query:
                 date_field = self._get_date_field(entities["tables"])
-                sql_parts.append(f"SELECT * FROM {main_table}")
+                if main_table == "assets":
+                    sql_parts.append("SELECT asset_id, name, asset_type, broker_id")
+                else:
+                    sql_parts.append("SELECT *")
                 entities["order"] = ("ASC", date_field)
                 entities["limit"] = 10
             elif "latest" in nl_query or "newest" in nl_query:
                 date_field = self._get_date_field(entities["tables"])
-                sql_parts.append(f"SELECT * FROM {main_table}")
+                if main_table == "assets":
+                    sql_parts.append("SELECT asset_id, name, asset_type, broker_id")
+                else:
+                    sql_parts.append("SELECT *")
                 entities["order"] = ("DESC", date_field)
                 entities["limit"] = 10
             else:
-                sql_parts.append("SELECT *")
+                if main_table == "assets":
+                    sql_parts.append("SELECT asset_id, name, asset_type, broker_id")
+                else:
+                    sql_parts.append("SELECT *")
 
         else:
-            if entities["fields"]:
+            if main_table == "assets":
+                sql_parts.append("SELECT asset_id, name, asset_type, broker_id")
+            elif entities["fields"]:
                 sql_parts.append(f"SELECT {', '.join(entities['fields'])}")
             else:
                 sql_parts.append("SELECT *")
@@ -1313,23 +1390,25 @@ class QueryProcessor:
 
     def get_assets_without_broker(self):
         sql = """
-        SELECT * FROM assets
-        WHERE broker_id IS NULL
-        """
+               SELECT asset_id, name, asset_type, broker_id
+               FROM assets
+               WHERE broker_id IS NULL
+               """
         return self._execute_and_process_query(sql)
 
-    def get_actively_traded_assets(self):
-        sql = """
-        SELECT 
-            a.*,
-            COUNT(t.trade_id) as trade_count
-        FROM assets a
-        JOIN trades t ON a.asset_id = t.asset_id
-        WHERE t.trade_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-        GROUP BY a.asset_id
-        ORDER BY trade_count DESC
-        """
-        return self._execute_and_process_query(sql)
+
+        def get_actively_traded_assets(self):
+            sql = """
+            SELECT
+                a.asset_id, a.name, a.asset_type, a.broker_id,
+                COUNT(t.trade_id) as trade_count
+            FROM assets a
+            JOIN trades t ON a.asset_id = t.asset_id
+            WHERE t.trade_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+            GROUP BY a.asset_id, a.name, a.asset_type, a.broker_id, a.api_symbol
+            ORDER BY trade_count DESC
+            """
+            return self._execute_and_process_query(sql)
 
     def get_average_trades_per_asset(self):
         sql = """

@@ -27,7 +27,6 @@ class DatabaseConnector:
             self.logger.error(f"Error connecting to MySQL database: {e}")
             return False
 
-    # First, add an is_connected() method to your DatabaseConnector class
     def is_connected(self):
         try:
             return self.connection and self.connection.is_connected()

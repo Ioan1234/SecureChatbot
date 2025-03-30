@@ -26,22 +26,6 @@
       "validation_split": 0.2
     }
   },
-  "auto_learning": {
-        "enabled": true,
-        "data_path": "auto_learning_data",
-        "auto_training": true,
-        "training_interval": 86400,
-        "min_interactions": 100,
-        "analysis_interval": 3600,
-        "min_confidence": 0.7,
-        "max_samples": 10000,
-        "tables_created": false,
-        "behavioral_thresholds": {
-            "quick_reformulation_time": 15,
-            "adequate_reading_time": 30,
-            "query_similarity_threshold": 0.7
-        }
-    },
   "speech": {
     "enabled": true,
     "use_encryption": true,

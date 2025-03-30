@@ -1,7 +1,10 @@
+import decimal
 import logging
 import re
+from collections import defaultdict
+import tenseal as ts
 import base64
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class ChatbotEngine:
     def __init__(self, intent_classifier, query_processor):
@@ -24,128 +27,180 @@ class ChatbotEngine:
         }
 
         self._init_entity_question_handlers()
+        self.entity_patterns = [
+            (re.compile(p, re.IGNORECASE), h)
+            for p, h in self.base_patterns.items()
+        ]
+
 
     def _init_entity_question_handlers(self):
-        self.entity_question_handlers = {
-            r'how many traders.*registered before (.+)': self._handle_traders_before_date,
-            r'(?:what is|how many|count).*total number of traders': self._handle_trader_count,
-            r'(?:are there|any|find|list) traders without (?:an|a)? (email|phone)': self._handle_traders_without_contact,
-            r'(?:what is|find) the most common (?:email)? domain': self._handle_common_email_domains,
-            r'how many traders share the same name': self._handle_traders_same_name,
-            r'(?:who are|which|find) the (?:traders with|oldest) (?:the oldest|earliest) registration': self._handle_oldest_traders,
-            r'(?:are|any|which) traders (?:who|that) haven\'t made any trades': self._handle_traders_without_trades,
-            r'how many traders have multiple accounts': self._handle_traders_multiple_accounts,
-            r'what is the average registration date': self._handle_average_registration_date,
-            r'(?:what is|show) the distribution of traders by year': self._handle_trader_registration_distribution,
+        # Initialize entity-specific shortcut handlers, excluding any that query sensitive fields
+        self.base_patterns = {
+            # Asset and market handlers unaffected
+            r"(?:what are|show|list|get|find|display).*(?:recent|latest|newest|current) trades": self._handle_recent_trades_query,
+            r"(?:show|list|get|find|display).*(?:recent|latest|newest|current) transactions(?: in the market)?": self._handle_recent_transactions_query,
+            r"(?:show|list|rank|compare).*(?:markets?).*(?:trade (?:volume|count)|trading activity|most activity)": self._handle_market_trade_activity,
+            r"(?:show|display).*(?:current asset prices|latest price records|most recent price)": self._handle_latest_prices,
+            r"(?:show|list|get|display).*(?:account types)": self._handle_account_types,
+            r"(?:which|list|find).*(?:no trading activity|inactive traders|without any trades)": self._handle_traders_without_trades,
+            r"(?:which|show|display).*(?:most traded asset|popular assets by trade count|trade most frequently)": self._handle_most_traded_asset,
+            r"(?:show|find|display).*(?:largest trade|biggest trade|most units)": self._handle_highest_trade_quantity,
+            r"(?:show|give me).*(?:price range for trades|statistics on trade prices)": self._handle_trade_price_range,
+            r"(?:show|give me).*(?:statistics on account balances|summary of account balances)": self._handle_average_account_balance,
+            r"(?:show|what time|list).*(?:markets open and close|time do markets operate|opening and closing times)": self._handle_market_trading_hours_summary,
+            r"(?:show|who registered|list).*(?:earliest registration|registered first|oldest first)": self._handle_oldest_traders,
+            r"(?:show|list|get|display).*(?:transaction types|transaction categories|kinds of transactions)": self._handle_transaction_types,
+            r"(?:show|display).*(?:most active account|highest transaction count)": self._handle_account_with_most_transactions,
+            r"(?:how efficiently|show|list).*(?:orders completed|order completion times|order types processed most efficiently)": self._handle_order_completion_efficiency,
+            r"(?:how|show).*(?:brokers distribute their assets|asset distribution across brokers|types of assets do brokers manage)": self._handle_broker_asset_distribution,
+            r"(?:what|show|list|get|display).*(?:account types)(?: available)?": self._handle_account_types,
+            r"(?:who|show|find|identify).*(?:most active trader|highest number of trades|trades the most frequently)":
+                self._handle_trader_most_trades,
 
-            r'(?:show|list|find|get|display).*traders.*(?:highest|largest|most|top|maximum).*(?:account)?.*balance': self._handle_highest_balance_query,
-            r'(?:which|who|what) trader.*(?:highest|largest|most|top|maximum).*(?:account)?.*balance': self._handle_highest_balance_query,
-            r'highest.*(?:account)?.*balance': self._handle_highest_balance_query,
+            # ── BROKER “largest portfolio” queries ──
+            r"(?:who|show|find|rank|list).*(?:broker).*?(?:largest portfolio|most assets managed|assets under management)":
+                self._handle_broker_with_most_assets,
 
-            r'(?:show|list|get|find|display).*(?:recent|latest|newest|current) trades': self._handle_recent_trades_query,
-            r'(?:show|list|get|find|display).*trades.*(?:recent|latest|newest|current)': self._handle_recent_trades_query,
-            r'what are the (?:recent|latest|newest|current) trades': self._handle_recent_trades_query,
+            # ── BROKER “most assets” queries ──
+            # exact match for “largest portfolio” you already had:
+            r"(?:show|find|display).*(?:broker).*(?:largest portfolio)":
+                self._handle_broker_with_most_assets,
 
-            r'how many markets (?:exist|are there)': self._handle_market_count,
-            r'what are the (?:opening|closing) (?:times|hours) of (?:each|the) market': self._handle_market_trading_hours,
-            r'which market opens (?:the)? earliest': self._handle_earliest_latest_markets,
-            r'which (?:market|one) closes (?:the)? latest': self._handle_earliest_latest_markets,
-            r'(?:are|any|which) markets (?:with|having) overlapping (?:trading)? hours': self._handle_overlapping_markets,
-            r'how many markets (?:are|located) in (?:a specific )?(city|region|location)?': self._handle_markets_by_location,
-            r'do all markets have unique names': self._handle_market_name_uniqueness,
-            r'what is the busiest market': self._handle_busiest_market,
+            # “highest number of assets”
+            r"(?:who|show|find|identify).*(?:broker).*(?:highest number of assets)":
+                self._handle_broker_with_most_assets,
 
-            r'how many brokers (?:are registered|are there)': self._handle_broker_count,
-            r'(?:are there|any) brokers without a license number': self._handle_brokers_without_license,
-            r'how many brokers share the same contact email': self._handle_brokers_with_same_email,
-            r'which broker manages the most assets': self._handle_broker_with_most_assets,
-            r'what is the average number of assets (?:managed )?per broker': self._handle_average_assets_per_broker,
-            r'(?:are there|any) brokers that don\'t manage any assets': self._handle_brokers_without_assets,
+            # “rank brokers by number of assets managed”
+            r"(?:rank|list).*(?:brokers).*(?:assets managed)":
+                self._handle_broker_with_most_assets,
 
-            r'how many assets exist': self._handle_asset_count,
-            r'what are the different asset types': self._handle_asset_types,
-            r'which asset is the most (?:commonly )?traded': self._handle_most_traded_asset,
-            r'are there assets not associated with any broker': self._handle_assets_without_broker,
-            r'how many (?:different )?assets are actively (?:being )?traded': self._handle_actively_traded_assets,
-            r'what is the average number of trades per asset': self._handle_average_trades_per_asset,
-
-            r'how many trades have been conducted': self._handle_trade_count,
-            r'what is the highest quantity of an asset traded': self._handle_highest_trade_quantity,
-            r'what is the highest and lowest trade price': self._handle_trade_price_range,
-            r'which trader has conducted the most trades': self._handle_trader_most_trades,
-            r'what is the average trade quantity': self._handle_average_trade_quantity,
-            r'(?:are there|any) trades where the asset or trader is missing': self._handle_trades_with_nulls,
-            r'which market has the most trade activity': self._handle_market_trade_activity,
-
-            r'what is the average open price': self._handle_average_open_price,
-            r'how many price records exist for each asset': self._handle_price_records_per_asset,
-            r'which asset had the highest price fluctuation': self._handle_highest_price_fluctuation,
-            r'what is the earliest price record': self._handle_earliest_price_record,
-            r'(?:are there|any) price records for assets that are not (?:currently )?traded': self._handle_orphaned_price_records,
-            r'what is the most recent price recorded for each asset': self._handle_latest_prices,
-
-            r'how many accounts exist': self._handle_account_count,
-            r'what is the average account balance': self._handle_average_account_balance,
-            r'how many accounts have a negative or zero balance': self._handle_non_positive_balance_accounts,
-            r'which trader has the highest account balance': self._handle_highest_balance_account,
-            r'what are the different account types': self._handle_account_types,
-            r'how many accounts were created before (.+)': self._handle_accounts_before_date,
-            r'(?:are there|any) traders with multiple accounts': self._handle_trader_multiple_accounts,
-
-            r'what is the total number of transactions': self._handle_transaction_count,
-            r'what is the most common transaction type': self._handle_transaction_types,
-            r'what is the highest and lowest transaction amount': self._handle_transaction_amount_range,
-            r'which account has the most transactions': self._handle_account_with_most_transactions,
-            r'(?:are there|any) accounts without any transactions': self._handle_accounts_without_transactions,
-            r'how many transactions occurred on (.+)': self._handle_transactions_on_date,
-            r'what is the total amount transacted': self._handle_total_transacted_amount,
-
-            r'how many orders have been placed': self._handle_order_count,
-            r'what is the most common order type': self._handle_order_types,
-            r'which trade has the highest number of (?:associated )?orders': self._handle_trades_with_most_orders,
-            r'how many orders were placed on (.+)': self._handle_orders_on_date,
-            r'(?:are there|any) orders without a corresponding trade': self._handle_orphaned_orders,
-
-            r'what are the different order statuses': self._handle_order_statuses,
-            r'how many orders have a (.*) status': self._handle_orders_by_status,
-            r'which order took the longest time to complete': self._handle_slow_completion_orders,
-            r'what is the average time between order placement and status change': self._handle_avg_status_change_time,
-            r'(?:are there|any) orders with multiple status updates': self._handle_orders_with_multiple_statuses,
-
-            r'analyze trader activity over time': self._handle_trader_activity_analysis,
-            r'analyze market correlations': self._handle_market_correlations,
-            r'analyze asset price volatility': self._handle_asset_price_volatility,
-            r'analyze trader portfolio diversity': self._handle_trader_portfolio_diversity,
-            r'analyze transaction patterns': self._handle_transaction_patterns,
-            r'analyze account type performance': self._handle_account_type_performance,
-            r'analyze order completion efficiency': self._handle_order_completion_efficiency,
-            r'analyze broker asset distribution': self._handle_broker_asset_distribution,
-            r'identify anomalous trading activity': self._handle_anomalous_trading,
-            r'analyze market peak hours': self._handle_market_peak_hours,
-            r'identify market inefficiencies': self._handle_market_inefficiencies,
-            r'analyze data quality issues': self._handle_data_quality_issues,
-
-            r'(?:show|list|get|display).*(?:etf|etfs)(?:\s+assets)?':
-                lambda: self._handle_asset_type_query('ETF'),
-            r'(?:show|list|get|display).*(?:stock|stocks|equities|shares)(?:\s+assets)?':
-                lambda: self._handle_asset_type_query('Stock'),
-            r'(?:show|list|get|display).*(?:bond|bonds)(?:\s+assets)?':
-                lambda: self._handle_asset_type_query('Bond'),
-            r'(?:show|list|get|display).*(?:crypto|cryptocurrency|cryptocurrencies|bitcoin|ethereum)(?:\s+assets)?':
-                lambda: self._handle_asset_type_query('Cryptocurrency'),
-            r'(?:show|list|get|display).*(?:commodity|commodities)(?:\s+assets)?':
-                lambda: self._handle_asset_type_query('Commodity'),
-            r'(?:show|list|get|display).*(?:future|futures)(?:\s+assets)?':
-                lambda: self._handle_asset_type_query('Futures'),
-            r'(?:show|list|get|display).*(?:option|options)(?:\s+assets)?':
-                lambda: self._handle_asset_type_query('Options'),
-            r'(?:show|list|get|display).*(?:forex|currency|currencies|fx)(?:\s+assets)?':
-                lambda: self._handle_asset_type_query('Forex'),
-            r'(?:show|list|get|display).*(?:reit|reits)(?:\s+assets)?':
-                lambda: self._handle_asset_type_query('REIT'),
-            r'(?:show|list|get|display).*(\w+)\s+assets':
-                lambda match: self._handle_asset_type_query(match.group(1).title())
+            # “assets under management” synonym
+            r"(?:find|show).*(?:broker).*(?:assets under management)":
+                self._handle_broker_with_most_assets
         }
+
+
+        synonym_groups = {
+            # Retain synonyms for non-sensitive handlers
+            self._handle_recent_trades_query: [
+                "What are the latest trades?",
+                "Display the newest trading activity",
+                "List the most recent trades",
+                "Show the most recent trades from the last hour",
+                "List the latest transactions in the market",
+            ],
+            self._handle_recent_transactions_query: [
+                "List the most recent transactions in the market",
+            ],
+            lambda match: self._handle_asset_type_query("Cryptocurrency"): ["List cryptocurrency assets"],
+            lambda match: self._handle_asset_type_query("Stock"): ["What stocks do we have?"],
+            lambda match: self._handle_asset_type_query("Bond"): ["Display all bond assets"],
+            lambda match: self._handle_asset_type_query("ETF"): ["Show all ETF assets"],
+            lambda match: self._handle_asset_type_query("Commodity"): ["Display commodity assets"],
+            self._handle_market_trade_activity: [
+                "Show me trading activity across markets",
+                "List markets by trade volume",
+                "Compare trading activity between markets",
+                "Rank markets by trade count",
+                "Show markets sorted by total trading volume",
+                "Compare trading activity among different markets",
+            ],
+            self._handle_latest_prices: [
+                "Show current asset prices",
+                "What is the most recent price for each asset?",
+                "Display latest price records",
+            ],
+            self._handle_account_types: [
+                "Show me all account types",
+                "List types of accounts and their statistics",
+                "What account types are available?",
+                "Show all available account types",
+                "List account types and their respective counts",
+            ],
+            self._handle_traders_without_trades: [
+                "Which users have no trading activity?",
+                "List inactive traders",
+                "Find traders without any trades",
+                "Identify traders with no trading history",
+                "List traders who have never placed a trade",
+            ],
+            self._handle_most_traded_asset: [
+                "Which asset has the highest trading volume?",
+                "Show me the most popular assets by trade count",
+                "What do traders trade most frequently?",
+                "Which asset has the highest trade volume this month?",
+                "Display the top traded asset over the last 30 days",
+            ],
+            self._handle_highest_trade_quantity: [
+                "Show me the largest trade by quantity",
+                "Which trade had the most units?",
+                "Find the trade with the maximum quantity",
+                "Show the largest trade by unit count",
+            ],
+            self._handle_trade_price_range: [
+                "Show me the price range for trades",
+                "What's the trading price range?",
+                "Give me statistics on trade prices",
+                "Show minimum and maximum trade prices",
+                "Display trade price statistics",
+            ],
+            self._handle_average_account_balance: [
+                "Show me statistics on account balances",
+                "What's the typical balance across accounts?",
+                "Give me a summary of account balances",
+                "Show a summary of account balances across all users",
+                "Display a statistical overview of account balances",
+            ],
+            self._handle_market_trading_hours_summary: [
+                "Show me when markets open and close",
+                "What time do markets operate?",
+                "List the opening and closing times of each market",
+                "Show market hours for all exchanges",
+                "List opening and closing times of each market",
+            ],
+            self._handle_oldest_traders: [
+                "Show me traders with earliest registration",
+                "Who registered first on the platform?",
+                "List traders by registration date, oldest first",
+                "List traders by earliest registration date",
+                "Identify which trader registered first",
+            ],
+            self._handle_transaction_types: [
+                "Show me statistics on transaction types",
+                "List all types of transactions",
+                "What kinds of transactions are recorded?",
+                "Show all transaction types",
+                "List the different transaction categories",
+            ],
+            self._handle_account_with_most_transactions: [
+                "Show me the most active account",
+                "What account performs the most transactions?",
+                "Which account has the highest transaction count?",
+                "Display the account with the highest transaction count",
+                "List the most active account by number of transactions",
+            ],
+            self._handle_order_completion_efficiency: [
+                "How efficiently are orders completed?",
+                "Show me order completion times by type",
+                "Which order types are processed most efficiently?",
+                "List order types sorted by completion speed",
+                "Show which order types are processed most efficiently",
+            ],
+            self._handle_broker_asset_distribution: [
+                "How do brokers distribute their assets?",
+                "Show me asset distribution across brokers",
+                "What types of assets do brokers manage?",
+                "Display how brokers allocate their assets across types",
+            ],
+        }
+
+        self.entity_question_handlers = {}
+        for pattern, handler in self.base_patterns.items():
+            self.entity_question_handlers[pattern] = handler
+        for handler_or_lambda, phrases in synonym_groups.items():
+            for phrase in phrases:
+                regex = rf".*{re.escape(phrase)}.*"
+                self.entity_question_handlers[regex] = handler_or_lambda
 
         self.compiled_entity_patterns = {
             re.compile(pattern, re.IGNORECASE): handler
@@ -153,13 +208,17 @@ class ChatbotEngine:
         }
 
     def process_user_input(self, user_input):
+
+
         try:
             self.current_query = user_input
             self.logger.info(f"Processing input: '{user_input}'")
 
-            entity_handler_result = self._check_entity_question_handlers(user_input)
-            if entity_handler_result:
-                return self._process_response_for_json(entity_handler_result)
+            entity_query_result = self._check_entity_question_handlers(user_input)
+            if entity_query_result is not None:
+                # wrap the raw query result in your normal formatter
+                formatted = self.generate_response(None, entity_query_result)
+                return self._process_response_for_json(formatted)
 
             intent_data = self.intent_classifier.classify_intent(user_input)
             self.logger.info(f"Classified intent: {intent_data}")
@@ -188,11 +247,28 @@ class ChatbotEngine:
             return {"response": f"An error occurred while processing your request: {str(e)}"}
 
     def _check_entity_question_handlers(self, user_input):
+        exact_matches = [
+            "what are the trading hours for markets",
+            "trading hours for markets",
+            "market hours",
+            "when do markets open",
+            "when do markets close"
+        ]
+
+        user_input_lower = user_input.lower()
+
+        if user_input_lower in exact_matches:
+            return self._handle_market_trading_hours_summary()
+
         for pattern, handler in self.compiled_entity_patterns.items():
             match = pattern.search(user_input)
             if match:
-                capture_groups = match.groups()
-                return handler(*capture_groups) if capture_groups else handler()
+                if handler.__name__ == '<lambda>' and handler.__code__.co_argcount == 1:
+                    return handler(match)
+                else:
+                    capture_groups = match.groups()
+                    return handler(*capture_groups) if capture_groups else handler()
+
         return None
 
     def _process_response_for_json(self, response):
@@ -209,15 +285,18 @@ class ChatbotEngine:
                 if 'data' in response:
                     data = response['data']
                     if isinstance(data, list):
-                        max_items = 10
-                        if len(data) > max_items:
-                            processed['data'] = data[:max_items]
-                            if 'response' in processed:
-                                processed['response'] += f" (Showing {max_items} of {len(data)} records)"
+                        processed_data = []
+                        for item in data:
+                            if isinstance(item, dict):
+                                item_dict = {}
+                                for k, v in item.items():
+                                    if k.endswith('_encrypted'):
+                                        continue
+                                    item_dict[k] = self._process_value_for_json(v)
+                                processed_data.append(item_dict)
                             else:
-                                processed['response'] = f"Showing {max_items} of {len(data)} records"
-                        else:
-                            processed['data'] = data
+                                processed_data.append(self._process_value_for_json(item))
+                        processed['data'] = processed_data
                     else:
                         processed['data'] = self._process_value_for_json(data)
 
@@ -230,9 +309,6 @@ class ChatbotEngine:
                 return processed
 
             elif isinstance(response, list):
-                max_items = 10
-                if len(response) > max_items:
-                    return [self._process_value_for_json(item) for item in response[:max_items]]
                 return [self._process_value_for_json(item) for item in response]
 
             else:
@@ -245,40 +321,42 @@ class ChatbotEngine:
     def _process_value_for_json(self, value):
         if value is None:
             return None
-
         if isinstance(value, bytes):
             return "[BINARY DATA]"
-
+        elif isinstance(value, timedelta):
+            total_seconds = value.total_seconds()
+            hours = int(total_seconds // 3600)
+            minutes = int((total_seconds % 3600) // 60)
+            return f"{hours}h {minutes}m"
         elif isinstance(value, dict):
             processed_dict = {}
             for k, v in value.items():
+                if k == 'api_symbol':
+                    continue
                 if k.endswith('_encrypted'):
                     continue
-
                 if isinstance(v, str) and len(v) > 500:
                     processed_dict[k] = v[:497] + "..."
                 else:
                     processed_dict[k] = self._process_value_for_json(v)
 
             return processed_dict
-
         elif isinstance(value, list):
-            max_items = 10
-            if len(value) > max_items:
-                return [self._process_value_for_json(item) for item in value[:max_items]]
             return [self._process_value_for_json(item) for item in value]
+        elif hasattr(value, 'isoformat'):
+            return value.isoformat()
+        elif isinstance(value, decimal.Decimal):
+            return str(value)
 
         elif hasattr(value, '__dict__'):
             return self._process_value_for_json(value.__dict__)
-
-        elif hasattr(value, 'isoformat'):
-            return value.isoformat()
 
         elif isinstance(value, str) and len(value) > 500:
             return value[:497] + "..."
 
         else:
             return value
+
 
     def generate_response(self, intent, query_result, sub_intent=None):
         if not query_result:
@@ -296,7 +374,7 @@ class ChatbotEngine:
 
             table_detected = self._determine_primary_table(query_result[0])
 
-            intent_parts = intent.split('_')
+            intent_parts = intent.split('_') if intent else []
             intent_table = None
             for part in intent_parts:
                 if part in ["assets", "traders", "trades", "markets", "accounts", "orders"]:
@@ -307,13 +385,15 @@ class ChatbotEngine:
 
             display_name = self.table_display_names.get(primary_table, primary_table.capitalize())
 
+            total_records = len(query_result)
+
             if len(query_result) == 1:
                 response_text = f"Here's the {display_name.rstrip('s')} information I found:"
                 data_to_return = query_result[0]
             else:
-                response_text = f"Here are {len(query_result)} {display_name} from the database:"
+                response_text = f"Found {total_records} {display_name} in the database:"
 
-                if len(query_result) <= 10:
+                if total_records <= 10:
                     sample = query_result[0]
                     if "name" in sample:
                         names = [r.get("name", "") for r in query_result if "name" in r]
@@ -423,9 +503,29 @@ class ChatbotEngine:
             "count": count
         }
 
+    def _handle_average_asset_price(self):
+        sql = """
+        SELECT 
+            AVG(ph.close_price) as avg_price
+        FROM assets a
+        JOIN price_history ph ON a.asset_id = ph.asset_id
+        """
+
+        result = self.query_processor.db_connector.execute_query(sql)
+
+        if not result or len(result) == 0:
+            return {"response": "Could not calculate average asset price."}
+
+        avg_price = result[0].get('avg_price', 0)
+
+        return {
+            "response": f"The average price across all assets is ${avg_price:.2f}.",
+            "data": result
+        }
+
     def _handle_traders_without_contact(self, contact_field=None):
         if not contact_field:
-            contact_field = "email"  # Default
+            contact_field = "email"
         result = self.query_processor.get_traders_without_contact(contact_field)
         count = len(result) if result else 0
         return {
@@ -470,27 +570,99 @@ class ChatbotEngine:
         }
 
     def _handle_oldest_traders(self):
-        result = self.query_processor.get_oldest_traders()
+        sql = """
+        SELECT 
+            t.trader_id,
+            t.name,
+            t.email_encrypted,
+            t.phone_encrypted,
+            t.registration_date,
+            DATEDIFF(CURRENT_DATE, t.registration_date) as days_registered,
+            (SELECT COUNT(*) FROM trades tr WHERE tr.trader_id = t.trader_id) as trade_count
+        FROM traders t
+        ORDER BY t.registration_date ASC
+        LIMIT 10
+        """
+
+        result=self.query_processor.db_connector.execute_encrypted_raw(sql)
+
+
         if not result or len(result) == 0:
             return {"response": "No trader registration data found."}
 
         oldest = result[0]
         oldest_date = oldest.get('registration_date')
         oldest_name = oldest.get('name')
+        days_registered = oldest.get('days_registered', 0)
+        years_registered = days_registered / 365 if days_registered else 0
+
+        trader_examples = []
+        for i, trader in enumerate(result[:3]):
+            if i >= 3:
+                break
+            name = trader.get('name')
+            date = trader.get('registration_date')
+            trader_examples.append(f"{name} (since {date})")
+
+        traders_list = ", ".join(trader_examples)
 
         return {
-            "response": f"The oldest registered trader is {oldest_name}, who registered on {oldest_date}. Here are the 10 oldest registrations:",
+            "response": f"The oldest registered trader is {oldest_name}, who registered on {oldest_date} (approximately {years_registered:.1f} years ago). Other longstanding traders include: {traders_list}.",
             "data": result
         }
 
     def _handle_traders_without_trades(self):
-        result = self.query_processor.get_traders_without_trades()
-        count = len(result) if result else 0
-        return {
-            "response": f"Found {count} traders who haven't made any trades yet.",
-            "data": result
-        }
+        sql = """
+        SELECT 
+            t.trader_id,
+            t.name,
+            t.registration_date,
+            DATEDIFF(CURRENT_DATE, t.registration_date) as days_since_registration
+        FROM traders t
+        LEFT JOIN trades tr ON t.trader_id = tr.trader_id
+        WHERE tr.trade_id IS NULL
+        ORDER BY t.registration_date
+        """
 
+        result = self.query_processor.db_connector.execute_query(sql)
+        count = len(result) if result else 0
+
+        processed_results = []
+        for item in result or []:
+            processed_item = {}
+            for key, value in item.items():
+                if key in ['email', 'phone', 'email_encrypted', 'phone_encrypted']:
+                    continue
+                processed_item[key] = self._process_value_for_json(value)
+            processed_results.append(processed_item)
+
+        if count > 0:
+            recent_count = 0
+            old_count = 0
+
+            for trader in processed_results:
+                days = trader.get('days_since_registration', 0)
+                if isinstance(days, str) and 'h' in days:  # Handle already formatted time
+                    days = 0
+                if days <= 30:
+                    recent_count += 1
+                else:
+                    old_count += 1
+
+            response = f"Found {count} traders who haven't made any trades yet. "
+            if recent_count > 0 and old_count > 0:
+                response += f"{recent_count} of them registered within the last 30 days and {old_count} have been registered for more than 30 days without trading."
+            elif recent_count > 0:
+                response += f"All of them registered within the last 30 days."
+            else:
+                response += f"All {count} have been registered for more than 30 days without trading."
+        else:
+            response = "All traders have made at least one trade."
+
+        return {
+            "response": response,
+            "data": processed_results
+        }
     def _handle_traders_multiple_accounts(self):
         result = self.query_processor.get_traders_with_multiple_accounts()
         if not result or len(result) == 0:
@@ -541,14 +713,82 @@ class ChatbotEngine:
             "count": count
         }
 
-    def _handle_market_trading_hours(self):
-        result = self.query_processor.get_market_trading_hours()
+    def _handle_market_trading_hours_summary(self):
+        sql = """
+        SELECT 
+            name, 
+            location,
+            opening_time, 
+            closing_time,
+            TIMEDIFF(closing_time, opening_time) as trading_duration
+        FROM markets
+        ORDER BY location, name
+        """
+
+        result = self.query_processor.db_connector.execute_query(sql)
+
         if not result or len(result) == 0:
             return {"response": "No market trading hours information found."}
 
         count = len(result)
+
+        locations = {}
+        for market in result:
+            loc = market.get('location', 'Unknown')
+            if loc not in locations:
+                locations[loc] = []
+            locations[loc].append(market)
+
+        location_count = len(locations)
+
+        earliest_market = None
+        earliest_time = "23:59:59"
+        latest_market = None
+        latest_time = "00:00:00"
+
+        for market in result:
+            opening = str(market.get('opening_time', '09:00:00'))
+            closing = str(market.get('closing_time', '17:00:00'))
+
+            if opening < earliest_time:
+                earliest_time = opening
+                earliest_market = market
+
+            if closing > latest_time:
+                latest_time = closing
+                latest_market = market
+
+        standard_hours = 0
+        extended_hours = 0
+
+        for market in result:
+            opening = str(market.get('opening_time', '09:00:00'))
+            closing = str(market.get('closing_time', '17:00:00'))
+
+            if opening <= "09:00:00" and closing >= "17:00:00":
+                standard_hours += 1
+            else:
+                extended_hours += 1
+
+        summary = f"Found trading hours for {count} markets across {location_count} locations. "
+
+        if earliest_market:
+            summary += f"The earliest market to open is {earliest_market.get('name')} in {earliest_market.get('location')} at {earliest_market.get('opening_time')}. "
+
+        if latest_market:
+            summary += f"The latest market to close is {latest_market.get('name')} in {latest_market.get('location')} at {latest_market.get('closing_time')}. "
+
+        top_locations = sorted(locations.items(), key=lambda x: len(x[1]), reverse=True)[:3]
+        location_summary = []
+
+        for loc, markets in top_locations:
+            location_summary.append(f"{loc} ({len(markets)} markets)")
+
+        if location_summary:
+            summary += f"Top market locations: {', '.join(location_summary)}."
+
         return {
-            "response": f"Found trading hours for {count} markets:",
+            "response": summary,
             "data": result
         }
 
@@ -615,17 +855,48 @@ class ChatbotEngine:
         }
 
     def _handle_busiest_market(self):
-        result = self.query_processor.get_busiest_market()
+        sql = """
+        SELECT 
+            m.market_id,
+            m.name,
+            m.location,
+            m.opening_time,
+            m.closing_time,
+            COUNT(t.trade_id) as trade_count,
+            SUM(t.quantity * t.price) as total_value,
+            COUNT(DISTINCT t.trader_id) as unique_traders,
+            COUNT(DISTINCT t.asset_id) as unique_assets
+        FROM markets m
+        LEFT JOIN trades t ON m.market_id = t.market_id
+        GROUP BY m.market_id, m.name, m.location, m.opening_time, m.closing_time
+        ORDER BY trade_count DESC
+        LIMIT 1
+        """
+
+        result = self.query_processor.db_connector.execute_query(sql)
+
         if not result or len(result) == 0:
             return {"response": "No market trading activity information found."}
 
-        busiest = result[0]
+        processed_results = []
+        for item in result:
+            processed_item = {}
+            for key, value in item.items():
+                processed_item[key] = self._process_value_for_json(value)
+            processed_results.append(processed_item)
+
+        busiest = processed_results[0]
         market_name = busiest.get('name')
+        location = busiest.get('location', '')
         trade_count = busiest.get('trade_count', 0)
+        total_value = busiest.get('total_value', 0)
+        unique_traders = busiest.get('unique_traders', 0)
+
+        location_str = f" in {location}" if location else ""
 
         return {
-            "response": f"The busiest market is {market_name} with {trade_count} trades.",
-            "data": result
+            "response": f"The busiest market is {market_name}{location_str} with {trade_count} trades totaling ${total_value:.2f} from {unique_traders} different traders.",
+            "data": processed_results
         }
 
     def _handle_broker_count(self):
@@ -660,18 +931,37 @@ class ChatbotEngine:
         }
 
     def _handle_broker_with_most_assets(self):
-        result = self.query_processor.get_broker_with_most_assets()
+        sql = """
+        SELECT 
+            b.broker_id,
+            b.name,
+            b.contact_email_encrypted,
+            b.license_number_encrypted,
+            COUNT(a.asset_id) as asset_count,
+            GROUP_CONCAT(DISTINCT a.asset_type) as asset_types
+        FROM brokers b
+        LEFT JOIN assets a ON b.broker_id = a.broker_id
+        GROUP BY b.broker_id, b.name
+        ORDER BY asset_count DESC
+        LIMIT 10
+        """
+
+        result = self.query_processor.db_connector.execute_encrypted_raw(sql)
+
+
         if not result or len(result) == 0:
             return {"response": "No broker asset management information found."}
 
         top_broker = result[0]
         broker_name = top_broker.get('name')
         asset_count = top_broker.get('asset_count', 0)
+        asset_types = top_broker.get('asset_types', '').split(',')
+        unique_types = len(set(asset_types))
 
         return {
-                "response": f"The broker managing the most assets is {broker_name} with {asset_count} assets.",
-                "data": result
-            }
+            "response": f"The broker managing the most assets is {broker_name} with {asset_count} assets across {unique_types} different asset types.",
+            "data": result
+        }
 
     def _handle_average_assets_per_broker(self):
         result = self.query_processor.get_average_assets_per_broker()
@@ -693,7 +983,6 @@ class ChatbotEngine:
             "data": result
             }
 
-        # Asset handlers
     def _handle_asset_count(self):
         result = self.query_processor.get_asset_count()
         count = result[0].get('count', 0) if result and len(result) > 0 else 0
@@ -723,17 +1012,39 @@ class ChatbotEngine:
         }
 
     def _handle_most_traded_asset(self):
-        result = self.query_processor.get_most_traded_asset()
+        sql = """
+        SELECT 
+            a.asset_id,
+            a.name,
+            a.asset_type,
+            b.name as broker_name,
+            COUNT(t.trade_id) as trade_count,
+            SUM(t.quantity) as total_quantity,
+            SUM(t.quantity * t.price) as total_value,
+            COUNT(DISTINCT t.trader_id) as unique_traders
+        FROM assets a
+        JOIN trades t ON a.asset_id = t.asset_id
+        LEFT JOIN brokers b ON a.broker_id = b.broker_id
+        GROUP BY a.asset_id, a.name, a.asset_type, b.name
+        ORDER BY trade_count DESC
+        LIMIT 10
+        """
+
+        result = self.query_processor.db_connector.execute_query(sql)
+
         if not result or len(result) == 0:
             return {"response": "No asset trading information found."}
 
         top_asset = result[0]
         asset_name = top_asset.get('name')
         asset_type = top_asset.get('asset_type')
+        broker_name = top_asset.get('broker_name', 'Unknown')
         trade_count = top_asset.get('trade_count', 0)
+        total_value = top_asset.get('total_value', 0)
+        unique_traders = top_asset.get('unique_traders', 0)
 
         return {
-            "response": f"The most commonly traded asset is {asset_name} ({asset_type}) with {trade_count} trades.",
+            "response": f"The most commonly traded asset is {asset_name} ({asset_type}) managed by {broker_name} with {trade_count} trades worth ${total_value:.2f} by {unique_traders} different traders.",
             "data": result
         }
 
@@ -765,7 +1076,6 @@ class ChatbotEngine:
             "data": result
         }
 
-        # Trade handlers
     def _handle_trade_count(self):
         result = self.query_processor.get_trade_count()
         count = result[0].get('count', 0) if result and len(result) > 0 else 0
@@ -775,7 +1085,26 @@ class ChatbotEngine:
         }
 
     def _handle_highest_trade_quantity(self):
-        result = self.query_processor.get_highest_trade_quantity()
+        sql = """
+        SELECT 
+            t.*,
+            a.name as asset_name,
+            a.asset_type,
+            tr.name as trader_name,
+            tr.email as trader_email,
+            m.name as market_name,
+            m.location as market_location,
+            (t.quantity * t.price) as trade_value
+        FROM trades t
+        JOIN assets a ON t.asset_id = a.asset_id
+        JOIN traders tr ON t.trader_id = tr.trader_id
+        JOIN markets m ON t.market_id = m.market_id
+        ORDER BY t.quantity DESC
+        LIMIT 10
+        """
+
+        result = self.query_processor.db_connector.execute_query(sql)
+
         if not result or len(result) == 0:
             return {"response": "No trade quantity information found."}
 
@@ -783,37 +1112,82 @@ class ChatbotEngine:
         trader_name = top_trade.get('trader_name')
         asset_name = top_trade.get('asset_name')
         quantity = top_trade.get('quantity', 0)
+        price = top_trade.get('price', 0)
+        trade_value = top_trade.get('trade_value', 0)
+        trade_date = top_trade.get('trade_date')
+        market_name = top_trade.get('market_name')
 
         return {
-            "response": f"The highest quantity traded was {quantity} units of {asset_name} by {trader_name}.",
+            "response": f"The highest quantity traded was {quantity} units of {asset_name} by {trader_name} on {trade_date} at {market_name}, worth ${trade_value:.2f} total.",
             "data": result
         }
 
     def _handle_trade_price_range(self):
-        result = self.query_processor.get_trade_price_range()
+        sql = """
+        SELECT 
+            MIN(price) as min_price,
+            MAX(price) as max_price,
+            AVG(price) as avg_price,
+            STDDEV(price) as price_stddev,
+            (SELECT a.name FROM trades t JOIN assets a ON t.asset_id = a.asset_id WHERE t.price = (SELECT MIN(price) FROM trades)) as min_price_asset,
+            (SELECT a.name FROM trades t JOIN assets a ON t.asset_id = a.asset_id WHERE t.price = (SELECT MAX(price) FROM trades)) as max_price_asset,
+            COUNT(*) as total_trades,
+            SUM(quantity * price) as total_value
+        FROM trades
+        """
+
+        result = self.query_processor.db_connector.execute_query(sql)
+
         if not result or len(result) == 0:
             return {"response": "No trade price information found."}
 
         min_price = result[0].get('min_price', 0)
         max_price = result[0].get('max_price', 0)
         avg_price = result[0].get('avg_price', 0)
+        min_asset = result[0].get('min_price_asset', 'Unknown')
+        max_asset = result[0].get('max_price_asset', 'Unknown')
+        total_trades = result[0].get('total_trades', 0)
+
+        price_range = max_price - min_price
+        range_percent = (price_range / min_price) * 100 if min_price > 0 else 0
 
         return {
-            "response": f"Trade price range: lowest ${min_price:.2f}, highest ${max_price:.2f}, average ${avg_price:.2f}.",
+            "response": f"Trade price analysis across {total_trades} trades: lowest ${min_price:.2f} ({min_asset}), highest ${max_price:.2f} ({max_asset}), average ${avg_price:.2f}. The price range of ${price_range:.2f} represents a {range_percent:.1f}% spread from lowest to highest.",
             "data": result
         }
 
     def _handle_trader_most_trades(self):
-        result = self.query_processor.get_trader_most_trades()
+        sql = """
+        SELECT 
+            tr.trader_id,
+            tr.name,
+            tr.email_encrypted,
+            COUNT(t.trade_id) as trade_count,
+            SUM(t.quantity * t.price) as total_value,
+            MIN(t.trade_date) as first_trade_date,
+            MAX(t.trade_date) as last_trade_date,
+            COUNT(DISTINCT t.asset_id) as unique_assets_traded
+        FROM traders tr
+        JOIN trades t ON tr.trader_id = t.trader_id
+        GROUP BY tr.trader_id, tr.name
+        ORDER BY trade_count DESC
+        LIMIT 10
+        """
+
+        result=self.query_processor.db_connector.execute_encrypted_raw(sql)
+
+
         if not result or len(result) == 0:
             return {"response": "No trader trading information found."}
 
         top_trader = result[0]
         trader_name = top_trader.get('name')
         trade_count = top_trader.get('trade_count', 0)
+        total_value = top_trader.get('total_value', 0)
+        unique_assets = top_trader.get('unique_assets_traded', 0)
 
         return {
-            "response": f"The trader who conducted the most trades is {trader_name} with {trade_count} trades.",
+            "response": f"The trader who conducted the most trades is {trader_name} with {trade_count} trades totaling ${total_value:.2f} across {unique_assets} different assets.",
             "data": result
         }
 
@@ -860,23 +1234,53 @@ class ChatbotEngine:
         }
 
     def _handle_market_trade_activity(self):
-        result = self.query_processor.get_market_trade_activity()
+        sql = """
+        SELECT 
+            m.market_id,
+            m.name,
+            m.location,
+            m.opening_time,
+            m.closing_time,
+            COUNT(t.trade_id) as trade_count,
+            SUM(t.quantity * t.price) as total_value,
+            COUNT(DISTINCT t.trader_id) as unique_traders,
+            COUNT(DISTINCT t.asset_id) as unique_assets,
+            MIN(t.trade_date) as earliest_trade,
+            MAX(t.trade_date) as latest_trade
+        FROM markets m
+        LEFT JOIN trades t ON m.market_id = t.market_id
+        GROUP BY m.market_id, m.name, m.location, m.opening_time, m.closing_time
+        ORDER BY trade_count DESC
+        """
+
+        result = self.query_processor.db_connector.execute_query(sql)
+
         if not result or len(result) == 0:
             return {"response": "No market trading activity information found."}
 
+        processed_results = []
+        for item in result:
+            processed_item = {}
+            for key, value in item.items():
+                processed_item[key] = self._process_value_for_json(value)
+            processed_results.append(processed_item)
+
         markets = []
-        for item in result[:5]:
+        for item in processed_results[:5]:
             market_name = item.get('name')
             trade_count = item.get('trade_count', 0)
-            markets.append(f"{market_name} ({trade_count} trades)")
+            location = item.get('location', '')
+            if location:
+                markets.append(f"{market_name} in {location} ({trade_count} trades)")
+            else:
+                markets.append(f"{market_name} ({trade_count} trades)")
 
         markets_str = ", ".join(markets)
 
         return {
             "response": f"Market trading activity: {markets_str}.",
-            "data": result
+            "data": processed_results
         }
-
     def _handle_average_open_price(self):
         result = self.query_processor.get_average_open_price()
         if not result or len(result) == 0:
@@ -949,21 +1353,59 @@ class ChatbotEngine:
         }
 
     def _handle_latest_prices(self):
-        result = self.query_processor.get_latest_prices()
+        sql = """
+        SELECT 
+            a.asset_id,
+            a.name,
+            a.asset_type,
+            b.name as broker_name,
+            p.price_date,
+            p.open_price,
+            p.close_price,
+            ((p.close_price - p.open_price) / p.open_price * 100) as daily_change_percent
+        FROM assets a
+        JOIN (
+            SELECT asset_id, MAX(price_date) as max_date
+            FROM price_history
+            GROUP BY asset_id
+        ) latest ON a.asset_id = latest.asset_id
+        JOIN price_history p ON latest.asset_id = p.asset_id AND latest.max_date = p.price_date
+        LEFT JOIN brokers b ON a.broker_id = b.broker_id
+        ORDER BY daily_change_percent DESC
+        """
+
+        result = self.query_processor.db_connector.execute_query(sql)
+
         if not result or len(result) == 0:
             return {"response": "No latest price information found."}
 
         assets = []
-        for item in result[:5]:
+        gainers = []
+        losers = []
+
+        for item in result:
             asset_name = item.get('name')
             price = item.get('close_price', 0)
-            date = item.get('price_date')
-            assets.append(f"{asset_name}: ${price:.2f} ({date})")
+            change_pct = item.get('daily_change_percent', 0)
+
+            if len(assets) < 5:
+                assets.append(f"{asset_name}: ${price:.2f}")
+
+            if change_pct > 0 and len(gainers) < 3:
+                gainers.append(f"{asset_name} (+{change_pct:.2f}%)")
+            elif change_pct < 0 and len(losers) < 3:
+                losers.append(f"{asset_name} ({change_pct:.2f}%)")
 
         assets_str = ", ".join(assets)
+        response = f"Latest prices: {assets_str}."
+
+        if gainers:
+            response += f" Top gainers: {', '.join(gainers)}."
+        if losers:
+            response += f" Top losers: {', '.join(losers)}."
 
         return {
-            "response": f"Latest prices: {assets_str}.",
+            "response": response,
             "data": result
         }
 
@@ -983,11 +1425,12 @@ class ChatbotEngine:
             sql = """
             SELECT 
                 t.trader_id, 
-                t.name, 
-                t.email, 
+                t.name as trader_name, 
+                t.email_encrypted as email, 
                 a.account_id, 
-                a.balance, 
-                a.account_type
+                a.balance_encrypted as balance, 
+                a.account_type,
+                a.creation_date
             FROM traders t
             JOIN accounts a ON t.trader_id = a.trader_id
             ORDER BY a.balance DESC
@@ -995,20 +1438,11 @@ class ChatbotEngine:
             """
 
             self.logger.info(f"Executing highest balance SQL: {sql}")
-
-            if hasattr(self, 'db_connector'):
-                result = self.db_connector.execute_query(sql)
-            elif hasattr(self.query_processor, 'db_connector'):
-                result = self.query_processor.db_connector.execute_query(sql)
-            else:
-                self.logger.error("No database connector available")
-                return {"response": "System error: No database connector available."}
-
-            self.logger.info(f"Query result: {result}")
+            result = self.query_processor.db_connector.execute_query(sql)
 
             if result and len(result) > 0:
                 top_trader = result[0]
-                trader_name = top_trader.get('name', 'Unknown')
+                trader_name = top_trader.get('trader_name', 'Unknown')
                 balance = top_trader.get('balance', 0)
 
                 return {
@@ -1024,19 +1458,83 @@ class ChatbotEngine:
             return {
                 "response": f"Could not retrieve trader balance information due to an error: {str(e)}"
             }
+
     def _handle_average_account_balance(self):
-        result = self.query_processor.get_average_account_balance()
-        if not result or len(result) == 0:
+        # 1) fetch balances + trader names
+        rows = self.query_processor.db_connector.execute_query(
+            """
+            SELECT a.balance_encrypted AS balance_encrypted,
+                   t.name              AS trader_name
+            FROM accounts a
+                     JOIN traders t ON a.trader_id = t.trader_id
+            """
+        )
+        if not rows:
             return {"response": "Could not calculate average account balance."}
 
-        avg_balance = result[0].get('avg_balance', 0)
-        min_balance = result[0].get('min_balance', 0)
-        max_balance = result[0].get('max_balance', 0)
-        total_balance = result[0].get('total_balance', 0)
+        # 2) grab CKKS contexts
+        he_ctx = self.query_processor.encryption_manager.ckks_context
+        sec_ctx = self.query_processor.encryption_manager.secret_context
+
+        # 3) sum and collect plaintexts
+        total_vec = None
+        plaintext_vals = []
+        trader_names = []
+
+        for row in rows:
+            ct = row["balance_encrypted"]
+            if ct is None:
+                continue
+
+            vec = ts.ckks_vector_from(he_ctx, ct)
+            total_vec = vec if total_vec is None else total_vec + vec
+
+            plain = vec.decrypt()[0]/he_ctx.global_scale
+            plaintext_vals.append(plain)
+            trader_names.append(row["trader_name"])
+
+        count = len(plaintext_vals)
+        if count == 0:
+            return {"response": "No encrypted balances found."}
+
+        # 4) average under CKKS, then decrypt
+        avg_vec = total_vec * (1.0 / count)
+        avg_plain = avg_vec.decrypt()[0]/he_ctx.global_scale
+
+        # 5) compute stats in Python
+        min_balance = min(plaintext_vals)
+        max_balance = max(plaintext_vals)
+        total_balance = sum(plaintext_vals)
+
+        negative_count = sum(1 for v in plaintext_vals if v < 0)
+        negative_pct = (negative_count / count) * 100
+
+        idx_high = plaintext_vals.index(max_balance)
+        highest_trader = trader_names[idx_high]
+
+        # 6) format exactly as before
+        response = (
+            f"Account balance summary: "
+            f"average ${avg_plain:.2f}, "
+            f"minimum ${min_balance:.2f}, "
+            f"maximum ${max_balance:.2f} held by {highest_trader}, "
+            f"total ${total_balance:.2f} across {count} accounts. "
+            f"{negative_count} accounts ({negative_pct:.1f}%) have negative balances."
+        )
+
+        data = [{
+            "avg_balance": avg_plain,
+            "min_balance": min_balance,
+            "max_balance": max_balance,
+            "total_balance": total_balance,
+            "total_accounts": count,
+            "negative_balance_count": negative_count,
+            "highest_balance_trader": highest_trader,
+        }]
 
         return {
-            "response": f"Account balances: average ${avg_balance:.2f}, minimum ${min_balance:.2f}, maximum ${max_balance:.2f}, total ${total_balance:.2f}.",
-            "data": result
+            "response": response,
+            "data": data
         }
 
     def _handle_non_positive_balance_accounts(self):
@@ -1070,23 +1568,55 @@ class ChatbotEngine:
         }
 
     def _handle_account_types(self):
-        result = self.query_processor.get_account_types()
-        if not result or len(result) == 0:
-            return {"response": "No account type information found."}
+        # 1) fetch every encrypted balance
+        rows = self.query_processor.db_connector.execute_query(
+            "SELECT account_type, balance_encrypted FROM accounts"
+        )
+        if not rows:
+            return {"response": "No account data found."}
 
-        types = []
-        for item in result:
-            account_type = item.get('account_type')
-            count = item.get('count', 0)
-            avg_balance = item.get('avg_balance', 0)
-            types.append(f"{account_type} ({count} accounts, avg ${avg_balance:.2f})")
+        # 2) group the ciphertexts
+        groups = defaultdict(list)
+        for row in rows:
+            acct_type = row["account_type"]
+            cipher = row["balance_encrypted"]
+            if cipher is not None:
+                groups[acct_type].append(cipher)
 
-        types_str = ", ".join(types)
+        # 3) grab your CKKS contexts
+        he_ctx = self.query_processor.encryption_manager.ckks_context
+        sec_ctx = self.query_processor.encryption_manager.secret_context
 
-        return {
-            "response": f"Account types: {types_str}.",
-            "data": result
-        }
+        results = []
+        for acct_type, ciphers in groups.items():
+            # homomorphic sum
+            total_vec = None
+            for ct in ciphers:
+                vec = ts.ckks_vector_from(he_ctx, ct)
+                total_vec = vec if total_vec is None else total_vec + vec
+
+            # average under CKKS
+            avg_vec = total_vec * (1.0 / len(ciphers))
+            avg_plain = avg_vec.decrypt()[0]/he_ctx.global_scale
+
+            # decrypt each one for min/max/total
+            balances = []
+            for ct in ciphers:
+                vec = ts.ckks_vector_from(he_ctx, ct)
+                plain = vec.decrypt()[0]/he_ctx.global_scale
+                balances.append(plain)
+
+            results.append({
+                "account_type": acct_type,
+                "count": len(ciphers),
+                "avg_balance": avg_plain,
+                "min_balance": min(balances),
+                "max_balance": max(balances),
+                "total_balance": sum(balances),
+            })
+
+        # pass the raw dicts to your existing generate_response
+        return results
 
     def _handle_accounts_before_date(self, date_str):
         result = self.query_processor.get_accounts_before_date(date_str)
@@ -1131,7 +1661,21 @@ class ChatbotEngine:
         }
 
     def _handle_transaction_types(self):
-        result = self.query_processor.get_transaction_types()
+        sql = """
+        SELECT 
+            transaction_type,
+            COUNT(*) as count,
+            SUM(amount) as total_amount,
+            AVG(amount) as avg_amount,
+            MIN(transaction_date) as earliest_date,
+            MAX(transaction_date) as latest_date
+        FROM transactions
+        GROUP BY transaction_type
+        ORDER BY count DESC
+        """
+
+        result = self.query_processor.db_connector.execute_query(sql)
+
         if not result or len(result) == 0:
             return {"response": "No transaction type information found."}
 
@@ -1139,12 +1683,19 @@ class ChatbotEngine:
         for item in result:
             trans_type = item.get('transaction_type')
             count = item.get('count', 0)
-            types.append(f"{trans_type} ({count} transactions)")
+            total = item.get('total_amount', 0)
+            sign = "+" if total >= 0 else ""
+            types.append(f"{trans_type}: {count} transactions (${sign}{total:.2f} total)")
 
         types_str = ", ".join(types)
 
+        most_common = result[0].get('transaction_type') if result else "None"
+        most_common_count = result[0].get('count', 0) if result else 0
+
+        total_transactions = sum(item.get('count', 0) for item in result)
+
         return {
-            "response": f"Transaction types: {types_str}.",
+            "response": f"Found {len(result)} transaction types across {total_transactions} total transactions: {types_str}. The most common type is {most_common} ({most_common_count} transactions).",
             "data": result
         }
 
@@ -1164,18 +1715,47 @@ class ChatbotEngine:
         }
 
     def _handle_account_with_most_transactions(self):
-        result = self.query_processor.get_account_with_most_transactions()
+        sql = """
+              SELECT a.account_id, \
+                     a.account_type, \
+                     ANY_VALUE(a.balance_encrypted)             AS balance, \
+                     a.creation_date, \
+                     t.trader_id, \
+                     t.name                                     AS trader_name, \
+                     ANY_VALUE(t.email_encrypted)               AS trader_email, \
+                     COUNT(tr.transaction_id)                   AS transaction_count, \
+                     SUM(tr.amount)                             AS total_amount, \
+                     MIN(tr.transaction_date)                   AS earliest_transaction, \
+                     MAX(tr.transaction_date)                   AS latest_transaction, \
+                     COUNT(DISTINCT DATE (tr.transaction_date)) AS active_days
+              FROM accounts a
+                       JOIN traders t ON a.trader_id = t.trader_id
+                       JOIN transactions tr ON a.account_id = tr.account_id
+              GROUP BY a.account_id, \
+                       a.account_type, \
+                       a.creation_date, \
+                       t.trader_id, \
+                       t.name
+              ORDER BY transaction_count DESC LIMIT 10 \
+              """
+        return self.query_processor.db_connector.execute_encrypted_raw(sql)
+
         if not result or len(result) == 0:
             return {"response": "No account transaction information found."}
 
         top_account = result[0]
         account_id = top_account.get('account_id')
+        account_type = top_account.get('account_type')
         trader_name = top_account.get('trader_name')
         trans_count = top_account.get('transaction_count', 0)
         total_amount = top_account.get('total_amount', 0)
+        active_days = top_account.get('active_days', 0)
+        latest = top_account.get('latest_transaction')
+
+        avg_per_day = trans_count / active_days if active_days > 0 else 0
 
         return {
-            "response": f"Account #{account_id} belonging to {trader_name} has the most transactions with {trans_count} transactions totaling ${total_amount:.2f}.",
+            "response": f"Account #{account_id} ({account_type}) belonging to {trader_name} has the most transactions with {trans_count} transactions totaling ${total_amount:.2f} over {active_days} active trading days (avg {avg_per_day:.1f} per day). Most recent activity: {latest}.",
             "data": result
         }
 
@@ -1435,7 +2015,29 @@ class ChatbotEngine:
         }
 
     def _handle_order_completion_efficiency(self):
-        result = self.query_processor.analyze_order_completion_efficiency()
+        sql = """
+        SELECT 
+            o.order_type,
+            COUNT(o.order_id) as total_orders,
+            AVG(TIMESTAMPDIFF(MINUTE, o.order_date, completed.status_date)) as avg_completion_time,
+            MIN(TIMESTAMPDIFF(MINUTE, o.order_date, completed.status_date)) as min_completion_time,
+            MAX(TIMESTAMPDIFF(MINUTE, o.order_date, completed.status_date)) as max_completion_time,
+            COUNT(DISTINCT t.trader_id) as unique_traders,
+            COUNT(DISTINCT t.asset_id) as unique_assets,
+            COUNT(DISTINCT t.market_id) as unique_markets
+        FROM orders o
+        JOIN trades t ON o.trade_id = t.trade_id
+        JOIN (
+            SELECT order_id, status_date
+            FROM order_status
+            WHERE status = 'Completed'
+        ) completed ON o.order_id = completed.order_id
+        GROUP BY o.order_type
+        ORDER BY avg_completion_time
+        """
+
+        result = self.query_processor.db_connector.execute_query(sql)
+
         if not result or len(result) == 0:
             return {"response": "No order completion efficiency data available for analysis."}
 
@@ -1444,25 +2046,78 @@ class ChatbotEngine:
         order_type = fastest.get('order_type', 'Unknown')
         avg_time = fastest.get('avg_completion_time', 0)
 
+
+        slowest = result[-1] if result and len(result) > 1 else {}
+        slowest_type = slowest.get('order_type', 'Unknown')
+        slowest_time = slowest.get('avg_completion_time', 0)
+
+        fastest_time_formatted = f"{int(avg_time // 60)}h {int(avg_time % 60)}m" if avg_time >= 60 else f"{int(avg_time)}m"
+        slowest_time_formatted = f"{int(slowest_time // 60)}h {int(slowest_time % 60)}m" if slowest_time >= 60 else f"{int(slowest_time)}m"
+
+        efficiency_data = []
+        for item in result:
+            order_type = item.get('order_type')
+            avg_min = item.get('avg_completion_time', 0)
+            time_formatted = f"{int(avg_min // 60)}h {int(avg_min % 60)}m" if avg_min >= 60 else f"{int(avg_min)}m"
+            efficiency_data.append(f"{order_type}: {time_formatted}")
+
+        efficiency_str = ", ".join(efficiency_data)
+
         return {
-            "response": f"Analyzed completion efficiency for {types} order types. The most efficient is {order_type} with an average completion time of {avg_time:.1f} minutes.",
+            "response": f"Order completion efficiency by type: {efficiency_str}. The most efficient is {order_type} with average completion time of {fastest_time_formatted}, while {slowest_type} is the slowest at {slowest_time_formatted}.",
             "data": result
         }
 
     def _handle_broker_asset_distribution(self):
-        result = self.query_processor.analyze_broker_asset_distribution()
+        sql = """
+        SELECT 
+            b.broker_id,
+            b.name,
+            COUNT(a.asset_id) as total_assets,
+            SUM(CASE WHEN a.asset_type = 'Stock' THEN 1 ELSE 0 END) as stocks,
+            SUM(CASE WHEN a.asset_type = 'ETF' THEN 1 ELSE 0 END) as etfs,
+            SUM(CASE WHEN a.asset_type = 'Bond' THEN 1 ELSE 0 END) as bonds,
+            SUM(CASE WHEN a.asset_type = 'Cryptocurrency' THEN 1 ELSE 0 END) as crypto,
+            SUM(CASE WHEN a.asset_type = 'Commodity' THEN 1 ELSE 0 END) as commodities,
+            SUM(CASE WHEN a.asset_type = 'Options' THEN 1 ELSE 0 END) as options,
+            SUM(CASE WHEN a.asset_type = 'Futures' THEN 1 ELSE 0 END) as futures,
+            b.contact_email
+        FROM brokers b
+        LEFT JOIN assets a ON b.broker_id = a.broker_id
+        GROUP BY b.broker_id, b.name, b.contact_email
+        ORDER BY total_assets DESC
+        """
+
+        result = self.query_processor.db_connector.execute_query(sql)
+
         if not result or len(result) == 0:
             return {"response": "No broker asset distribution data available for analysis."}
 
         brokers = len(result)
         most_diverse = result[0] if result else {}
         broker_name = most_diverse.get('name', 'Unknown')
+        total_assets = most_diverse.get('total_assets', 0)
         stocks = most_diverse.get('stocks', 0)
         etfs = most_diverse.get('etfs', 0)
         crypto = most_diverse.get('crypto', 0)
 
+        for broker in result:
+            asset_types = ['stocks', 'etfs', 'bonds', 'crypto', 'commodities', 'options', 'futures']
+            non_zero_types = sum(1 for asset_type in asset_types if broker.get(asset_type, 0) > 0)
+            broker['diversity_score'] = non_zero_types
+
+        most_diverse_broker = max(result, key=lambda x: x.get('diversity_score', 0))
+        diverse_name = most_diverse_broker.get('name')
+        diverse_score = most_diverse_broker.get('diversity_score', 0)
+
+        asset_distribution = f"{stocks} stocks, {etfs} ETFs, {crypto} cryptocurrencies"
+        if most_diverse.get('bonds', 0) > 0:
+            asset_distribution += f", {most_diverse.get('bonds')} bonds"
+        if most_diverse.get('commodities', 0) > 0:
+            asset_distribution += f", {most_diverse.get('commodities')} commodities"
+
         return {
-            "response": f"Analyzed asset distribution for {brokers} brokers. {broker_name} has the most diverse portfolio with {stocks} stocks, {etfs} ETFs, and {crypto} cryptocurrencies.",
+            "response": f"Analyzed asset distribution for {brokers} brokers. {broker_name} manages the most assets ({total_assets} total: {asset_distribution}). {diverse_name} has the most diverse portfolio with {diverse_score} different asset types.",
             "data": result
         }
 
@@ -1482,21 +2137,21 @@ class ChatbotEngine:
             "response": f"Identified {count} potentially anomalous trades. The most significant is {trader_name} trading {asset_name} with a value of ${trade_value:.2f}.",
             "data": result
         }
-
-    def _handle_recent_trades_query(self):
+    def _handle_recent_transactions_query(self):
         try:
             sql = """
             SELECT 
-                t.*,
-                tr.name as trader_name,
-                a.name as asset_name,
-                m.name as market_name
-            FROM trades t
-            JOIN traders tr ON t.trader_id = tr.trader_id
-            JOIN assets a ON t.asset_id = a.asset_id
-            JOIN markets m ON t.market_id = m.market_id
-            ORDER BY t.trade_date DESC
-            LIMIT 10
+            tr.transaction_id,
+            tr.transaction_date,
+            tr.transaction_type,
+            tr.amount,
+            a.account_type,
+            t.name as trader_name
+            FROM transactions tr
+            JOIN accounts a   ON tr.account_id = a.account_id
+            JOIN traders t    ON a.trader_id   = t.trader_id
+            ORDER BY tr.transaction_date DESC
+            LIMIT 20
             """
 
             result = self.query_processor.db_connector.execute_query(sql)
@@ -1505,8 +2160,69 @@ class ChatbotEngine:
                 count = len(result)
                 latest_date = result[0].get('trade_date')
 
+                recent_trades = []
+                for trade in result[:3]:
+                    trader = trade.get('trader_name')
+                    asset = trade.get('asset_name')
+                    price = trade.get('price', 0)
+                    quantity = trade.get('quantity', 0)
+                    recent_trades.append(f"{trader} traded {quantity} {asset} at ${price:.2f}")
+
+                trade_examples = ", ".join(recent_trades)
+
                 return {
-                    "response": f"Found {count} recent trades. Most recent trade was on {latest_date}.",
+                    "response": f"Found {count} recent trades. Most recent trade was on {latest_date}. Examples include: {trade_examples}.",
+                    "data": result
+                }
+            else:
+                return {
+                    "response": "No trade information found in the database."
+                }
+        except Exception as e:
+            self.logger.error(f"Error in recent trades query: {e}")
+            return {
+                "response": "Could not retrieve recent trades due to an error."
+            }
+    def _handle_recent_trades_query(self):
+        try:
+            sql = """
+            SELECT 
+                t.trade_id,
+                t.trade_date,
+                t.quantity,
+                t.price,
+                (t.quantity * t.price) as trade_value,
+                tr.name as trader_name,
+                a.name as asset_name,
+                a.asset_type,
+                m.name as market_name,
+                m.location as market_location
+            FROM trades t
+            JOIN traders tr ON t.trader_id = tr.trader_id
+            JOIN assets a ON t.asset_id = a.asset_id
+            JOIN markets m ON t.market_id = m.market_id
+            ORDER BY t.trade_date DESC
+            LIMIT 20
+            """
+
+            result = self.query_processor.db_connector.execute_query(sql)
+
+            if result and len(result) > 0:
+                count = len(result)
+                latest_date = result[0].get('trade_date')
+
+                recent_trades = []
+                for trade in result[:3]:
+                    trader = trade.get('trader_name')
+                    asset = trade.get('asset_name')
+                    price = trade.get('price', 0)
+                    quantity = trade.get('quantity', 0)
+                    recent_trades.append(f"{trader} traded {quantity} {asset} at ${price:.2f}")
+
+                trade_examples = ", ".join(recent_trades)
+
+                return {
+                    "response": f"Found {count} recent trades. Most recent trade was on {latest_date}. Examples include: {trade_examples}.",
                     "data": result
                 }
             else:
@@ -1526,15 +2242,22 @@ class ChatbotEngine:
 
                 asset_type_mappings = {
                     'etf': 'ETF',
+                    'etfs': 'ETF',
                     'stock': 'Stock',
+                    'stocks': 'Stock',
                     'equity': 'Stock',
+                    'equities': 'Stock',
                     'share': 'Stock',
+                    'shares': 'Stock',
                     'bond': 'Bond',
+                    'bonds': 'Bond',
                     'crypto': 'Cryptocurrency',
                     'cryptocurrency': 'Cryptocurrency',
+                    'cryptocurrencies': 'Cryptocurrency',
                     'bitcoin': 'Cryptocurrency',
                     'ethereum': 'Cryptocurrency',
                     'commodity': 'Commodity',
+                    'commodities': 'Commodity',
                     'future': 'Futures',
                     'futures': 'Futures',
                     'option': 'Options',
@@ -1557,10 +2280,17 @@ class ChatbotEngine:
             self.logger.info(f"Querying for asset type: {asset_type}")
 
             sql = f"""
-            SELECT * FROM assets 
-            WHERE asset_type = '{asset_type}'
-            ORDER BY asset_id
-            LIMIT 50
+            SELECT 
+                a.asset_id, 
+                a.name, 
+                a.asset_type, 
+                b.name as broker_name,
+                b.contact_email as broker_contact
+            FROM assets a
+            LEFT JOIN brokers b ON a.broker_id = b.broker_id
+            WHERE a.asset_type = '{asset_type}'
+            ORDER BY a.name
+            LIMIT 20
             """
 
             self.logger.info(f"Executing asset type query: {sql}")
@@ -1568,24 +2298,35 @@ class ChatbotEngine:
 
             if result and len(result) > 0:
                 count = len(result)
+
+                asset_names = [r.get('name', '') for r in result[:5]]
+                examples = ", ".join(asset_names)
+
                 return {
-                    "response": f"Found {count} {asset_type} assets in the database:",
+                    "response": f"Found {count} {asset_type} assets in the database. Examples include: {examples}.",
                     "data": result
                 }
             else:
                 sql = f"""
-                SELECT * FROM assets 
-                WHERE asset_type LIKE '%{asset_type}%'
-                ORDER BY asset_id
-                LIMIT 50
+                SELECT 
+                    a.asset_id, 
+                    a.name, 
+                    a.asset_type, 
+                    b.name as broker_name,
+                    b.contact_email as broker_contact
+                FROM assets a
+                LEFT JOIN brokers b ON a.broker_id = b.broker_id
+                WHERE a.asset_type LIKE '%{asset_type}%'
+                ORDER BY a.name
+                LIMIT 20
                 """
-                self.logger.info(f"Executing flexible asset type query: {sql}")
+
                 result = self.query_processor.db_connector.execute_query(sql)
 
                 if result and len(result) > 0:
                     count = len(result)
                     return {
-                        "response": f"Found {count} {asset_type} assets in the database:",
+                        "response": f"Found {count} assets similar to {asset_type} type in the database.",
                         "data": result
                     }
                 else:
@@ -1664,3 +2405,19 @@ class ChatbotEngine:
             "response": f"Data quality issues found: {issues_str}.",
             "data": result
         }
+
+    def _is_sensitive_field(self, field_name):
+        sensitive_fields = ['email', 'phone', 'license_number', 'contact_email', 'balance']
+
+        if field_name in sensitive_fields:
+            return True
+
+        if field_name.endswith('_encrypted'):
+            return True
+
+        if '.' in field_name:
+            table, field = field_name.split('.')
+            if field in sensitive_fields or field.endswith('_encrypted'):
+                return True
+
+        return False

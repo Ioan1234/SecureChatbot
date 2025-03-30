@@ -4,11 +4,8 @@ import json
 import numpy as np
 import base64
 from datetime import datetime
+import tenseal as ts
 
-try:
-    import tenseal as ts
-except ImportError:
-    logging.error("TenSEAL not installed. Please install it with: pip install tenseal")
 
 
 class HomomorphicEncryptionManager:
@@ -19,11 +16,18 @@ class HomomorphicEncryptionManager:
 
         os.makedirs(self.keys_dir, exist_ok=True)
 
-        self.context_params = context_params or {
+        _default_ctx = {
             "poly_modulus_degree": 8192,
             "coeff_mod_bit_sizes": [60, 40, 40, 60],
-            "scale_bits": 40
+            "scale_bits": 40,
+            # you can also include a default plain_modulus here if you like
         }
+
+        # start from the defaults, then overlay any user-provided overrides
+        if context_params:
+            _default_ctx.update(context_params)
+
+        self.context_params = _default_ctx
 
         self.sensitive_fields = {
             "traders.email": "string",
@@ -35,7 +39,7 @@ class HomomorphicEncryptionManager:
 
         self.use_encryption = True
 
-        self.context = None
+        self.ckks_context = None
         self.secret_context = None
         self.public_key = None
         self.private_key = None
@@ -43,9 +47,25 @@ class HomomorphicEncryptionManager:
         if self.use_encryption:
             self._initialize_encryption()
 
+        self.bfv_context = None
+
+        try:
+            self.bfv_context = ts.context(
+                ts.SCHEME_TYPE.BFV,
+                poly_modulus_degree=self.context_params["poly_modulus_degree"],
+                plain_modulus=self.context_params.get("plain_modulus", 1032193),
+                coeff_mod_bit_sizes=self.context_params["coeff_mod_bit_sizes"],
+            )
+            self.bfv_context.generate_galois_keys()
+            self.bfv_context.generate_relin_keys()
+            self.logger.info("BFV context initialized for string encryption")
+        except Exception as e:
+            self.logger.error(f"Failed to initialize BFV context: {e}")
+
+
     def _initialize_encryption(self):
         try:
-            if self._load_encryption_data():
+            if self.load_encryption_data():
                 self.logger.info("Successfully loaded existing encryption data")
             else:
                 self.logger.info("Creating new encryption context and keys")
@@ -54,41 +74,43 @@ class HomomorphicEncryptionManager:
             self.logger.error(f"Error initializing encryption: {e}")
             self._setup_simplified_encryption()
 
-    def _load_encryption_data(self):
+        # ── DEBUG SELF-TEST ──
         try:
-            context_path = os.path.join(self.keys_dir, "serialized_context.dat")
-            key_path = os.path.join(self.keys_dir, "private_key.dat")
+            plain = 123.456
+            self.logger.info(f"Encryption self-test: encrypting {plain}")
+            # create a CKKS vector of length 1
+            vec = ts.ckks_vector(self.ckks_context, [plain])
+            blob = vec.serialize()
+            # deserialize under the secret context and decrypt
+            loaded = ts.ckks_vector_from(self.secret_context, blob)
+            result = loaded.decrypt()[0]
+            self.logger.info(f"Encryption self-test: decrypted back {result}")
+        except Exception as e:
+            self.logger.error(f"Encryption self-test failed: {e}")
 
-            if not os.path.exists(context_path) or not os.path.exists(key_path):
-                self.logger.info("Encryption files not found, need to create new ones")
-                return False
+    def load_encryption_data(self) -> bool:
+        key_path = os.path.join(self.keys_dir, "private_key.dat")
+        if not os.path.exists(key_path):
+            self.logger.info("No private key context found; will create new one")
+            return False
 
-            self.logger.info("Loading encryption context from file")
-            with open(context_path, 'rb') as f:
-                serialized_context = f.read()
-
-            self.context = ts.context_from(serialized_context)
-
-            self.logger.info("Loading private key")
+        try:
+            self.logger.info("Loading full (secret) CKKS context from private_key.dat")
             with open(key_path, 'rb') as f:
-                private_key_data = f.read()
+                private_bytes = f.read()
 
-            try:
-                self.secret_context = ts.context_from(private_key_data)
+            # rehydrate a real tenseal.Context with the secret key
+            full_ctx = ts.context_from(private_bytes)
+            self.secret_context = full_ctx
 
-                if not self.secret_context.is_private():
-                    self.logger.warning("Secret context not marked as private, creating new one")
+            # derive public-only for encryption
+            self.ckks_context = full_ctx.copy()
+            self.ckks_context.make_context_public()
 
-                    return self._setup_new_encryption()
-
-            except Exception as e:
-                self.logger.warning(f"Error loading secret context: {e}")
-                return self._setup_new_encryption()
-
-            self.logger.info("Successfully loaded encryption context and private key")
+            self.logger.info("Successfully loaded secret CKKS context and derived public encryption context")
             return True
         except Exception as e:
-            self.logger.error(f"Error loading encryption data: {e}")
+            self.logger.error(f"Failed to load private CKKS context: {e}")
             return False
 
     def _setup_new_encryption(self):
@@ -98,21 +120,22 @@ class HomomorphicEncryptionManager:
             scale_bits = self.context_params.get("scale_bits", 40)
 
             self.logger.info("Creating new TenSEAL CKKS context")
-            self.context = ts.context(
+            self.ckks_context = ts.context(
                 ts.SCHEME_TYPE.CKKS,
                 poly_modulus_degree=poly_modulus_degree,
                 coeff_mod_bit_sizes=coeff_mod_bit_sizes
             )
 
-            self.context.global_scale = 2 ** scale_bits
+            self.ckks_context.global_scale = 2 ** scale_bits
 
-            self.context.generate_galois_keys()
+            self.ckks_context.generate_galois_keys()
 
-            self.secret_context = self.context.copy()
-
+            self.secret_context = self.ckks_context.copy()
+            # SAVE SECRET BEFORE PUBLICIZING
             self._save_encryption_data()
 
-            self.context.make_context_public()
+            # now turn the original ckks_context public
+            self.ckks_context.make_context_public()
 
             self.logger.info("Successfully created and saved new encryption context and keys")
             return True
@@ -121,31 +144,25 @@ class HomomorphicEncryptionManager:
             return False
 
     def _save_encryption_data(self):
-        try:
-            os.makedirs(self.keys_dir, exist_ok=True)
+        # write the secret‐bearing context first
+        secret_path = os.path.join(self.keys_dir, "private_key.dat")
+        self.logger.info(f"Saving secret CKKS context to {secret_path}")
+        with open(secret_path, "wb") as f:
+            # include the secret key in the serialization
+            f.write(self.secret_context.serialize(save_secret_key=True))
 
-            context_path = os.path.join(self.keys_dir, "serialized_context.dat")
-            with open(context_path, 'wb') as f:
-                f.write(self.context.serialize())
+        # optionally, if you want a public copy on disk too:
+        public_path = os.path.join(self.keys_dir, "public_context.dat")
+        self.logger.info(f"Saving public CKKS context to {public_path}")
+        with open(public_path, "wb") as f:
+            f.write(self.ckks_context.serialize())
 
-            key_path = os.path.join(self.keys_dir, "private_key.dat")
-            with open(key_path, 'wb') as f:
-                f.write(self.secret_context.serialize())
-
-            params_path = os.path.join(self.keys_dir, "context_params.json")
-            with open(params_path, 'w') as f:
-                json.dump(self.context_params, f)
-
-            self.logger.info("Encryption data saved successfully")
-            return True
-        except Exception as e:
-            self.logger.error(f"Error saving encryption data: {e}")
-            return False
+        self.logger.info("Encryption data saved successfully")
 
     def _setup_simplified_encryption(self):
         self.logger.warning("Setting up simplified encryption as fallback")
         self.use_encryption = False
-        self.context = None
+        self.ckks_context = None
         self.secret_context = None
 
         import secrets
@@ -162,7 +179,7 @@ class HomomorphicEncryptionManager:
         field_type = self._get_field_type(field_name)
 
         try:
-            if not self.use_encryption or not self.context:
+            if not self.use_encryption or not self.ckks_context:
                 return self._simplified_encrypt(value, field_type)
 
             if field_type == "numeric":
@@ -175,141 +192,118 @@ class HomomorphicEncryptionManager:
             self.logger.error(f"Error encrypting value for field {field_name}: {e}")
             return self._simplified_encrypt(value, field_type)
 
+        # in encryption_manager.py
+
     def decrypt_value(self, encrypted_value, field_name=None):
         if encrypted_value is None:
-            return None
-
-        if isinstance(encrypted_value, str) and encrypted_value.startswith("ENCRYPTION_ERROR_"):
             return None
 
         field_type = self._get_field_type(field_name)
 
         try:
             if not self.use_encryption or not self.secret_context:
-                return self._simplified_decrypt(encrypted_value, field_type)
+                # no more XOR-fallback on missing context
+                return None
 
             if field_type == "numeric":
                 return self.decrypt_numeric(encrypted_value)
-            elif field_type == "string":
-                return self.decrypt_string(encrypted_value)
             else:
                 return self.decrypt_string(encrypted_value)
+
         except Exception as e:
             self.logger.error(f"Error decrypting value for field {field_name}: {e}")
-            try:
-                return self._simplified_decrypt(encrypted_value, field_type)
-            except:
-                return None
+            return None
 
     def _get_field_type(self, field_name):
-        if not field_name:
-            return "string"
+            if not field_name:
+                return "string"
 
-        return self.sensitive_fields.get(field_name, "string")
+            return self.sensitive_fields.get(field_name, "string")
 
     def encrypt_numeric(self, value):
         try:
-            if not self.secret_context or not self.context:
+            self.logger.info(f"HE: encrypt_numeric start – value={value}")
+            if not self.secret_context or not self.ckks_context:
                 raise ValueError("Encryption context not properly initialized")
-
             if not self.secret_context.is_private():
                 raise ValueError("Secret context does not have a private key")
 
             value = float(value)
-
-            encrypted_vector = ts.ckks_vector(self.context, [value])
-
+            encrypted_vector = ts.ckks_vector(self.ckks_context, [value])
             serialized = encrypted_vector.serialize()
 
+            self.logger.debug(f"HE: encrypt_numeric done – ciphertext bytes={len(serialized)}")
             return serialized
         except Exception as e:
             self.logger.error(f"Error in numeric encryption: {e}")
             return self._simplified_encrypt(value, "numeric")
 
     def decrypt_numeric(self, encrypted_value):
-        try:
-            if not self.secret_context:
-                self.logger.error("Secret context not available for decryption")
-                raise ValueError("Secret context not available for decryption")
+        """
+        Decrypt a CKKS‐encrypted numeric (single‐slot vector) and un‐scale it.
+        """
+        if encrypted_value is None:
+            return None
 
-            if not self.secret_context.is_private():
-                self.logger.error("Secret context does not have a private key")
-                raise ValueError("Secret context does not have a private key")
-
-            if isinstance(encrypted_value, bytes):
-                try:
-                    self.logger.info(f"Encrypted value length: {len(encrypted_value)} bytes")
-                    self.logger.info(f"Encrypted value preview: {encrypted_value[:20]}")
-
-                    encrypted_vector = ts.ckks_vector_from(self.secret_context, encrypted_value)
-
-                    self.logger.info(f"Successfully deserialized encrypted vector")
-
-                    decrypted_values = encrypted_vector.decrypt()
-                    self.logger.info(f"Decrypted values: {decrypted_values}")
-
-                    if decrypted_values and len(decrypted_values) > 0:
-                        return decrypted_values[0]
-                    return None
-                except Exception as inner_e:
-                    self.logger.error(f"Inner error during numeric decryption: {inner_e}")
-                    raise
-            else:
-                self.logger.error(f"Invalid encrypted numeric value type: {type(encrypted_value)}")
-                return None
-        except Exception as e:
-            self.logger.error(f"Error in numeric decryption: {e}")
-            try:
-                return self._simplified_decrypt(encrypted_value, "numeric")
-            except Exception as fallback_e:
-                self.logger.error(f"Fallback decryption also failed: {fallback_e}")
-                return None
-
-    def encrypt_string(self, value):
+        if not self.secret_context or not self.secret_context.is_private():
+            self.logger.error("Secret context missing or not private")
+            return None
 
         try:
-            if not self.context:
-                raise ValueError("Encryption context not properly initialized")
+            self.logger.info("HE: decrypt_numeric start")
+            self.logger.info(f"Encrypted value length: {len(encrypted_value)} bytes")
+            self.logger.info(f"Encrypted value preview: {encrypted_value[:16]}…")
 
-            if not isinstance(value, str):
-                value = str(value)
+            # Deserialize and decrypt
+            vec = ts.ckks_vector_from(self.secret_context, encrypted_value)
+            raw = vec.decrypt()[0]
+            rounded=round(raw, 2)
+            self.logger.info(f"Decrypted plaintext value: {rounded} (rounded)")
+            return rounded
 
-            ascii_values = [ord(c) for c in value]
-
-            encrypted_vector = ts.ckks_vector(self.context, ascii_values)
-
-            serialized = encrypted_vector.serialize()
-
-            return serialized
         except Exception as e:
-            self.logger.error(f"Error in string encryption: {e}")
-            return self._simplified_encrypt(value, "string")
+            self.logger.error(f"HE-BFV: numeric decrypt failed: {e}")
+            return None
 
-    def decrypt_string(self, encrypted_value):
+    def encrypt_string(self, value: str) -> bytes:
+        if value is None:
+            return None
+        codepoints = [ord(ch) for ch in value]
+        enc = ts.bfv_vector(self.bfv_context, codepoints)
+        token = enc.serialize()
+        self.logger.info(f"HE-BFV: encrypted string of length {len(value)} -> {len(token)} bytes")
+        return token
+
+    def decrypt_string(self, token: bytes) -> str:
+        if token is None:
+            return None
 
         try:
-            if not self.secret_context:
-                raise ValueError("Secret context not available for decryption")
+            vec = ts.bfv_vector_from(self.bfv_context, token)
+            decrypted_ints = vec.decrypt()
 
-            if not self.secret_context.is_private():
-                raise ValueError("Secret context does not have a private key")
+            chars = []
+            for v in decrypted_ints:
+                code = int(v)
 
-            if isinstance(encrypted_value, bytes):
-                encrypted_vector = ts.ckks_vector_from(self.secret_context, encrypted_value)
+                # drop padding
+                if code == 0:
+                    continue
 
-                decrypted_values = encrypted_vector.decrypt()
+                # only valid Unicode scalars
+                if not (0 <= code <= 0x10FFFF):
+                    continue
 
-                chars = [chr(round(val)) for val in decrypted_values]
-                return ''.join(chars)
-            else:
-                self.logger.error(f"Invalid encrypted string value type: {type(encrypted_value)}")
-                return None
+                # (optional) restrict to printable ASCII for emails
+                if not (32 <= code <= 126):
+                    continue
+
+                chars.append(chr(code))
+
+            return "".join(chars)
         except Exception as e:
-            self.logger.error(f"Error in string decryption: {e}")
-            try:
-                return self._simplified_decrypt(encrypted_value, "string")
-            except:
-                return None
+            self.logger.error(f"HE-BFV: string decrypt failed: {e}")
+            return None
 
     def _simplified_encrypt(self, value, value_type="string"):
 
@@ -333,11 +327,11 @@ class HomomorphicEncryptionManager:
             return b"ENCRYPTION_ERROR"
 
     def _simplified_decrypt(self, encrypted_value, value_type="string"):
-
         try:
             if not isinstance(encrypted_value, bytes):
                 return str(encrypted_value)
 
+            # only decode the tiny XOR‐based scheme that we ourselves prefix
             if encrypted_value.startswith(b"NUM:"):
                 encrypted_data = encrypted_value[4:]
                 is_numeric = True
@@ -345,8 +339,11 @@ class HomomorphicEncryptionManager:
                 encrypted_data = encrypted_value[4:]
                 is_numeric = False
             else:
-                encrypted_data = encrypted_value
-                is_numeric = (value_type == "numeric")
+                # this is almost certainly a CKKS blob—don't try to UTF-8 it!
+                self.logger.error(
+                    "Simplified decrypt: unsupported ciphertext format, skipping fallback"
+                )
+                return None
 
             key_bytes = self.symmetric_key if hasattr(self, 'symmetric_key') else b'testkey123'
             decrypted = bytearray()
@@ -364,16 +361,17 @@ class HomomorphicEncryptionManager:
 
     def perform_encrypted_addition(self, encrypted_value1, encrypted_value2):
         try:
+            self.logger.info("HE: starting homomorphic addition")
             if not self.use_encryption:
                 val1 = self.decrypt_value(encrypted_value1)
                 val2 = self.decrypt_value(encrypted_value2)
                 return self.encrypt_value(val1 + val2, "accounts.balance")
 
-            vec1 = ts.ckks_vector_from(self.context, encrypted_value1)
-            vec2 = ts.ckks_vector_from(self.context, encrypted_value2)
+            vec1 = ts.ckks_vector_from(self.ckks_context, encrypted_value1)
+            vec2 = ts.ckks_vector_from(self.ckks_context, encrypted_value2)
 
             result = vec1 + vec2
-
+            self.logger.debug(f"HE: addition result ciphertext={len(result.serialize())}")
             return result.serialize()
         except Exception as e:
             self.logger.error(f"Error in encrypted addition: {e}")
@@ -386,14 +384,15 @@ class HomomorphicEncryptionManager:
 
     def perform_encrypted_multiplication(self, encrypted_value, scalar):
         try:
+            self.logger.info(f"HE: starting homomorphic multiplication by scalar={scalar}")
             if not self.use_encryption:
                 val = self.decrypt_value(encrypted_value)
                 return self.encrypt_value(val * scalar, "accounts.balance")
 
-            vec = ts.ckks_vector_from(self.context, encrypted_value)
+            vec = ts.ckks_vector_from(self.ckks_context, encrypted_value)
 
             result = vec * scalar
-
+            self.logger.debug(f"HE: multiplication result ciphertext={len(result.serialize())}")
             return result.serialize()
         except Exception as e:
             self.logger.error(f"Error in encrypted multiplication: {e}")
@@ -502,10 +501,10 @@ class HomomorphicEncryptionManager:
                     return None
                 return self.encrypt_value(result, "accounts.balance")
 
-            result = ts.ckks_vector_from(self.context, encrypted_values[0])
+            result = ts.ckks_vector_from(self.ckks_context, encrypted_values[0])
 
             for i in range(1, len(encrypted_values)):
-                vec = ts.ckks_vector_from(self.context, encrypted_values[i])
+                vec = ts.ckks_vector_from(self.ckks_context, encrypted_values[i])
                 result += vec
 
             if operation == "avg" and len(encrypted_values) > 1:
