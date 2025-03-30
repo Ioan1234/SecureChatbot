@@ -197,25 +197,41 @@ document.addEventListener('DOMContentLoaded', function() {
         return chatMessages.lastElementChild;
     }
 
-    function addDataTable(container, data) {
-        if (!data || data.length === 0) return;
 
-        const tableWrapper = document.createElement('div');
-        tableWrapper.className = 'data-table-wrapper';
+function addDataTable(container, data) {
+    if (!data || data.length === 0) return;
 
-        const table = dataTableTemplate.content.cloneNode(true).querySelector('table');
+    const tableWrapper = document.createElement('div');
+    tableWrapper.className = 'data-table-wrapper';
 
-        const headers = Object.keys(data[0]);
+    const table = dataTableTemplate.content.cloneNode(true).querySelector('table');
+    const headers = Object.keys(data[0]);
 
-        const headerRow = table.querySelector('thead tr');
-        headers.forEach(header => {
-            const th = document.createElement('th');
-            th.textContent = formatHeaderName(header);
-            headerRow.appendChild(th);
-        });
+    const headerRow = table.querySelector('thead tr');
+    headers.forEach(header => {
+        const th = document.createElement('th');
+        th.textContent = formatHeaderName(header);
+        headerRow.appendChild(th);
+    });
 
-        const tbody = table.querySelector('tbody');
-        data.forEach(item => {
+    const tbody = table.querySelector('tbody');
+
+    const state = {
+        currentPage: 1,
+        itemsPerPage: 10,
+        totalItems: data.length,
+        totalPages: Math.ceil(data.length / 10)
+    };
+
+    function renderCurrentPage() {
+        const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+        const endIndex = Math.min(startIndex + state.itemsPerPage, data.length);
+
+        tbody.innerHTML = '';
+
+        const currentPageData = data.slice(startIndex, endIndex);
+
+        currentPageData.forEach(item => {
             const row = document.createElement('tr');
 
             headers.forEach(header => {
@@ -237,9 +253,154 @@ document.addEventListener('DOMContentLoaded', function() {
             tbody.appendChild(row);
         });
 
-        tableWrapper.appendChild(table);
-        container.appendChild(tableWrapper);
+        updateRecordCount();
     }
+
+    function updateRecordCount() {
+        if (recordCountDisplay) {
+            const startRecord = (state.currentPage - 1) * state.itemsPerPage + 1;
+            const endRecord = Math.min(state.currentPage * state.itemsPerPage, data.length);
+            recordCountDisplay.textContent = `Showing ${startRecord}-${endRecord} of ${data.length} records`;
+        }
+    }
+
+    tableWrapper.appendChild(table);
+    container.appendChild(tableWrapper);
+
+    if (data.length > state.itemsPerPage) {
+        const paginationContainer = document.createElement('div');
+        paginationContainer.className = 'pagination-controls';
+
+        const firstPageBtn = document.createElement('button');
+        firstPageBtn.innerHTML = '&laquo; First';
+        firstPageBtn.className = 'pagination-btn';
+        firstPageBtn.addEventListener('click', () => {
+            if (state.currentPage !== 1) {
+                state.currentPage = 1;
+                renderCurrentPage();
+                updatePaginationButtons();
+            }
+        });
+
+        const prevPageBtn = document.createElement('button');
+        prevPageBtn.innerHTML = '&lt; Previous';
+        prevPageBtn.className = 'pagination-btn';
+        prevPageBtn.addEventListener('click', () => {
+            if (state.currentPage > 1) {
+                state.currentPage--;
+                renderCurrentPage();
+                updatePaginationButtons();
+            }
+        });
+
+        const pageDisplay = document.createElement('span');
+        pageDisplay.className = 'pagination-info';
+
+        const nextPageBtn = document.createElement('button');
+        nextPageBtn.innerHTML = 'Next &gt;';
+        nextPageBtn.className = 'pagination-btn';
+        nextPageBtn.addEventListener('click', () => {
+            if (state.currentPage < state.totalPages) {
+                state.currentPage++;
+                renderCurrentPage();
+                updatePaginationButtons();
+            }
+        });
+
+        const lastPageBtn = document.createElement('button');
+        lastPageBtn.innerHTML = 'Last &raquo;';
+        lastPageBtn.className = 'pagination-btn';
+        lastPageBtn.addEventListener('click', () => {
+            if (state.currentPage !== state.totalPages) {
+                state.currentPage = state.totalPages;
+                renderCurrentPage();
+                updatePaginationButtons();
+            }
+        });
+
+        paginationContainer.appendChild(firstPageBtn);
+        paginationContainer.appendChild(prevPageBtn);
+        paginationContainer.appendChild(pageDisplay);
+        paginationContainer.appendChild(nextPageBtn);
+        paginationContainer.appendChild(lastPageBtn);
+
+        tableWrapper.appendChild(paginationContainer);
+
+        function updatePaginationButtons() {
+            firstPageBtn.disabled = state.currentPage === 1;
+            prevPageBtn.disabled = state.currentPage === 1;
+            nextPageBtn.disabled = state.currentPage === state.totalPages;
+            lastPageBtn.disabled = state.currentPage === state.totalPages;
+
+            pageDisplay.textContent = `Page ${state.currentPage} of ${state.totalPages}`;
+        }
+
+        updatePaginationButtons();
+    }
+
+    const recordCountDisplay = document.createElement('p');
+    recordCountDisplay.className = 'record-count-display';
+    tableWrapper.appendChild(recordCountDisplay);
+
+    renderCurrentPage();
+
+    return tableWrapper;
+}
+
+function executeSqlQueryWithPagination(sql) {
+    const typingIndicator = showTypingIndicator();
+
+    fetch('/api/execute_sql', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ sql })
+    })
+    .then(response => response.json())
+    .then(data => {
+        chatMessages.removeChild(typingIndicator);
+
+        const message = botMessageTemplate.content.cloneNode(true);
+        const content = message.querySelector('.message-content');
+
+        if (data.error) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = data.error;
+            content.appendChild(errorDiv);
+        } else {
+            content.innerHTML = `
+                <p>📊 <strong>SQL Results</strong></p>
+                <div class="sql-query">${sql}</div>
+            `;
+
+            if (data.results && data.results.length > 0) {
+                addDataTable(content, data.results);
+
+                const exportButton = document.createElement('button');
+                exportButton.className = 'export-data-btn';
+                exportButton.innerHTML = '<i class="fas fa-download"></i> Export Results';
+                exportButton.addEventListener('click', () => {
+                    exportDataToCSV(data.results, 'sql_results');
+                });
+                content.appendChild(exportButton);
+            } else {
+                content.innerHTML += '<p>No results returned</p>';
+            }
+        }
+
+        message.querySelector('.message-time').textContent = getCurrentTime();
+        chatMessages.appendChild(message);
+        scrollToBottom();
+    })
+    .catch(error => {
+        chatMessages.removeChild(typingIndicator);
+        console.error('SQL error:', error);
+        addBotErrorMessage("Error executing SQL query.");
+    });
+}
+
 
     function formatHeaderName(header) {
         return header

@@ -15,8 +15,6 @@ from query_processor import QueryProcessor
 from model.chatbot_engine import ChatbotEngine
 from api.flask_api import FlaskAPI
 
-from auto_learning.feedback_analyzer import AutoLearningAnalyzer
-from auto_learning.learning_engine import AutonomousLearningEngine
 
 
 try:
@@ -46,15 +44,6 @@ class SecureChatbotApplication:
         self.logger = self._setup_logging()
         self.components = {}
         self.model_last_loaded = 0
-
-        self.auto_learning_enabled = self.config.get("auto_learning", {}).get("enabled", True)
-        self.learning_path = self.config.get("auto_learning", {}).get("data_path", "auto_learning_data")
-        self.auto_training = self.config.get("auto_learning", {}).get("auto_training", True)
-        self.training_interval = self.config.get("auto_learning", {}).get("training_interval", 86400)
-        self.min_interactions = self.config.get("auto_learning", {}).get("min_interactions", 20)
-
-        if self.auto_learning_enabled:
-            os.makedirs(self.learning_path, exist_ok=True)
 
     def _setup_logging(self):
         log_config = self.config.get("logging", {}) if hasattr(self, "config") else {}
@@ -228,32 +217,6 @@ class SecureChatbotApplication:
                 secret_key=api_config.get("secret_key")
             )
 
-            if self.auto_learning_enabled:
-                try:
-                    learning_config = {
-                        "enabled": self.auto_learning_enabled,
-                        "analysis_interval": 3600,
-                        "training_interval": self.training_interval,
-                        "min_interactions": self.min_interactions,
-                        "continuous_analysis": self.auto_training
-                    }
-
-                    self.components["learning_engine"] = AutonomousLearningEngine(
-                        chatbot_engine=self.components["chatbot_engine"],
-                        intent_classifier=self.components["intent_classifier"],
-                        db_connector=self.components["db_connector"],
-                        config=learning_config,
-                        learning_path=self.learning_path
-                    )
-
-                    self.components["enhanced_chatbot_engine"] = self._create_enhanced_engine()
-
-                    self.logger.info("Autonomous learning engine initialized successfully")
-                except Exception as e:
-                    self.logger.error(f"Error initializing autonomous learning components: {e}")
-                    self.auto_learning_enabled = False
-
-            self.logger.info("All components initialized successfully")
             return True
         except Exception as e:
             self.logger.error(f"Error initializing components: {e}")
@@ -376,101 +339,6 @@ class SecureChatbotApplication:
             self.logger.error(f"Error reloading model: {e}")
             return False
 
-    def _create_enhanced_engine(self):
-        original_engine = self.components["chatbot_engine"]
-        learning_engine = self.components["learning_engine"]
-
-        class EnhancedChatbotEngine:
-            def __init__(self, original_engine, learning_engine):
-                self.original_engine = original_engine
-                self.learning_engine = learning_engine
-
-                for attr_name in dir(original_engine):
-                    if not attr_name.startswith('__') and not hasattr(self, attr_name):
-                        try:
-                            setattr(self, attr_name, getattr(original_engine, attr_name))
-                        except AttributeError:
-                            pass
-
-            def process_user_input(self, user_input, session_id=None):
-                return self.learning_engine.process_user_input(user_input, session_id)
-
-            def end_session(self, session_id):
-                return self.learning_engine.end_session(session_id)
-
-        return EnhancedChatbotEngine(original_engine, learning_engine)
-
-    def _add_learning_routes(self, app):
-        from flask import request, jsonify
-
-        @app.route('/api/learning/stats', methods=['GET'])
-        def get_learning_stats():
-            try:
-                if self.auto_learning_enabled and "learning_engine" in self.components:
-                    stats = self.components["learning_engine"].get_learning_stats()
-                    return jsonify({"status": "success", "data": stats})
-                else:
-                    return jsonify({"status": "error", "message": "Autonomous learning not enabled"}), 400
-            except Exception as e:
-                self.logger.error(f"Error getting learning stats: {e}")
-                return jsonify({"status": "error", "message": str(e)}), 500
-
-        @app.route('/api/learning/trigger-training', methods=['POST'])
-        def trigger_training():
-            try:
-                if self.auto_learning_enabled and "learning_engine" in self.components:
-                    data = request.json or {}
-                    output_path = data.get('output_path')
-
-                    result = self.components["learning_engine"].retrain_model(output_path=output_path)
-
-                    if result.get("success"):
-                        return jsonify({"status": "success", "data": result})
-                    else:
-                        return jsonify({"status": "error", "message": result.get("reason", "Unknown error")}), 400
-                else:
-                    return jsonify({"status": "error", "message": "Autonomous learning not enabled"}), 400
-            except Exception as e:
-                self.logger.error(f"Error triggering training: {e}")
-                return jsonify({"status": "error", "message": str(e)}), 500
-
-        @app.route('/api/learning/analyze-sessions', methods=['POST'])
-        def analyze_sessions():
-            try:
-                if self.auto_learning_enabled and "learning_engine" in self.components:
-                    data = request.json or {}
-                    limit = data.get('limit', 50)
-
-                    analyzer = self.components["learning_engine"].analyzer
-                    result = analyzer.analyze_all_unprocessed_sessions(limit=limit)
-
-                    return jsonify({"status": "success", "data": result})
-                else:
-                    return jsonify({"status": "error", "message": "Autonomous learning not enabled"}), 400
-            except Exception as e:
-                self.logger.error(f"Error analyzing sessions: {e}")
-                return jsonify({"status": "error", "message": str(e)}), 500
-
-        @app.route('/api/learning/patterns', methods=['GET'])
-        def get_patterns():
-            try:
-                if self.auto_learning_enabled and "learning_engine" in self.components:
-                    patterns_query = """
-                    SELECT pattern, intent, is_positive, discovery_time, occurrences, confidence
-                    FROM chatbot_discovered_patterns
-                    ORDER BY occurrences DESC, discovery_time DESC
-                    LIMIT 100
-                    """
-
-                    patterns = self.components["db_connector"].execute_query(patterns_query)
-
-                    return jsonify({"status": "success", "data": patterns})
-                else:
-                    return jsonify({"status": "error", "message": "Autonomous learning not enabled"}), 400
-            except Exception as e:
-                self.logger.error(f"Error getting patterns: {e}")
-                return jsonify({"status": "error", "message": str(e)}), 500
-
     def start(self):
         try:
             if not self.initialize_components():
@@ -482,18 +350,11 @@ class SecureChatbotApplication:
                 self.logger.error("Failed to connect to database. Exiting.")
                 return False
 
-            if self.auto_learning_enabled and "enhanced_chatbot_engine" in self.components:
-                self.logger.info("Using enhanced chatbot engine with autonomous learning")
-                chatbot_engine = self.components["enhanced_chatbot_engine"]
-            else:
-                chatbot_engine = self.components["chatbot_engine"]
+            chatbot_engine = self.components["chatbot_engine"]
 
             flask_api = self.components["flask_api"]
 
             flask_api.chatbot_engine = chatbot_engine
-
-            if self.auto_learning_enabled:
-                self._add_learning_routes(flask_api.app)
 
             speech_recognition = self.components.get("speech_recognition")
 
@@ -567,9 +428,6 @@ class SecureChatbotApplication:
 
     def shutdown(self):
         try:
-            if self.auto_learning_enabled and "learning_engine" in self.components:
-                self.logger.info("Stopping autonomous learning threads")
-                self.components["learning_engine"].stop_background_threads()
 
             db_connector = self.components.get("db_connector")
             if db_connector:

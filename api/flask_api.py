@@ -72,8 +72,10 @@ class FlaskAPI:
             if not re.match(r'^\s*SELECT', sql, re.IGNORECASE):
                 return jsonify({"error": "Only SELECT queries are allowed for security reasons"}), 403
 
-            results = self.db_connector.execute_query(sql)
+            if not re.search(r'\bLIMIT\s+\d+\b', sql, re.IGNORECASE):
+                pass
 
+            results = self.db_connector.execute_query(sql)
 
             return jsonify({
                 "results": results,
@@ -82,11 +84,11 @@ class FlaskAPI:
 
         @self.app.route('/api/table_preview/<table_name>', methods=['GET'])
         def table_preview(table_name):
-            # Safety check - only allow alphanumeric table names
             if not re.match(r'^[a-zA-Z0-9_]+$', table_name):
                 return jsonify({"error": "Invalid table name"}), 400
 
-            preview_query = f"SELECT * FROM {table_name} LIMIT 100"
+            # Removed the LIMIT clause to get all records
+            preview_query = f"SELECT * FROM {table_name}"
             preview_results = self.db_connector.execute_query(preview_query)
 
             count_query = f"SELECT COUNT(*) as count FROM {table_name}"

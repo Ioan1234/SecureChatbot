@@ -408,3 +408,71 @@ body {
         gap: 6px;
     }
 }
+/* Add these pagination styles to your existing style.css file */
+
+/* Pagination controls container */
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 5px 0;
+}
+
+/* Pagination buttons */
+.pagination-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    margin: 0 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background-color: #0069d9;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #cccccc;
+}
+
+.pagination-info {
+    font-size: 14px;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.record-count-display {
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+    margin-top: 5px;
+    text-align: right;
+}
+
+@media (max-width: 768px) {
+    .pagination-controls {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .pagination-btn {
+        padding: 4px 8px;
+        font-size: 12px;
+        margin: 2px;
+    }
+
+    .pagination-info {
+        width: 100%;
+        text-align: center;
+        margin: 5px 0;
+        order: -1;
+    }
+}
