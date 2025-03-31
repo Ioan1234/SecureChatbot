@@ -46,10 +46,10 @@
         <mxCell id="4AuzWeC4cYhFhULAJRwi-14" value="Audio processing" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=12;fontColor=#000000;align=center;" parent="4AuzWeC4cYhFhULAJRwi-1" vertex="1">
           <mxGeometry x="340" y="30" width="70" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="4AuzWeC4cYhFhULAJRwi-13" value="Intent processer" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=12;fontColor=#000000;align=center;" parent="4AuzWeC4cYhFhULAJRwi-1" vertex="1">
+        <mxCell id="4AuzWeC4cYhFhULAJRwi-13" value="Intent processor" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=12;fontColor=#000000;align=center;" parent="4AuzWeC4cYhFhULAJRwi-1" vertex="1">
           <mxGeometry x="240" y="30" width="70" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="4AuzWeC4cYhFhULAJRwi-12" value="NL to SQL processer" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=12;fontColor=#000000;align=center;" parent="4AuzWeC4cYhFhULAJRwi-1" vertex="1">
+        <mxCell id="4AuzWeC4cYhFhULAJRwi-12" value="NL to SQL processor" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=12;fontColor=#000000;align=center;" parent="4AuzWeC4cYhFhULAJRwi-1" vertex="1">
           <mxGeometry x="130" y="30" width="80" height="60" as="geometry" />
         </mxCell>
         <mxCell id="dNxyNK7c78bLwvsdeMH5-22" value="Infrastructure layer" style="swimlane;html=1;startSize=20;horizontal=0;" parent="dNxyNK7c78bLwvsdeMH5-19" vertex="1">
