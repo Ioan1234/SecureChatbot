@@ -1,0 +1,12 @@
+2025-04-27 21:22:38,938 - INFO - Starting generation of 1000 brokers with 4 threads
+2025-04-27 21:22:38,945 - INFO - Progress: 100/1000 (10.0%) — 13695.2 rows/s — ETA 0.1s
+2025-04-27 21:22:38,947 - INFO - Progress: 200/1000 (20.0%) — 20760.8 rows/s — ETA 0.0s
+2025-04-27 21:22:38,950 - INFO - Progress: 300/1000 (30.0%) — 25008.3 rows/s — ETA 0.0s
+2025-04-27 21:22:38,952 - INFO - Progress: 400/1000 (40.0%) — 28448.0 rows/s — ETA 0.0s
+2025-04-27 21:22:38,954 - INFO - Progress: 500/1000 (50.0%) — 30921.0 rows/s — ETA 0.0s
+2025-04-27 21:22:38,956 - INFO - Progress: 600/1000 (60.0%) — 32770.1 rows/s — ETA 0.0s
+2025-04-27 21:22:38,968 - INFO - Progress: 700/1000 (70.0%) — 23132.1 rows/s — ETA 0.0s
+2025-04-27 21:22:38,970 - INFO - Progress: 800/1000 (80.0%) — 24791.8 rows/s — ETA 0.0s
+2025-04-27 21:22:38,972 - INFO - Progress: 900/1000 (90.0%) — 26265.5 rows/s — ETA 0.0s
+2025-04-27 21:22:38,974 - INFO - Progress: 1000/1000 (100.0%) — 27404.8 rows/s — ETA 0.0s
+2025-04-27 21:22:38,975 - INFO - Generation complete — file written to sql_output\brokers_inserts.sql
