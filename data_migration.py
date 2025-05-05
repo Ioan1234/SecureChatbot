@@ -7,41 +7,59 @@ from tqdm import tqdm
 
 from encryption_manager import HomomorphicEncryptionManager
 from secure_database_connector import SecureDatabaseConnector
-
+import logging
+from pathlib import Path
+from load_config import load_config
+from encryption_manager import HomomorphicEncryptionManager
+from secure_database_connector import SecureDatabaseConnector
 
 class DataEncryptionMigrator:
-    def __init__(self, config, encryption_manager=None, db_connector=None):
+    def __init__(
+            self,
+            config_path: str = "config.json",
+            encryption_manager=None,
+            db_connector=None
+    ):
         self.logger = logging.getLogger(__name__)
-        self.config = config
+        if isinstance(config_path, dict):
+            self.config = config_path
+        else:
+            self.config = load_config(config_path)
 
-        if encryption_manager:
+        if encryption_manager is not None:
             self.encryption_manager = encryption_manager
         else:
-            enc_cfg = config.get("encryption", {})
+            enc_cfg = self.config["encryption"]
+            keys_dir = Path(__file__).parent / enc_cfg.get("keys_dir", "encryption_keys")
             self.encryption_manager = HomomorphicEncryptionManager(
-                key_size=enc_cfg.get("key_size", 2048),
-                context_params=enc_cfg.get("context_parameters", {}),
-                keys_dir=enc_cfg.get("keys_dir", "encryption_keys")
+                key_size=enc_cfg["key_size"],
+                context_params=enc_cfg["context_parameters"],
+                keys_dir=str(keys_dir)
             )
+        self.logger.info("Encryption manager ready")
 
-        if db_connector:
+        if db_connector is not None:
             self.db_connector = db_connector
         else:
-            db_cfg = config.get("database", {})
+            db_cfg = self.config["database"]
             self.db_connector = SecureDatabaseConnector(
-                host=db_cfg.get("host", "localhost"),
-                user=db_cfg.get("user", "root"),
-                password=db_cfg.get("password", ""),
-                database=db_cfg.get("database", "secure_chatbot"),
+                host=db_cfg["host"],
+                user=db_cfg["user"],
+                password=db_cfg["password"],
+                database=db_cfg["database"],
                 encryption_manager=self.encryption_manager
             )
-        self.db_connector.connect()
+        if not self.db_connector.connect():
+            self.logger.error("Failed to connect to database")
+            raise RuntimeError("DB connection failed")
+        self.logger.info("Database connector initialized and connected")
 
+        sec_cfg = self.config.get("security", {}).get("sensitive_fields", {})
         self.sensitive_fields = {}
-        for tf, ftype in self.encryption_manager.sensitive_fields.items():
-            table, field = tf.split('.', 1)
-            self.sensitive_fields.setdefault(table, []).append(field)
+        for table, fields in sec_cfg.items():
+            self.sensitive_fields[table] = list(fields)
 
+        self.logger.info(f"Sensitive fields loaded for tables: {list(self.sensitive_fields)}")
     def get_primary_key(self, table):
         q = f"""
         SELECT COLUMN_NAME
@@ -83,7 +101,7 @@ class DataEncryptionMigrator:
             offset = 0
 
             while True:
-                # 1) pull the plaintext column
+
                 rows = self.db_connector.execute_query(
                     f"SELECT `{pk}`, `{field}` FROM `{table}` "
                     f"ORDER BY `{pk}` LIMIT %s OFFSET %s",
@@ -92,17 +110,17 @@ class DataEncryptionMigrator:
                 if not rows:
                     break
 
-                # 2) encrypt & write back
+
                 for row in rows:
                     key = row[pk]
                     plaintext = row[field]
                     if plaintext is None or plaintext == "":
                         continue
 
-                    # BFV-encrypt the plaintext string
+
                     bfv_blob = self.encryption_manager.encrypt_string(plaintext)
 
-                    # update the *_encrypted column
+
                     self.db_connector.execute_query(
                         f"UPDATE `{table}` "
                         f"SET `{encrypted_col}` = %s "
@@ -149,11 +167,12 @@ class DataEncryptionMigrator:
             self.db_connector.execute_query(sql)
             self.logger.info(f"Dropped plaintext columns {fields} from {table}")
 
-    # … after your migrate_string_fields() and migrate_numeric_fields() calls …
+
 
 
 
 def main():
+
     parser = argparse.ArgumentParser(description="Migrate sensitive columns to CKKS (numeric) and BFV (string)")
     parser.add_argument('--config', default='config.json')
     parser.add_argument('--num-batch-num', type=int, default=100)

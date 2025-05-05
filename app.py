@@ -14,6 +14,7 @@ from model.intent_classifier import EnhancedIntentClassifier
 from query_processor import QueryProcessor
 from model.chatbot_engine import ChatbotEngine
 from api.flask_api import FlaskAPI
+from load_config import load_config
 
 
 
@@ -21,6 +22,7 @@ try:
     spec = importlib.util.spec_from_file_location("train_model", "train_model.py")
     train_module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(train_module)
+
     TRAINING_AVAILABLE = True
 except Exception as e:
     TRAINING_AVAILABLE = False
@@ -40,11 +42,16 @@ except ImportError:
 
 class SecureChatbotApplication:
 
-    def __init__(self, config_path):
-        self.config = self._load_config(config_path)
-        self.logger = self._setup_logging()
+    def __init__(self, config_path: str = None):
+        import logging
+
+        self.logger = logging.getLogger(__name__)
+
+        self.config_path = config_path or "config.json"
         self.components = {}
-        self.model_last_loaded = 0
+
+
+        self.config = self._load_config(self.config_path)
 
     def _setup_logging(self):
         log_config = self.config.get("logging", {}) if hasattr(self, "config") else {}
@@ -65,53 +72,16 @@ class SecureChatbotApplication:
             logging.getLogger(mod).setLevel(logging.DEBUG)
         return logging.getLogger(__name__)
 
-    def _load_config(self, config_path):
+    def _load_config(self, config_path: str = None) -> dict:
+        
         try:
-            with open(config_path, 'r') as f:
-                config = json.load(f)
-            print(f"Configuration loaded from {config_path}")
-            return config
+            cfg = load_config(config_path)
+            self.logger.info(f"Configuration loaded from {config_path or 'config.json'}")
+            return cfg
         except Exception as e:
-            print(f"Error loading configuration: {e}")
-            return {
-                "database": {
-                    "host": "localhost",
-                    "user": "root",
-                    "password": "",
-                    "database": "fm_database"
-                },
-                "encryption": {
-                    "key_size": 2048,
-                    "context_parameters": {
-                        "poly_modulus_degree": 8192,
-                        "coeff_mod_bit_sizes": [60, 40, 40, 60],
-                        "scale_bits": 40
-                    },
-                    "keys_dir": "encryption_keys"
-                },
-                "model": {
-                    "path": "models/intent_classifier"
-                },
-                "training": {
-                    "strategy": "mirrored"
-                },
-                "api": {
-                    "host": "0.0.0.0",
-                    "port": 5000,
-                    "debug": False
-                },
-                "logging": {
-                    "level": "INFO",
-                    "file": "chatbot.log"
-                },
-                "security": {
-                    "sensitive_fields": {
-                        "traders": ["email", "phone"],
-                        "brokers": ["license_number", "contact_email"],
-                        "accounts": ["balance"]
-                    }
-                }
-            }
+            self.logger.error(f"Error loading configuration from {config_path}: {e}")
+
+            raise
 
     def _check_and_update_model(self):
         training_config = self.config.get("training", {})
@@ -139,92 +109,87 @@ class SecureChatbotApplication:
             self.logger.info("Training data is newer than model. Retraining...")
             self.run_train_model()
 
-    def initialize_components(self):
+    def initialize_components(self) -> bool:
+        
         try:
             BASE_DIR = Path(__file__).parent.resolve()
             KEY_DIR = BASE_DIR / "encryption_keys"
-            enc_config = self.config.get("encryption", {})
+
+
+            enc_cfg = self.config["encryption"]
             self.components["encryption_manager"] = HomomorphicEncryptionManager(
-                key_size=enc_config.get("key_size", 2048),
-                context_params=enc_config.get("context_parameters", {}),
+                key_size=enc_cfg["key_size"],
+                context_params=enc_cfg["context_parameters"],
                 keys_dir=str(KEY_DIR)
             )
             self.logger.info("Homomorphic encryption manager initialized")
 
-            db_config = self.config.get("database", {})
+
+            db_cfg = self.config["database"]
             self.components["db_connector"] = SecureDatabaseConnector(
-                host=db_config.get("host", "localhost"),
-                user=db_config.get("user", "root"),
-                password=db_config.get("password", ""),
-                database=db_config.get("database", "secure_chatbot"),
+                host=db_cfg["host"],
+                user=db_cfg["user"],
+                password=db_cfg["password"],
+                database=db_cfg["database"],
                 encryption_manager=self.components["encryption_manager"]
             )
-            connected = self.components["db_connector"].connect()
-            if not connected:
+            if not self.components["db_connector"].connect():
                 self.logger.error("Failed to connect to database")
                 return False
             self.logger.info("Secure database connector initialized and connected")
 
-            if TRAINING_AVAILABLE:
-                self._check_and_update_model()
 
-            model_config = self.config.get("model", {})
-            model_params = model_config.get("parameters", {})
+            model_cfg = self.config["model"]
+            params = model_cfg.get("parameters", {})
             self.components["intent_classifier"] = EnhancedIntentClassifier(
-                vocab_size=model_params.get("vocab_size", 5000),
-                embedding_dim=model_params.get("embedding_dim", 128),
-                max_sequence_length=model_params.get("max_sequence_length", 50)
+                vocab_size=params.get("vocab_size", 5000),
+                embedding_dim=params.get("embedding_dim", 128),
+                max_sequence_length=params.get("max_sequence_length", 50)
             )
-
-            model_path = model_config.get("path")
-            if model_path and os.path.exists(f"{model_path}/model.h5"):
-                self.logger.info(f"Loading intent classifier model from {model_path}")
+            model_path = model_cfg["path"]
+            if os.path.exists(f"{model_path}/model.h5"):
                 self.components["intent_classifier"].load_model(model_path)
-                self.model_last_loaded = os.path.getmtime(f"{model_path}/model.h5")
+                self.logger.info(f"Loaded intent model from {model_path}")
             else:
-                self.logger.warning(f"Model not found at {model_path}. Using uninitialized classifier.")
+                self.logger.warning(f"No model found at {model_path}, using uninitialized classifier")
 
-            security_config = self.config.get("security", {})
+
+            sec_fields = self.config["security"]["sensitive_fields"]
             self.components["query_processor"] = QueryProcessor(
                 db_connector=self.components["db_connector"],
                 encryption_manager=self.components["encryption_manager"],
-                sensitive_fields=security_config.get("sensitive_fields", [])
+                sensitive_fields=sec_fields
             )
-
             self.components["chatbot_engine"] = ChatbotEngine(
                 intent_classifier=self.components["intent_classifier"],
                 query_processor=self.components["query_processor"]
             )
 
-            speech_config = self.config.get("speech", {})
-            if speech_config.get("enabled", False) and SPEECH_AVAILABLE:
+
+            speech_cfg = self.config.get("speech", {})
+            if speech_cfg.get("enabled", False):
                 try:
                     self.components["speech_recognition"] = SecureSpeechRecognition(
                         encryption_manager=self.components["encryption_manager"],
-                        model_path=speech_config.get("model_path"),
-                        use_encryption=speech_config.get("use_encryption", True)
+                        model_path=speech_cfg["model_path"],
+                        use_encryption=speech_cfg.get("use_encryption", True)
                     )
-                    self.logger.info("Speech recognition initialized successfully")
+                    self.logger.info("Speech recognition initialized")
                 except Exception as e:
-                    self.logger.error(f"Error initializing speech recognition: {e}")
-                    self.logger.warning("Speech recognition will be disabled")
+                    self.logger.error(f"Speech init error: {e}")
                     self.components["speech_recognition"] = None
             else:
                 self.components["speech_recognition"] = None
-                if not SPEECH_AVAILABLE:
-                    self.logger.warning("Speech recognition is not available. "
-                                        "Required packages not installed.")
-                else:
-                    self.logger.info("Speech recognition is disabled in configuration")
 
-            api_config = self.config.get("api", {})
+
+            api_cfg = self.config["api"]
             self.components["flask_api"] = FlaskAPI(
                 chatbot_engine=self.components["chatbot_engine"],
                 db_connector=self.components["db_connector"],
-                secret_key=api_config.get("secret_key")
             )
 
             return True
+
         except Exception as e:
             self.logger.error(f"Error initializing components: {e}")
             return False

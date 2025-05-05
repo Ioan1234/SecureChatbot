@@ -15,7 +15,6 @@ try:
     SPEECH_DEPENDENCIES_AVAILABLE = True
 except ImportError as e:
     logging.error(f"Speech recognition libraries not installed: {e}")
-    logging.error("Run: pip install librosa soundfile SpeechRecognition pydub")
 
     class DummySR:
         class Recognizer:
@@ -58,7 +57,7 @@ class SecureSpeechRecognition:
         if not SPEECH_DEPENDENCIES_AVAILABLE:
             self.logger.error("Speech recognition dependencies not available")
             raise ImportError(
-                "Speech recognition dependencies not installed. Run: pip install librosa soundfile SpeechRecognition pydub")
+                "Speech recognition dependencies not installed.")
 
         self.encryption_manager = encryption_manager
         self.model_path = model_path
@@ -194,7 +193,7 @@ class SecureSpeechRecognition:
 
     def secure_process_audio(self, audio_data=None, audio_file=None):
         try:
-            # Load audio data
+
             if audio_data is None and audio_file is not None:
                 audio_data, sample_rate = self.load_audio_file(audio_file)
             elif audio_data is None:

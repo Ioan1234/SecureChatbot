@@ -130,7 +130,8 @@ class QueryProcessor:
                 "patterns": [
                     r'price range for trades',
                     r'trade price range',
-                    r'price range of trades'
+                    r'price range of trades',
+                    r'what(?:’|\'?)s the trading price range\??'
                 ],
                 "sql_template": """
               SELECT
@@ -381,7 +382,8 @@ class QueryProcessor:
             "busiest_market": {
                 "patterns": [
                     r'what is the busiest market',
-                    r'market with (?:the)? most trades'
+                    r'market with (?:the)? most trades',
+                    r'which exchange has (?:the )?highest trade count'
                 ],
                 "sql_template": """
                     SELECT 
@@ -393,43 +395,94 @@ class QueryProcessor:
                     GROUP BY m.market_id, m.name
                     ORDER BY trade_count DESC
                     LIMIT 10
-                """
+                """,
+                "sort_key": "trade_count",
+                "order": "DESC"
+            },
+            "highest_market_volume": {
+                "patterns": [
+                    r'which market has (?:the )?most activity',
+                    r'market with (?:the )?highest trading volume',
+                    r'identify (?:the )?busiest market by trade volume'
+                ],
+                "sql_template": """
+                                SELECT m.market_id,
+                                       m.name,
+                                       m.location,
+                                       COUNT(t.trade_id)         AS trade_count,
+                                       SUM(t.quantity * t.price) AS total_volume
+                                FROM markets m
+                                         LEFT JOIN trades t ON m.market_id = t.market_id
+                                GROUP BY m.market_id, m.name, m.location
+                                ORDER BY total_volume DESC LIMIT 10
+                                """,
+                "sort_key": "total_volume"
             },
 
             "highest_account_balance": {
                 "patterns": [
                     r'which trader has (?:the)? highest (?:account)? balance',
+                    r'highest balances?',
                     r'trader with most money',
-                    r'largest account balance'
+                    r'has the most money',
+                    r'largest account balances?',
+                    r'top\s+\d+\s+traders\s+by\s+(?:account )?balance',
+                    r'traders ranked by highest (?:account )?balance',
+                    r'most money in (?:their|the) account'
                 ],
                 "sql_template": """
                     SELECT 
                         t.trader_id,
                         t.name,
                         a.account_id,
-                        a.balance,
+                        a.balance_encrypted as balance,
                         a.account_type
                     FROM traders t
                     JOIN accounts a ON t.trader_id = a.trader_id
-                    ORDER BY a.balance DESC
+                    ORDER BY a.balance_encrypted DESC
                     LIMIT 10
                 """
+            },
+            "most_active_trader": {
+                "patterns": [
+                    r'which (?:user|trader) trades (?:the )?most(?: frequently)?\??',
+                    r'(?:show|which) (?:user|trader) with (?:the )?highest number of trades',
+                    r'most active trader',
+                    r'user who trades (?:most|most frequently)'
+                ],
+                "sql_template": """
+                                SELECT tr.trader_id,
+                                       tr.name,
+                                       tr.email_encrypted,
+                                       COUNT(t.trade_id)          AS trade_count,
+                                       SUM(t.quantity * t.price)  AS total_value,
+                                       MIN(t.trade_date)          AS first_trade_date,
+                                       MAX(t.trade_date)          AS last_trade_date,
+                                       COUNT(DISTINCT t.asset_id) AS unique_assets_traded
+                                FROM traders tr
+                                         JOIN trades t ON tr.trader_id = t.trader_id
+                                GROUP BY tr.trader_id, tr.name
+                                ORDER BY trade_count DESC LIMIT 10
+                                """,
+                "sort_key": "trade_count",
+                "order": "DESC"
             },
 
             "account_balance_stats": {
                 "patterns": [
-                    r'what is the average account balance',
-                    r'mean balance (?:across|of) accounts'
+                    r'(?:show|give me).*(?:statistics?|summary).*account balances',
+                    r"what(?:'|’)?s.*balance.*accounts\??",
+                    r'typical.*balance.*accounts',
+                    r'display.*statistical.*account balances'
                 ],
                 "sql_template": """
-                    SELECT 
-                        COUNT(*) as total_accounts,
-                        AVG(balance) as avg_balance,
-                        MIN(balance) as min_balance,
-                        MAX(balance) as max_balance,
-                        SUM(balance) as total_balance
-                    FROM accounts
-                """
+                SELECT
+                    a.balance_encrypted AS balance_encrypted,
+                    t.name              AS trader_name
+                FROM accounts a
+                JOIN traders t ON a.trader_id = t.trader_id
+            """,
+                "handler": "_handle_average_account_balance"
             },
 
             "negative_balance_accounts": {
@@ -508,8 +561,27 @@ class QueryProcessor:
                         SUM(amount) as total_amount
                     FROM transactions
                 """
+            },
+            "largest_trade_by_quantity": {
+                "patterns": [
+                    r'show me the largest trade by quantity',
+                    r'which trade had the most units\?',
+                    r'find the trade with the maximum quantity',
+                    r'show the largest trade by unit count'
+                ],
+                "sql_template": """
+                                SELECT t.trade_id,
+                                       t.trader_id,
+                                       t.asset_id,
+                                       t.quantity,
+                                       t.price,
+                                       t.trade_date
+                                FROM trades t
+                                ORDER BY t.quantity DESC LIMIT 1
+                                """,
+                "sort_key": "quantity",
+                "order": "DESC"
             }
-
         }
 
         for key, pattern_data in patterns.items():
@@ -524,27 +596,36 @@ class QueryProcessor:
 
         analytical = self._match_analytical_pattern(nl_query)
         if analytical:
+            self.logger.info(f"Running analytical SQL for {analytical['name']}")
             return self._execute_analytical_query(analytical, nl_query)
 
-        intent = intent_data.get("intent")
-        sub_intent = intent_data.get("sub_intent")
-        entities = self._extract_entities(nl_query)
-        tables = entities.get("tables", [])
-
         if intent_data and intent_data.get("intent") == "database_query_comparative":
+            if intent_data.get("sub_intent") == "database_query_comparative_highest":
+                analytical = self._match_analytical_pattern(nl_query)
+                if analytical:
+                    self.logger.info("Running analytical SQL for highest_account_balance")
+                    return self._execute_analytical_query(analytical, nl_query)
+
             result = self._execute_generic_comparative(nl_query)
             if result is not None:
                 return result
 
-
         query_type = self._determine_query_type(nl_query)
-        entities    = self._extract_entities(nl_query)
-        sql         = self._generate_sql(query_type, entities, nl_query)
+        entities = self._extract_entities(nl_query)
+        sql = self._generate_sql(query_type, entities, nl_query)
         if not sql:
             return None
         return self._execute_and_process_query(sql)
 
     def _execute_generic_comparative(self, nl_query: str):
+        default_limit = 10
+        m = re.search(r'\btop\s+(\d+)\b', nl_query.lower())
+        try:
+            limit = int(m.group(1)) if m else default_limit
+        except ValueError:
+            self.logger.warning("Invalid numeric limit; defaulting to 10")
+            limit = default_limit
+
         main_table = None
         for tbl in self.schema:
             if re.search(rf"\b{tbl}\b", nl_query, re.IGNORECASE):
@@ -565,31 +646,27 @@ class QueryProcessor:
         if not related:
             return None
 
-        sql = f"""
-             SELECT
-               m.{pk_main}     AS id,
-               m.name          AS name,
-               COUNT(r.{pk_rel}) AS count
-             FROM {main_table} m
-             JOIN {related} r
-               ON m.{pk_main} = r.{pk_rel}
-             GROUP BY m.{pk_main}, m.name
-             ORDER BY count DESC
-             LIMIT 1
+        raw_sql = f"""
+               SELECT
+                   m.{pk_main}   AS id,
+                   m.name        AS name,
+                   COUNT(r.{pk_rel}) AS count
+               FROM {main_table} m
+               JOIN {related} r
+                 ON m.{pk_main} = r.{pk_rel}
+               GROUP BY m.{pk_main}, m.name
+               ORDER BY count DESC
+               LIMIT {limit}
            """
-
-        result = self.db_connector.execute_encrypted_query(
-            "SELECT", [main_table, related], fields=None, conditions=None,
-            order_by=None, limit=1
-        )
+        result = self.db_connector.execute_encrypted_raw(raw_sql)
         if not result:
             return None
 
+        names = [row["name"] for row in result]
         return {
-            "response": f"Top {main_table.rstrip('s').capitalize()}: {result[0]['name']} ({result[0]['count']} records)",
+            "response": f"Top {limit} {main_table.rstrip('s').capitalize()}: {', '.join(names)}",
             "data": result
         }
-
     def _match_analytical_pattern(self, nl_query):
         for name, pattern_data in self.analytical_patterns.items():
             for pattern in pattern_data["compiled_patterns"]:
@@ -600,28 +677,38 @@ class QueryProcessor:
                     return {
                         "name": name,
                         "sql_template": pattern_data["sql_template"],
-                        "params": params
+                        "params": params,
+                        "sort_key": pattern_data.get("sort_key"),
+                        "order": pattern_data.get("order", "DESC")
                     }
         return None
 
     def _execute_analytical_query(self, analytical_query, nl_query):
         sql_template = analytical_query["sql_template"]
         params = analytical_query["params"]
+        raw_sql = sql_template.format(*params)
 
-        sql = sql_template
+        base_sql = re.sub(
+            r"ORDER\sBY\s\w_encrypted\b.*?(LIMIT\s\d)?",
+            "",
+            raw_sql,
+            flags=re.IGNORECASE | re.DOTALL
+        )
 
-        if analytical_query["name"] == "traders_count_before_date" and params:
-            sql = sql.format(date=params[0])
-        elif analytical_query["name"] == "traders_without_contact" and params:
-            field = params[0].lower()
-            sql = sql.format(field=field)
-        elif "date" in sql and params and len(params) > 0:
-            sql = sql.format(date=params[0])
-        elif "field" in sql and params and len(params) > 0:
-            sql = sql.format(field=params[0])
+        rows = self.db_connector.execute_encrypted_raw(base_sql)
+        if not rows:
+            return []
 
-        result = self._execute_and_process_query(sql)
-        return result
+        key_col = analytical_query.get("sort_key", "balance")
+        reverse = analytical_query.get("order", "DESC").upper() == "DESC"
+        sorted_rows = sorted(rows, key=lambda r: r[key_col], reverse=reverse)
+
+        limit_match = re.search(r"LIMIT\s(\d+)", raw_sql, re.IGNORECASE)
+        if limit_match:
+            limit = int(limit_match.group(1))
+            sorted_rows = sorted_rows[:limit]
+
+        return sorted_rows
 
     def _determine_query_type(self, nl_query):
         query_type = defaultdict(int)
@@ -1095,6 +1182,10 @@ class QueryProcessor:
 
     def _execute_and_process_query(self, sql):
         try:
+            if re.search(r"\w_encrypted\b", sql, re.IGNORECASE):
+                decrypted = self.db_connector.execute_encrypted_raw(sql)
+                return decrypted or []
+
             result = self.db_connector.execute_query(sql)
 
             if not result:
@@ -1103,17 +1194,7 @@ class QueryProcessor:
 
             processed_result = []
             for item in result:
-                processed_item = {}
-                for key, value in item.items():
-                    if key.endswith('_encrypted'):
-                        continue
-
-                    if self._is_sensitive_field(key):
-                        processed_item[key] = value
-                    else:
-                        processed_item[key] = value
-
-                processed_result.append(processed_item)
+                processed_result.append(item)
 
             return processed_result
 
@@ -1143,24 +1224,30 @@ class QueryProcessor:
         return self._execute_and_process_query(sql)
 
     def get_traders_without_contact(self, contact_field="email"):
+        enc = f"{contact_field}_encrypted"
         sql = f"""
-        SELECT * FROM traders
-        WHERE {contact_field} IS NULL OR {contact_field} = ''
+        SELECT
+            trader_id,
+            name,
+            {enc} AS {contact_field},
+            registration_date
+        FROM traders
+        WHERE {enc} IS NULL OR {enc} = ''
         """
-        return self._execute_and_process_query(sql)
+        return self.db_connector.execute_encrypted_raw(sql)
 
     def get_common_email_domains(self, limit=5):
         sql = f"""
         SELECT 
-            SUBSTRING_INDEX(email, '@', -1) as domain,
+            SUBSTRING_INDEX(email_encrypted, '@', -1) AS domain,
             COUNT(*) as count
         FROM traders
-        WHERE email IS NOT NULL AND email != ''
+        WHERE email_encrypted IS NOT NULL AND email_encrypted != ''
         GROUP BY domain
         ORDER BY count DESC
         LIMIT {limit}
         """
-        return self._execute_and_process_query(sql)
+        return self.db_connector.execute_encrypted_raw(sql)
 
     def get_traders_with_same_name(self):
         sql = """
@@ -1310,21 +1397,28 @@ class QueryProcessor:
 
     def get_brokers_without_license(self):
         sql = """
-        SELECT * FROM brokers
-        WHERE license_number IS NULL OR license_number = ''
-        """
-        return self._execute_and_process_query(sql)
+              SELECT broker_id, \
+                     name, \
+                     license_number_encrypted AS license_number, \
+                     contact_email_encrypted  AS contact_email
+              FROM brokers
+              WHERE license_number_encrypted IS NULL \
+                 OR license_number_encrypted = '' \
+              """
+        return self.db_connector.execute_encrypted_raw(sql)
 
     def get_brokers_with_same_email(self):
         sql = """
-        SELECT contact_email, COUNT(*) as count
+        SELECT
+            contact_email_encrypted AS contact_email,
+            COUNT(*) as count
         FROM brokers
-        WHERE contact_email IS NOT NULL AND contact_email != ''
-        GROUP BY contact_email
+        WHERE contact_email_encrypted IS NOT NULL AND contact_email_encrypted != ''
+        GROUP BY contact_email_encrypted
         HAVING count > 1
         ORDER BY count DESC
         """
-        return self._execute_and_process_query(sql)
+        return self.db_connector.execute_encrypted_raw(sql)
 
     def get_broker_with_most_assets(self):
         sql = """
@@ -1571,40 +1665,39 @@ class QueryProcessor:
 
     def get_average_account_balance(self):
         sql = """
-        SELECT 
-            AVG(balance) as avg_balance,
-            MIN(balance) as min_balance,
-            MAX(balance) as max_balance,
-            SUM(balance) as total_balance
-        FROM accounts
-        """
-        return self._execute_and_process_query(sql)
+              SELECT AVG(balance_encrypted) as avg_balance, \
+                     MIN(balance_encrypted) as min_balance, \
+                     MAX(balance_encrypted) as max_balance, \
+                     SUM(balance_encrypted) as total_balance
+              FROM accounts \
+              """
+        return self.db_connector.execute_encrypted_raw(sql)
 
     def get_non_positive_balance_accounts(self):
         sql = """
-        SELECT 
-            COUNT(*) as total_accounts,
-            SUM(CASE WHEN balance < 0 THEN 1 ELSE 0 END) as negative_balance_count,
-            SUM(CASE WHEN balance = 0 THEN 1 ELSE 0 END) as zero_balance_count,
-            SUM(CASE WHEN balance <= 0 THEN 1 ELSE 0 END) as non_positive_balance_count
-        FROM accounts
-        """
-        return self._execute_and_process_query(sql)
+              SELECT COUNT(*)                                                as total_accounts, \
+                     SUM(CASE WHEN balance_encrypted < 0 THEN 1 ELSE 0 END)  as negative_balance_count, \
+                     SUM(CASE WHEN balance_encrypted = 0 THEN 1 ELSE 0 END)  as zero_balance_count, \
+                     SUM(CASE WHEN balance_encrypted <= 0 THEN 1 ELSE 0 END) as non_positive_balance_count
+              FROM accounts \
+              """
+        return self.db_connector.execute_encrypted_raw(sql)
 
-    def get_highest_balance_account(self):
+    def get_highest_balance_account(self, limit: int = 10):
         sql = """
-        SELECT 
-            a.account_id,
-            a.balance,
-            a.account_type,
-            t.trader_id,
-            t.name as trader_name
-        FROM accounts a
-        JOIN traders t ON a.trader_id = t.trader_id
-        ORDER BY a.balance DESC
-        LIMIT 10
-        """
-        return self._execute_and_process_query(sql)
+              SELECT a.account_id, \
+                     a.balance_encrypted AS balance, \
+                     a.account_type, \
+                     t.trader_id, \
+                     t.name              AS trader_name
+              FROM accounts a
+                       JOIN traders t ON a.trader_id = t.trader_id \
+              """
+        rows = self.db_connector.execute_encrypted_raw(sql)
+
+        rows.sort(key=lambda r: r.get("balance", 0), reverse=True)
+
+        return rows[:limit]
 
     def get_account_types(self):
         sql = """

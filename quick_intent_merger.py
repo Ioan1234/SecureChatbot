@@ -143,20 +143,19 @@ class QuickIntentMerger:
         if pattern_matches:
             self.logger.info(f"Pattern matches: {[m[0] for m in pattern_matches]}")
 
-            if confidence < 0.8:
-                pattern_info = pattern_matches[0][1]
-                self.logger.info(f"Low ML confidence ({confidence}). Using pattern match: {pattern_info}")
+            pattern_info = pattern_matches[0][1]
+            self.logger.info(f"Low ML confidence ({confidence}). Using pattern match: {pattern_info}")
 
-                new_intent = pattern_info["intent"]
-                sub_intent = pattern_info.get("sub_intent")
+            new_intent = pattern_info["intent"]
+            sub_intent = pattern_info.get("sub_intent")
 
-                result = {
+            result = {
                     "intent": new_intent,
                     "confidence": 0.9
                 }
 
-                if sub_intent:
-                    result["sub_intent"] = sub_intent
+            if sub_intent:
+                result["sub_intent"] = sub_intent
 
         if "intent" in result:
             intent = result["intent"]

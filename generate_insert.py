@@ -12,12 +12,16 @@ import threading
 import mysql.connector
 
 
-DB_CONFIG = {
-     "host":     "localhost",
-    "user":     "root",
-    "password": "stud",
-    "database": "fm_database"
-}
+
+
+import mysql.connector
+import logging
+from load_config import load_config
+
+
+config = load_config()
+db_cfg = config["database"]
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -30,13 +34,23 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def load_asset_ids():
-    conn = mysql.connector.connect(**DB_CONFIG)
+    
+    conn = mysql.connector.connect(
+        host=db_cfg["host"],
+        user=db_cfg["user"],
+        password=db_cfg["password"],
+        database=db_cfg["database"]
+    )
     cursor = conn.cursor()
     cursor.execute("SELECT asset_id FROM assets")
     ids = [row[0] for row in cursor.fetchall()]
     cursor.close()
     conn.close()
+    logger.info(f"Fetched {len(ids)} asset IDs")
     return ids
+
+
+
 
 class ThreadSafeCounter:
 

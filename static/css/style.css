@@ -408,9 +408,6 @@ body {
         gap: 6px;
     }
 }
-/* Add these pagination styles to your existing style.css file */
-
-/* Pagination controls container */
 .pagination-controls {
     display: flex;
     justify-content: space-between;
@@ -420,7 +417,6 @@ body {
     padding: 5px 0;
 }
 
-/* Pagination buttons */
 .pagination-btn {
     background-color: var(--primary-color);
     color: white;
@@ -475,4 +471,5 @@ body {
         margin: 5px 0;
         order: -1;
     }
+
 }

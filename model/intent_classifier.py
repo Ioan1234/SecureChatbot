@@ -160,7 +160,7 @@ class EnhancedIntentClassifier:
                     enhanced_result = self.post_processor.identify_sub_intent(query, intent, confidence)
                     self.logger.debug(f"Post-processed result: {enhanced_result}")
 
-                    # If we have a sub-intent with good confidence, add it to the result
+
                     if enhanced_result.get("sub_intent") and enhanced_result.get("sub_confidence", 0) > 0.5:
                         result["sub_intent"] = enhanced_result["sub_intent"]
                         result["sub_confidence"] = enhanced_result["sub_confidence"]
@@ -278,19 +278,16 @@ class EnhancedIntentClassifier:
                         self.logger.error(
                             f"Model file at {model_path} is too small ({file_size} bytes). It may be corrupted.")
                         self.model = None
-                        return False
+                    else:
+                        self.model = load_model(model_path)
+                        self.logger.info(f"Loaded model from {model_path}")
 
-                    self.model = load_model(model_path)
-                    self.logger.info(f"Loaded model from {model_path}")
-
-                    if not isinstance(self.model, tf.keras.Model):
-                        self.logger.error(f"Loaded object is not a valid Keras model. Type: {type(self.model)}")
-                        self.model = None
-                        return False
+                        if not isinstance(self.model, tf.keras.Model):
+                            self.logger.error(f"Loaded object is not a valid Keras model. Type: {type(self.model)}")
+                            self.model = None
                 except Exception as e:
                     self.logger.error(f"Error loading model from {model_path}: {e}")
                     self.model = None
-                    return False
             else:
                 alt_model_path = os.path.join(model_dir, "intent_model.h5")
                 if os.path.exists(alt_model_path):
@@ -304,11 +301,10 @@ class EnhancedIntentClassifier:
                     except Exception as e:
                         self.logger.error(f"Error loading alternative model from {alt_model_path}: {e}")
                         self.model = None
-                        return False
                 else:
                     self.logger.error(f"Model file not found at {model_path} or {alt_model_path}")
                     self.model = None
-                    return False
+
 
             if self.use_post_processor:
                 try:
@@ -318,6 +314,7 @@ class EnhancedIntentClassifier:
                 except Exception as e:
                     self.logger.warning(f"Could not initialize post-processor: {e}")
                     self.post_processor = None
+
 
             if self.model is None:
                 self.logger.error("Model loading failed")

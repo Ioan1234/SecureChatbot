@@ -20,7 +20,7 @@ class SpeechRoutes:
         @self.app.route('/api/speech_recognition', methods=['POST'])
         def speech_recognition():
             try:
-                # Check if speech recognition is available
+
                 if not self.speech_recognition:
                     return jsonify({
                         "error": "Speech recognition not configured",

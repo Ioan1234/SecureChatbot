@@ -16,7 +16,7 @@ class SecureDatabaseConnector(DatabaseConnector):
 
         self.encryption_manager = encryption_manager
 
-        # in SecureDatabaseConnector.__init__:
+
         self.sensitive_fields = {
             "traders": {
                 "email": "string",
@@ -46,19 +46,19 @@ class SecureDatabaseConnector(DatabaseConnector):
             for field in fields:
                 mapping[f"{table}.{field}"] = f"{table}.{field}"
                 mapping[field] = f"{table}.{field}"
-        # after the existing mapping loop:
+
         mapping.update({
-            # when you alias t.email AS trader_email
+
             "trader_email": "traders.email",
-            # when you alias b.contact_email AS contact_email (if you do)
+
             "contact_email": "brokers.contact_email",
 
-            # in your account‐types query:
+
             "avg_balance": "accounts.balance",
             "min_balance": "accounts.balance",
             "max_balance": "accounts.balance",
             "total_balance": "accounts.balance",
-            # (COUNT(*) AS count is not sensitive, so you can skip it)
+
         })
 
         return mapping
@@ -152,7 +152,7 @@ class SecureDatabaseConnector(DatabaseConnector):
         """
         self.logger.info(f"HE-TRIPWIRE: execute_encrypted_raw called for SQL: {sql}")
         try:
-            # run the query
+
             if not self.connection or not self.connection.is_connected():
                 self.connect()
             cursor = self.connection.cursor(dictionary=True)
@@ -160,14 +160,14 @@ class SecureDatabaseConnector(DatabaseConnector):
             rows = cursor.fetchall()
             cursor.close()
 
-            # decrypt sensitive fields
+
             decrypted_rows = []
             for row in rows:
                 new_row = {}
                 for col, val in row.items():
                     dec_val = val
-                    fq = self.field_mapping.get(col, col)  # e.g. "traders.email"
-                    # only attempt HE on actual encrypted bytes
+                    fq = self.field_mapping.get(col, col)
+
                     if "." in fq and isinstance(val, (bytes, bytearray)):
                         table, field = fq.split(".", 1)
                         ftype = self.sensitive_fields.get(table, {}).get(field)
@@ -175,11 +175,11 @@ class SecureDatabaseConnector(DatabaseConnector):
                             snippet = f"{repr(val)[:50]}{'…' if len(repr(val)) > 50 else ''}"
                             self.logger.info(f"HE: decrypting '{col}' ({fq}) ciphertext: {snippet}")
                             try:
-                                # delegate both string & numeric to your manager
+
                                 dec_val = self.encryption_manager.decrypt_value(val, fq)
                             except Exception as e:
                                 self.logger.error(f"HE: decryption error for {fq}: {e}")
-                                # return None (→ JSON null) rather than raw bytes
+
                                 dec_val = None
                     new_row[col] = dec_val
                 decrypted_rows.append(new_row)

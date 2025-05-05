@@ -99,7 +99,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.suggestions) {
             addSuggestions(messageContent, data.suggestions);
         } else if (data.data && Array.isArray(data.data) && data.data.length > 0) {
-            // Generate context-aware suggestions
             const suggestions = generateSuggestions(data.data);
             if (suggestions.length > 0) {
                 addSuggestions(messageContent, suggestions);
@@ -133,36 +132,36 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function generateSuggestions(data) {
-        const suggestions = [];
+      const suggestions = [];
+      if (!data || data.length === 0) return suggestions;
 
-        if (data.length === 0) return suggestions;
+      const cols = Object.keys(data[0]);
 
-        if ('trader_id' in data[0] || 'name' in data[0] && 'registration_date' in data[0]) {
-            suggestions.push("Show me traders with highest account balance");
-            suggestions.push("Count how many traders we have");
-        }
+      if (cols.includes('account_balance')) {
+        suggestions.push("List top 5 traders by account balance");
+        suggestions.push("Show traders ranked by highest account balance");
+      }
+      else if (cols.includes('trade_date')) {
+        suggestions.push("Display the newest trading activity");
+        suggestions.push("List the most recent transactions in the market");
+      }
+      else if (cols.includes('asset_type')) {
+        suggestions.push("List all bond assets");
+        suggestions.push("Show all ETF assets");
+      }
+      else if (cols.includes('trade_count') || cols.includes('num_trades')) {
+        suggestions.push("Find the trader with the highest number of trades");
+        suggestions.push("Identify which user trades the most frequently");
+      }
 
-        if ('asset_id' in data[0] || 'asset_type' in data[0]) {
-            suggestions.push("Show me ETF assets");
-            suggestions.push("Get the average price of assets");
-        }
+      if (suggestions.length === 0) {
+        suggestions.push("Show current asset prices");
+        suggestions.push("List account types and their respective counts");
+      }
 
-        if ('trade_id' in data[0] || 'trade_date' in data[0]) {
-            suggestions.push("Show trades from last week");
-            suggestions.push("Show me completed orders");
-        }
-
-        if ('transaction_id' in data[0] || 'transaction_date' in data[0]) {
-            suggestions.push("List transactions over $10,000");
-        }
-
-        if (suggestions.length < 2) {
-            suggestions.push("List all traders");
-            suggestions.push("Show me recent trades");
-        }
-
-        return suggestions.slice(0, 3);
+      return suggestions.slice(0, 3);
     }
+
 
     function getDataFromEntityData(entityData) {
         let allRows = [];

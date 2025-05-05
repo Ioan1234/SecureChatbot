@@ -62,7 +62,7 @@ class DatabaseConnector:
                 cursor.execute(query)
 
             if query.strip().upper().startswith(('SELECT', 'SHOW', 'DESCRIBE')):
-                result = cursor.fetchall()  # This ensures we consume all results
+                result = cursor.fetchall()
                 return result
             else:
                 self.connection.commit()

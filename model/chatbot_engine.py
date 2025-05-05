@@ -34,9 +34,18 @@ class ChatbotEngine:
 
 
     def _init_entity_question_handlers(self):
-        # Initialize entity-specific shortcut handlers, excluding any that query sensitive fields
+
         self.base_patterns = {
-            # Asset and market handlers unaffected
+
+            r"(?:how|who|list|show).*(?:largest|highest|top)\s+traders?.*balance": self._handle_highest_balance_account,
+            r"(?:who has|which trader has).*(?:the)?\s*(?:most|highest)\s+(?:money|balance)": self._handle_highest_balance_account,
+            r"(?:top)\s+\d+\s+traders?\s+by\s+(?:account\s+)?balance": self._handle_highest_balance_account,
+            r"traders?\s+ranked\s+by\s+highest\s+(?:account\s+)?balance": self._handle_highest_balance_account,
+            r".*(?:traders?\sranked\sby\shighest\sbalance).*": self._handle_highest_balance_query,
+            r".*(?:top\s\d\straders?\sby\s(?:account\s)?balance).*": self._handle_highest_balance_query,
+            r".*(?:who\shas\s(?:the\s)?most\smoney\sin\s(?:their|the)\saccount).*": self._handle_highest_balance_query,
+            r".*(?:largest\saccount\sbalances?).*": self._handle_highest_balance_query,
+            r".*(?:trader\swith\smost\smoney).*": self._handle_highest_balance_query,
             r"(?:what are|show|list|get|find|display).*(?:recent|latest|newest|current) trades": self._handle_recent_trades_query,
             r"(?:show|list|get|find|display).*(?:recent|latest|newest|current) transactions(?: in the market)?": self._handle_recent_transactions_query,
             r"(?:show|list|rank|compare).*(?:markets?).*(?:trade (?:volume|count)|trading activity|most activity)": self._handle_market_trade_activity,
@@ -54,34 +63,37 @@ class ChatbotEngine:
             r"(?:how efficiently|show|list).*(?:orders completed|order completion times|order types processed most efficiently)": self._handle_order_completion_efficiency,
             r"(?:how|show).*(?:brokers distribute their assets|asset distribution across brokers|types of assets do brokers manage)": self._handle_broker_asset_distribution,
             r"(?:what|show|list|get|display).*(?:account types)(?: available)?": self._handle_account_types,
+            r"(?:how|who|list|show).*(?:traders?).*(?:largest|highest|top)\s+balances?": self._handle_highest_balance_account,
+
+
             r"(?:who|show|find|identify).*(?:most active trader|highest number of trades|trades the most frequently)":
                 self._handle_trader_most_trades,
 
-            # ── BROKER “largest portfolio” queries ──
+
             r"(?:who|show|find|rank|list).*(?:broker).*?(?:largest portfolio|most assets managed|assets under management)":
                 self._handle_broker_with_most_assets,
 
-            # ── BROKER “most assets” queries ──
-            # exact match for “largest portfolio” you already had:
+
+
             r"(?:show|find|display).*(?:broker).*(?:largest portfolio)":
                 self._handle_broker_with_most_assets,
 
-            # “highest number of assets”
+
             r"(?:who|show|find|identify).*(?:broker).*(?:highest number of assets)":
                 self._handle_broker_with_most_assets,
 
-            # “rank brokers by number of assets managed”
+
             r"(?:rank|list).*(?:brokers).*(?:assets managed)":
                 self._handle_broker_with_most_assets,
 
-            # “assets under management” synonym
+
             r"(?:find|show).*(?:broker).*(?:assets under management)":
                 self._handle_broker_with_most_assets
         }
 
 
         synonym_groups = {
-            # Retain synonyms for non-sensitive handlers
+
             self._handle_recent_trades_query: [
                 "What are the latest trades?",
                 "Display the newest trading activity",
@@ -192,6 +204,7 @@ class ChatbotEngine:
                 "What types of assets do brokers manage?",
                 "Display how brokers allocate their assets across types",
             ],
+
         }
 
         self.entity_question_handlers = {}
@@ -216,7 +229,7 @@ class ChatbotEngine:
 
             entity_query_result = self._check_entity_question_handlers(user_input)
             if entity_query_result is not None:
-                # wrap the raw query result in your normal formatter
+
                 formatted = self.generate_response(None, entity_query_result)
                 return self._process_response_for_json(formatted)
 
@@ -357,84 +370,59 @@ class ChatbotEngine:
         else:
             return value
 
-
     def generate_response(self, intent, query_result, sub_intent=None):
         if not query_result:
             return {"response": "I couldn't find any information for your query."}
-
         if isinstance(query_result, dict) and "error" in query_result:
             return {"response": f"There was an error: {query_result['error']}"}
-
         if isinstance(query_result, dict) and "response" in query_result:
             return query_result
-
-        if isinstance(query_result, list):
-            if len(query_result) == 0:
-                return {"response": "I found no matching records."}
-
-            table_detected = self._determine_primary_table(query_result[0])
-
+        if isinstance(query_result, list) and len(query_result) > 1:
+            rows = query_result
+            sample = rows[0]
+            detected = self._determine_primary_table(sample)
             intent_parts = intent.split('_') if intent else []
-            intent_table = None
-            for part in intent_parts:
-                if part in ["assets", "traders", "trades", "markets", "accounts", "orders"]:
-                    intent_table = part
-                    break
-
-            primary_table = intent_table or table_detected or "records"
-
+            table_from_intent = next(
+                (p for p in intent_parts if p in ["assets", "traders", "trades", "markets", "accounts", "orders"]),
+                None)
+            primary_table = table_from_intent or detected or "records"
             display_name = self.table_display_names.get(primary_table, primary_table.capitalize())
-
-            total_records = len(query_result)
-
-            if len(query_result) == 1:
-                response_text = f"Here's the {display_name.rstrip('s')} information I found:"
-                data_to_return = query_result[0]
+            total = len(rows)
+            response_text = f"Found {total} {display_name} in the database:"
+            if total <= 10:
+                if 'trader_name' in sample:
+                    names = [r.get('trader_name') for r in rows]
+                    snippet = ', '.join(names[:5]) + (' and others' if len(names) > 5 else '')
+                    response_text += f" Including traders: {snippet}."
+                elif 'name' in sample:
+                    names = [r.get('name') for r in rows]
+                    snippet = ', '.join(names[:5]) + (' and others' if len(names) > 5 else '')
+                    response_text += f" Including {display_name.rstrip('s')}: {snippet}."
+            if primary_table == 'traders':
+                if 'balance' in sample:
+                    vals = [float(r.get('balance', 0)) for r in rows]
+                    avg = sum(vals) / len(vals) if vals else 0
+                    response_text += f" Average balance: ${avg:.2f}."
+                if 'registration_date' in sample:
+                    dates = [r.get('registration_date') for r in rows]
+                    earliest = min(dates)
+                    latest = max(dates)
+                    response_text += f" Registration from {earliest.strftime('%Y-%m-%d')} to {latest.strftime('%Y-%m-%d')}."
+            return {"response": response_text, "data": rows}
+        if isinstance(query_result, list) and len(query_result) == 1:
+            query_result = query_result[0]
+        if (intent == 'database_query_comparative'
+                and sub_intent == 'database_query_comparative_highest'
+                and not (isinstance(query_result, list) and len(query_result) > 1)):
+            if isinstance(query_result, list):
+                top = query_result[0]
             else:
-                response_text = f"Found {total_records} {display_name} in the database:"
+                top = query_result
 
-                if total_records <= 10:
-                    sample = query_result[0]
-                    if "name" in sample:
-                        names = [r.get("name", "") for r in query_result if "name" in r]
-                        name_list = ", ".join(names[:5])
-                        if len(names) > 5:
-                            name_list += " and others"
-                        response_text += f" Including {name_list}."
-                    elif "trader_id" in sample and "trader_name" in sample:
-                        names = [r.get("trader_name", "") for r in query_result if "trader_name" in r]
-                        name_list = ", ".join(names[:5])
-                        if len(names) > 5:
-                            name_list += " and others"
-                        response_text += f" Including traders: {name_list}."
-                    elif "asset_id" in sample and "asset_name" in sample:
-                        names = [r.get("asset_name", "") for r in query_result if "asset_name" in r]
-                        name_list = ", ".join(names[:5])
-                        if len(names) > 5:
-                            name_list += " and others"
-                        response_text += f" Including assets: {name_list}."
-
-                data_to_return = query_result
-
-            if primary_table == "traders" and len(query_result) > 1:
-                if "balance" in query_result[0]:
-                    balances = [float(r.get("balance", 0)) for r in query_result if "balance" in r]
-                    avg_balance = sum(balances) / len(balances) if balances else 0
-                    response_text += f" Average balance: ${avg_balance:.2f}."
-
-                if "registration_date" in query_result[0]:
-                    earliest = min(
-                        r.get("registration_date", datetime.now()) for r in query_result if "registration_date" in r)
-                    latest = max(
-                        r.get("registration_date", datetime.now()) for r in query_result if "registration_date" in r)
-                    response_text += f" Registration dates from {earliest.strftime('%Y-%m-%d')} to {latest.strftime('%Y-%m-%d')}."
-
-            return {
-                "response": response_text,
-                "data": data_to_return
-            }
-        else:
-            return {"response": "Operation completed successfully."}
+            name = top.get('trader_name') or top.get('name', 'Unknown')
+            bal = float(top.get('balance', 0))
+            return {"response": f"Top trader is {name} with ${bal:.2f}.", "data": [top]}
+        return {"response": "Operation completed successfully.", "data": query_result}
 
     def _determine_primary_table(self, result_item):
         if not result_item:
@@ -642,7 +630,7 @@ class ChatbotEngine:
 
             for trader in processed_results:
                 days = trader.get('days_since_registration', 0)
-                if isinstance(days, str) and 'h' in days:  # Handle already formatted time
+                if isinstance(days, str) and 'h' in days:
                     days = 0
                 if days <= 30:
                     recent_count += 1
@@ -1086,54 +1074,80 @@ class ChatbotEngine:
 
     def _handle_highest_trade_quantity(self):
         sql = """
-        SELECT 
-            t.*,
-            a.name as asset_name,
-            a.asset_type,
-            tr.name as trader_name,
-            tr.email as trader_email,
-            m.name as market_name,
-            m.location as market_location,
-            (t.quantity * t.price) as trade_value
-        FROM trades t
-        JOIN assets a ON t.asset_id = a.asset_id
-        JOIN traders tr ON t.trader_id = tr.trader_id
-        JOIN markets m ON t.market_id = m.market_id
-        ORDER BY t.quantity DESC
-        LIMIT 10
-        """
+              SELECT t.trade_id, \
+                     t.quantity, \
+                     t.price, \
+                     t.trade_date, \
+                     (t.quantity * t.price) AS trade_value, \
 
-        result = self.query_processor.db_connector.execute_query(sql)
+                     a.name                 AS asset_name, \
+                     a.asset_type, \
 
-        if not result or len(result) == 0:
+                     tr.trader_id           AS trader_id, \
+                     tr.name                AS trader_name, \
+                     tr.email_encrypted     AS trader_email, -- alias to trigger built-in decryption \
+
+                     m.name                 AS market_name, \
+                     m.location             AS market_location
+              FROM trades t
+                       JOIN assets a ON t.asset_id = a.asset_id
+                       JOIN traders tr ON t.trader_id = tr.trader_id
+                       JOIN markets m ON t.market_id = m.market_id
+              ORDER BY t.quantity DESC LIMIT 10 \
+              """
+
+        result = self.query_processor.db_connector.execute_encrypted_raw(sql)
+
+        if not result:
             return {"response": "No trade quantity information found."}
 
-        top_trade = result[0]
-        trader_name = top_trade.get('trader_name')
-        asset_name = top_trade.get('asset_name')
-        quantity = top_trade.get('quantity', 0)
-        price = top_trade.get('price', 0)
-        trade_value = top_trade.get('trade_value', 0)
-        trade_date = top_trade.get('trade_date')
-        market_name = top_trade.get('market_name')
+        top = result[0]
+        dec_email = top.get("trader_email", "Unknown")
+        trader_name = top["trader_name"]
+        asset_name = top["asset_name"]
+        quantity = top["quantity"]
+        trade_value = top["trade_value"]
+        trade_date = top["trade_date"]
+        market_name = top["market_name"]
 
-        return {
-            "response": f"The highest quantity traded was {quantity} units of {asset_name} by {trader_name} on {trade_date} at {market_name}, worth ${trade_value:.2f} total.",
-            "data": result
-        }
+        response = (
+            f"The highest quantity traded was {quantity} units of {asset_name} "
+            f"by {trader_name} <{dec_email}> on {trade_date} at {market_name}, "
+            f"worth ${trade_value:.2f} total."
+        )
+        return {"response": response, "data": result}
 
     def _handle_trade_price_range(self):
         sql = """
-        SELECT 
-            MIN(price) as min_price,
-            MAX(price) as max_price,
-            AVG(price) as avg_price,
-            STDDEV(price) as price_stddev,
-            (SELECT a.name FROM trades t JOIN assets a ON t.asset_id = a.asset_id WHERE t.price = (SELECT MIN(price) FROM trades)) as min_price_asset,
-            (SELECT a.name FROM trades t JOIN assets a ON t.asset_id = a.asset_id WHERE t.price = (SELECT MAX(price) FROM trades)) as max_price_asset,
-            COUNT(*) as total_trades,
-            SUM(quantity * price) as total_value
-        FROM trades
+        SELECT
+        s.min_price,
+        s.max_price,
+        s.avg_price,
+        s.price_stddev,
+      (SELECT a.name
+       FROM trades t
+       JOIN assets a ON t.asset_id = a.asset_id
+       WHERE t.price = s.min_price
+       LIMIT 1
+      ) AS min_price_asset,
+      (SELECT a.name
+       FROM trades t
+       JOIN assets a ON t.asset_id = a.asset_id
+       WHERE t.price = s.max_price
+       LIMIT 1
+      ) AS max_price_asset,
+      s.total_trades,
+      s.total_value
+        FROM (
+        SELECT
+        MIN(price)       AS min_price,
+        MAX(price)       AS max_price,
+        AVG(price)       AS avg_price,
+        STDDEV(price)    AS price_stddev,
+        COUNT(*)         AS total_trades,
+        SUM(quantity*price) AS total_value
+      FROM trades
+    ) s;
         """
 
         result = self.query_processor.db_connector.execute_query(sql)
@@ -1420,47 +1434,46 @@ class ChatbotEngine:
 
     def _handle_highest_balance_query(self):
         try:
-            self.logger.info("Using highest balance query handler")
+            self.logger.info("Using custom highest-balance handler")
+
+            query_lower = getattr(self, 'current_query', '').lower()
+            m = re.search(r'\b(?:top|show me)\s+(\d+)\b', query_lower)
+            limit = int(m.group(1)) if m else 10
 
             sql = """
-            SELECT 
-                t.trader_id, 
-                t.name as trader_name, 
-                t.email_encrypted as email, 
-                a.account_id, 
-                a.balance_encrypted as balance, 
-                a.account_type,
-                a.creation_date
-            FROM traders t
-            JOIN accounts a ON t.trader_id = a.trader_id
-            ORDER BY a.balance DESC
-            LIMIT 10
-            """
+                  SELECT t.trader_id, \
+                         t.name              AS trader_name, \
+                         a.account_id, \
+                         a.balance_encrypted AS balance, \
+                         a.account_type
+                  FROM traders t
+                           JOIN accounts a ON t.trader_id = a.trader_id \
+                  """
+            rows = self.query_processor.db_connector.execute_encrypted_raw(sql)  # decrypts numeric for you
+            if not rows:
+                return {"response": "No account balances found."}
 
-            self.logger.info(f"Executing highest balance SQL: {sql}")
-            result = self.query_processor.db_connector.execute_query(sql)
+            rows.sort(key=lambda r: float(r.get("balance", 0)), reverse=True)
+            top = rows[:limit]
 
-            if result and len(result) > 0:
-                top_trader = result[0]
-                trader_name = top_trader.get('trader_name', 'Unknown')
-                balance = top_trader.get('balance', 0)
+            lines = [
+                f"{r['trader_name']}: ${float(r['balance']):,.2f}"
+                for r in top
+            ]
 
-                return {
-                    "response": f"Traders with highest account balances. Top trader is {trader_name} with ${balance:.2f}.",
-                    "data": result
-                }
-            else:
-                return {
-                    "response": "No account balance information found."
-                }
-        except Exception as e:
-            self.logger.error(f"Error in highest balance query: {e}")
             return {
-                "response": f"Could not retrieve trader balance information due to an error: {str(e)}"
+                "response": f"Top {limit} traders by account balance:\n" + "\n".join(lines),
+                "data": top
+            }
+
+        except Exception as e:
+            self.logger.error(f"Error in custom highest-balance handler: {e}")
+            return {
+                "response": f"Could not retrieve top balances due to an error: {e}"
             }
 
     def _handle_average_account_balance(self):
-        # 1) fetch balances + trader names
+
         rows = self.query_processor.db_connector.execute_query(
             """
             SELECT a.balance_encrypted AS balance_encrypted,
@@ -1472,11 +1485,11 @@ class ChatbotEngine:
         if not rows:
             return {"response": "Could not calculate average account balance."}
 
-        # 2) grab CKKS contexts
-        he_ctx = self.query_processor.encryption_manager.ckks_context
+
+        he_ctx  = self.query_processor.encryption_manager.ckks_context
         sec_ctx = self.query_processor.encryption_manager.secret_context
 
-        # 3) sum and collect plaintexts
+
         total_vec = None
         plaintext_vals = []
         trader_names = []
@@ -1489,7 +1502,8 @@ class ChatbotEngine:
             vec = ts.ckks_vector_from(he_ctx, ct)
             total_vec = vec if total_vec is None else total_vec + vec
 
-            plain = vec.decrypt()[0]/he_ctx.global_scale
+            dec_vec = ts.ckks_vector_from(sec_ctx, ct)
+            plain   = dec_vec.decrypt()[0]
             plaintext_vals.append(plain)
             trader_names.append(row["trader_name"])
 
@@ -1497,11 +1511,12 @@ class ChatbotEngine:
         if count == 0:
             return {"response": "No encrypted balances found."}
 
-        # 4) average under CKKS, then decrypt
-        avg_vec = total_vec * (1.0 / count)
-        avg_plain = avg_vec.decrypt()[0]/he_ctx.global_scale
 
-        # 5) compute stats in Python
+        avg_vec = total_vec * (1.0 / count)
+        avg_ct    = avg_vec.serialize()
+        avg_plain = ts.ckks_vector_from(sec_ctx, avg_ct).decrypt()[0]
+
+
         min_balance = min(plaintext_vals)
         max_balance = max(plaintext_vals)
         total_balance = sum(plaintext_vals)
@@ -1512,7 +1527,7 @@ class ChatbotEngine:
         idx_high = plaintext_vals.index(max_balance)
         highest_trader = trader_names[idx_high]
 
-        # 6) format exactly as before
+
         response = (
             f"Account balance summary: "
             f"average ${avg_plain:.2f}, "
@@ -1523,13 +1538,13 @@ class ChatbotEngine:
         )
 
         data = [{
-            "avg_balance": avg_plain,
-            "min_balance": min_balance,
-            "max_balance": max_balance,
-            "total_balance": total_balance,
-            "total_accounts": count,
-            "negative_balance_count": negative_count,
-            "highest_balance_trader": highest_trader,
+            "avg_balance": round(avg_plain,2),
+            "min_balance": round(min_balance,2),
+            "max_balance": round(max_balance,2),
+            "total_balance": round(total_balance,2),
+            "total_accounts": round(count,2),
+            "negative_balance_count": round(negative_count,2),
+            "highest_balance_trader": highest_trader
         }]
 
         return {
@@ -1553,29 +1568,36 @@ class ChatbotEngine:
         }
 
     def _handle_highest_balance_account(self):
-        result = self.query_processor.get_highest_balance_account()
-        if not result or len(result) == 0:
-            return {"response": "No account balance information found."}
+        try:
+            rows = self.query_processor.get_highest_balance_account()
+            if not rows:
+                return {"response": "No account balance information found."}
 
-        top_account = result[0]
-        trader_name = top_account.get('trader_name')
-        balance = top_account.get('balance', 0)
-        account_type = top_account.get('account_type')
+            lines = [
+                f"{r['trader_name']}: ${float(r['balance']):,.2f} ({r['account_type']} account)"
+                for r in rows
+            ]
 
-        return {
-            "response": f"The highest account balance belongs to {trader_name} with ${balance:.2f} in their {account_type} account.",
-            "data": result
-        }
+            return {
+                "response": "Top 10 traders by account balance:\n" + "\n".join(lines),
+                "data": rows
+            }
+
+        except Exception as e:
+            self.logger.error(f"Error in custom highest‐balance handler: {e}")
+            return {
+                "response": f"Could not retrieve top balances due to an error: {e}"
+            }
 
     def _handle_account_types(self):
-        # 1) fetch every encrypted balance
+
         rows = self.query_processor.db_connector.execute_query(
             "SELECT account_type, balance_encrypted FROM accounts"
         )
         if not rows:
             return {"response": "No account data found."}
 
-        # 2) group the ciphertexts
+
         groups = defaultdict(list)
         for row in rows:
             acct_type = row["account_type"]
@@ -1583,39 +1605,36 @@ class ChatbotEngine:
             if cipher is not None:
                 groups[acct_type].append(cipher)
 
-        # 3) grab your CKKS contexts
+
         he_ctx = self.query_processor.encryption_manager.ckks_context
         sec_ctx = self.query_processor.encryption_manager.secret_context
 
         results = []
         for acct_type, ciphers in groups.items():
-            # homomorphic sum
+
             total_vec = None
             for ct in ciphers:
                 vec = ts.ckks_vector_from(he_ctx, ct)
-                total_vec = vec if total_vec is None else total_vec + vec
+                total_vec = vec if total_vec is None else total_vec+vec
 
-            # average under CKKS
             avg_vec = total_vec * (1.0 / len(ciphers))
-            avg_plain = avg_vec.decrypt()[0]/he_ctx.global_scale
+            avg_plain = ts.ckks_vector_from(sec_ctx, avg_vec.serialize()).decrypt()[0]
 
-            # decrypt each one for min/max/total
-            balances = []
-            for ct in ciphers:
-                vec = ts.ckks_vector_from(he_ctx, ct)
-                plain = vec.decrypt()[0]/he_ctx.global_scale
-                balances.append(plain)
+            balances = [
+                ts.ckks_vector_from(sec_ctx, ct).decrypt()[0]
+                for ct in ciphers
+            ]
 
             results.append({
                 "account_type": acct_type,
                 "count": len(ciphers),
-                "avg_balance": avg_plain,
-                "min_balance": min(balances),
-                "max_balance": max(balances),
-                "total_balance": sum(balances),
+                "avg_balance":   round(avg_plain,   2),
+                "min_balance":   round(min(balances),   2),
+                "max_balance":   round(max(balances),   2),
+                "total_balance": round(sum(balances),    2)
             })
 
-        # pass the raw dicts to your existing generate_response
+
         return results
 
     def _handle_accounts_before_date(self, date_str):
@@ -2070,55 +2089,65 @@ class ChatbotEngine:
 
     def _handle_broker_asset_distribution(self):
         sql = """
-        SELECT 
-            b.broker_id,
-            b.name,
-            COUNT(a.asset_id) as total_assets,
-            SUM(CASE WHEN a.asset_type = 'Stock' THEN 1 ELSE 0 END) as stocks,
-            SUM(CASE WHEN a.asset_type = 'ETF' THEN 1 ELSE 0 END) as etfs,
-            SUM(CASE WHEN a.asset_type = 'Bond' THEN 1 ELSE 0 END) as bonds,
-            SUM(CASE WHEN a.asset_type = 'Cryptocurrency' THEN 1 ELSE 0 END) as crypto,
-            SUM(CASE WHEN a.asset_type = 'Commodity' THEN 1 ELSE 0 END) as commodities,
-            SUM(CASE WHEN a.asset_type = 'Options' THEN 1 ELSE 0 END) as options,
-            SUM(CASE WHEN a.asset_type = 'Futures' THEN 1 ELSE 0 END) as futures,
-            b.contact_email
-        FROM brokers b
-        LEFT JOIN assets a ON b.broker_id = a.broker_id
-        GROUP BY b.broker_id, b.name, b.contact_email
-        ORDER BY total_assets DESC
-        """
+              SELECT b.broker_id, \
+                     b.name                                                           AS broker_name, \
+                     COUNT(a.asset_id)                                                AS total_assets, \
+                     SUM(CASE WHEN a.asset_type = 'Stock' THEN 1 ELSE 0 END)          AS stocks, \
+                     SUM(CASE WHEN a.asset_type = 'ETF' THEN 1 ELSE 0 END)            AS etfs, \
+                     SUM(CASE WHEN a.asset_type = 'Bond' THEN 1 ELSE 0 END)           AS bonds, \
+                     SUM(CASE WHEN a.asset_type = 'Cryptocurrency' THEN 1 ELSE 0 END) AS crypto, \
+                     SUM(CASE WHEN a.asset_type = 'Commodity' THEN 1 ELSE 0 END)      AS commodities, \
+                     SUM(CASE WHEN a.asset_type = 'Options' THEN 1 ELSE 0 END)        AS options, \
+                     SUM(CASE WHEN a.asset_type = 'Futures' THEN 1 ELSE 0 END)        AS futures
+              FROM brokers b
+                       LEFT JOIN assets a ON b.broker_id = a.broker_id
+              GROUP BY b.broker_id, b.name
+              ORDER BY total_assets DESC \
+              """
 
-        result = self.query_processor.db_connector.execute_query(sql)
-
-        if not result or len(result) == 0:
+        rows = self.query_processor.db_connector.execute_query(sql)
+        if not rows:
             return {"response": "No broker asset distribution data available for analysis."}
 
-        brokers = len(result)
-        most_diverse = result[0] if result else {}
-        broker_name = most_diverse.get('name', 'Unknown')
-        total_assets = most_diverse.get('total_assets', 0)
-        stocks = most_diverse.get('stocks', 0)
-        etfs = most_diverse.get('etfs', 0)
-        crypto = most_diverse.get('crypto', 0)
+        for r in rows[:10]:
+            broker_id = int(r["broker_id"])
+            email_sql = f"""
+                SELECT contact_email_encrypted AS contact_email
+                FROM brokers
+                WHERE broker_id = {broker_id}
+            """
+            email_result = self.query_processor.db_connector.execute_encrypted_raw(email_sql)
 
-        for broker in result:
+            if email_result and "contact_email" in email_result[0]:
+                r["contact_email"] = email_result[0]["contact_email"]
+            else:
+                r["contact_email"] = "N/A"
+
+        for r in rows:
             asset_types = ['stocks', 'etfs', 'bonds', 'crypto', 'commodities', 'options', 'futures']
-            non_zero_types = sum(1 for asset_type in asset_types if broker.get(asset_type, 0) > 0)
-            broker['diversity_score'] = non_zero_types
+            r["diversity_score"] = sum(1 for t in asset_types if r.get(t, 0) > 0)
 
-        most_diverse_broker = max(result, key=lambda x: x.get('diversity_score', 0))
-        diverse_name = most_diverse_broker.get('name')
-        diverse_score = most_diverse_broker.get('diversity_score', 0)
+        brokers = len(rows)
+        top = rows[0]
+        broker_name = top.get("broker_name", "Unknown")
+        total_assets = top.get("total_assets", 0)
+        stocks = top.get("stocks", 0)
+        etfs = top.get("etfs", 0)
+        crypto = top.get("crypto", 0)
+
+        most_diverse_broker = max(rows, key=lambda r: r.get("diversity_score", 0))
+        diverse_name = most_diverse_broker.get("broker_name", "Unknown")
+        diverse_score = most_diverse_broker.get("diversity_score", 0)
 
         asset_distribution = f"{stocks} stocks, {etfs} ETFs, {crypto} cryptocurrencies"
-        if most_diverse.get('bonds', 0) > 0:
-            asset_distribution += f", {most_diverse.get('bonds')} bonds"
-        if most_diverse.get('commodities', 0) > 0:
-            asset_distribution += f", {most_diverse.get('commodities')} commodities"
+        if top.get('bonds', 0): asset_distribution += f", {top['bonds']} bonds"
+        if top.get('commodities', 0): asset_distribution += f", {top['commodities']} commodities"
 
         return {
-            "response": f"Analyzed asset distribution for {brokers} brokers. {broker_name} manages the most assets ({total_assets} total: {asset_distribution}). {diverse_name} has the most diverse portfolio with {diverse_score} different asset types.",
-            "data": result
+            "response": f"Analyzed asset distribution for {brokers} brokers. {broker_name} manages the most assets "
+                        f"({total_assets} total: {asset_distribution}). {diverse_name} has the most diverse portfolio "
+                        f"with {diverse_score} different asset types.",
+            "data": rows
         }
 
     def _handle_anomalous_trading(self):
@@ -2137,52 +2166,53 @@ class ChatbotEngine:
             "response": f"Identified {count} potentially anomalous trades. The most significant is {trader_name} trading {asset_name} with a value of ${trade_value:.2f}.",
             "data": result
         }
+
     def _handle_recent_transactions_query(self):
         try:
             sql = """
-            SELECT 
-            tr.transaction_id,
-            tr.transaction_date,
-            tr.transaction_type,
-            tr.amount,
-            a.account_type,
-            t.name as trader_name
-            FROM transactions tr
-            JOIN accounts a   ON tr.account_id = a.account_id
-            JOIN traders t    ON a.trader_id   = t.trader_id
-            ORDER BY tr.transaction_date DESC
-            LIMIT 20
-            """
+                  SELECT tr.transaction_id, \
+                         tr.transaction_date, \
+                         tr.transaction_type, \
+                         tr.amount, \
+                         a.account_type, \
+                         t.name AS trader_name
+                  FROM transactions tr
+                           JOIN accounts a ON tr.account_id = a.account_id
+                           JOIN traders t ON a.trader_id = t.trader_id
+                  ORDER BY tr.transaction_date DESC LIMIT 20 \
+                  """
+            rows = self.query_processor.db_connector.execute_query(sql)
 
-            result = self.query_processor.db_connector.execute_query(sql)
+            if not rows:
+                return {"response": "No transaction information found in the database."}
 
-            if result and len(result) > 0:
-                count = len(result)
-                latest_date = result[0].get('trade_date')
+            count = len(rows)
+            latest_date = rows[0].get('transaction_date')
+            examples = []
+            for tx in rows[:3]:
+                ttype = tx.get('transaction_type')
+                amt = tx.get('amount', 0)
+                acct = tx.get('account_type')
+                trader = tx.get('trader_name')
+                date = tx.get('transaction_date')
+                examples.append(
+                    f"{trader} had a {ttype} of ${amt:.2f} in {acct} on {date}"
+                )
 
-                recent_trades = []
-                for trade in result[:3]:
-                    trader = trade.get('trader_name')
-                    asset = trade.get('asset_name')
-                    price = trade.get('price', 0)
-                    quantity = trade.get('quantity', 0)
-                    recent_trades.append(f"{trader} traded {quantity} {asset} at ${price:.2f}")
-
-                trade_examples = ", ".join(recent_trades)
-
-                return {
-                    "response": f"Found {count} recent trades. Most recent trade was on {latest_date}. Examples include: {trade_examples}.",
-                    "data": result
-                }
-            else:
-                return {
-                    "response": "No trade information found in the database."
-                }
-        except Exception as e:
-            self.logger.error(f"Error in recent trades query: {e}")
+            examples_str = ", ".join(examples)
             return {
-                "response": "Could not retrieve recent trades due to an error."
+                "response": (
+                    f"Found {count} recent transactions. "
+                    f"Most recent transaction was on {latest_date}. "
+                    f"Examples include: {examples_str}."
+                ),
+                "data": rows
             }
+
+        except Exception as e:
+            self.logger.error(f"Error in recent transactions query: {e}")
+            return {"response": "Could not retrieve recent transactions due to an error."}
+
     def _handle_recent_trades_query(self):
         try:
             sql = """
@@ -2238,106 +2268,86 @@ class ChatbotEngine:
     def _handle_asset_type_query(self, asset_type=None):
         try:
             if not asset_type and hasattr(self, 'current_query'):
-                query_lower = self.current_query.lower()
-
-                asset_type_mappings = {
-                    'etf': 'ETF',
-                    'etfs': 'ETF',
-                    'stock': 'Stock',
-                    'stocks': 'Stock',
-                    'equity': 'Stock',
-                    'equities': 'Stock',
-                    'share': 'Stock',
-                    'shares': 'Stock',
-                    'bond': 'Bond',
-                    'bonds': 'Bond',
-                    'crypto': 'Cryptocurrency',
-                    'cryptocurrency': 'Cryptocurrency',
+                q = self.current_query.lower()
+                mappings = {
+                    'etf': 'ETF', 'etfs': 'ETF',
+                    'stock': 'Stock', 'stocks': 'Stock', 'equity': 'Stock', 'equities': 'Stock',
+                    'share': 'Stock', 'shares': 'Stock',
+                    'bond': 'Bond', 'bonds': 'Bond',
+                    'crypto': 'Cryptocurrency', 'cryptocurrency': 'Cryptocurrency',
                     'cryptocurrencies': 'Cryptocurrency',
-                    'bitcoin': 'Cryptocurrency',
-                    'ethereum': 'Cryptocurrency',
-                    'commodity': 'Commodity',
-                    'commodities': 'Commodity',
-                    'future': 'Futures',
-                    'futures': 'Futures',
-                    'option': 'Options',
-                    'options': 'Options',
-                    'forex': 'Forex',
-                    'currency': 'Forex',
+                    'bitcoin': 'Cryptocurrency', 'ethereum': 'Cryptocurrency',
+                    'commodity': 'Commodity', 'commodities': 'Commodity',
+                    'future': 'Futures', 'futures': 'Futures',
+                    'option': 'Options', 'options': 'Options',
+                    'forex': 'Forex', 'currency': 'Forex',
                     'reit': 'REIT'
                 }
-
-                for term, db_type in asset_type_mappings.items():
-                    if term in query_lower:
-                        asset_type = db_type
+                for term, atype in mappings.items():
+                    if term in q:
+                        asset_type = atype
                         break
 
             if not asset_type:
-                return {
-                    "response": "Could not determine which type of assets you're looking for. Please specify an asset type such as ETF, Stock, or Cryptocurrency."
-                }
+                return {"response": "Please specify an asset type (e.g. ETF, Stock, Bond, Cryptocurrency)."}
 
             self.logger.info(f"Querying for asset type: {asset_type}")
 
             sql = f"""
-            SELECT 
-                a.asset_id, 
-                a.name, 
-                a.asset_type, 
-                b.name as broker_name,
-                b.contact_email as broker_contact
-            FROM assets a
-            LEFT JOIN brokers b ON a.broker_id = b.broker_id
-            WHERE a.asset_type = '{asset_type}'
-            ORDER BY a.name
-            LIMIT 20
+                SELECT
+                    a.asset_id,
+                    a.name,
+                    a.asset_type,
+                    b.name AS broker_name,
+                    b.contact_email_encrypted AS contact_email
+                FROM assets a
+                LEFT JOIN brokers b ON a.broker_id = b.broker_id
+                WHERE a.asset_type = '{asset_type}'
+                ORDER BY a.name
+                LIMIT 20
             """
+            rows = self.query_processor.db_connector.execute_encrypted_raw(sql)
 
-            self.logger.info(f"Executing asset type query: {sql}")
-            result = self.query_processor.db_connector.execute_query(sql)
+            for r in rows:
+                r['broker_contact'] = r.pop('contact_email', None)
 
-            if result and len(result) > 0:
-                count = len(result)
-
-                asset_names = [r.get('name', '') for r in result[:5]]
-                examples = ", ".join(asset_names)
-
+            if rows:
+                count = len(rows)
+                examples = ", ".join(r['name'] for r in rows[:5])
                 return {
-                    "response": f"Found {count} {asset_type} assets in the database. Examples include: {examples}.",
-                    "data": result
+                    'response': f"Found {count} {asset_type} assets. Examples include: {examples}.",
+                    'data': rows
                 }
-            else:
-                sql = f"""
-                SELECT 
-                    a.asset_id, 
-                    a.name, 
-                    a.asset_type, 
-                    b.name as broker_name,
-                    b.contact_email as broker_contact
+
+            fallback_sql = f"""
+                SELECT
+                    a.asset_id,
+                    a.name,
+                    a.asset_type,
+                    b.name AS broker_name,
+                    b.contact_email_encrypted AS contact_email
                 FROM assets a
                 LEFT JOIN brokers b ON a.broker_id = b.broker_id
                 WHERE a.asset_type LIKE '%{asset_type}%'
                 ORDER BY a.name
                 LIMIT 20
-                """
+            """
+            fallback = self.query_processor.db_connector.execute_encrypted_raw(fallback_sql)
+            for r in fallback:
+                r['broker_contact'] = r.pop('contact_email', None)
 
-                result = self.query_processor.db_connector.execute_query(sql)
+            if fallback:
+                count = len(fallback)
+                return {
+                    'response': f"Found {count} assets similar to {asset_type}.",
+                    'data': fallback
+                }
 
-                if result and len(result) > 0:
-                    count = len(result)
-                    return {
-                        "response": f"Found {count} assets similar to {asset_type} type in the database.",
-                        "data": result
-                    }
-                else:
-                    return {
-                        "response": f"No {asset_type} assets found in the database."
-                    }
+            return {'response': f"No {asset_type} assets found."}
+
         except Exception as e:
             self.logger.error(f"Error in asset type query: {e}")
-            return {
-                "response": f"Could not retrieve {asset_type} assets due to an error: {str(e)}"
-            }
+            return {'response': f"Could not retrieve {asset_type} assets: {e}"}
 
     def _handle_market_peak_hours(self):
         result = self.query_processor.analyze_market_peak_hours()

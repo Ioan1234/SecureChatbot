@@ -1,0 +1,51 @@
+2025-05-24 17:51:55,490 - INFO - populate_asset_map.py:405 - --- Starting Asset Population Script ---
+2025-05-24 17:51:55,490 - INFO - populate_asset_map.py:418 - Connecting to database 'fm_database' on host 'localhost'...
+2025-05-24 17:51:57,556 - INFO - populate_asset_map.py:421 - Database connection successful.
+2025-05-24 17:51:57,556 - INFO - populate_asset_map.py:282 - Loading active symbols from 'active_symbols.txt'...
+2025-05-24 17:51:57,557 - INFO - populate_asset_map.py:301 - Loaded 11 symbols to keep active from 'active_symbols.txt'.
+2025-05-24 17:51:57,557 - INFO - populate_asset_map.py:122 - Querying database for existing asset symbols and broker IDs...
+2025-05-24 17:51:57,578 - INFO - populate_asset_map.py:130 - Found 11 existing API symbols with broker info in the database.
+2025-05-24 17:51:57,578 - INFO - populate_asset_map.py:142 - Querying database for existing broker IDs...
+2025-05-24 17:51:57,579 - INFO - populate_asset_map.py:150 - Found 100 existing broker IDs in the database.
+2025-05-24 17:51:57,580 - INFO - populate_asset_map.py:443 - 
+--- Processing Endpoint: /stocks (Default Type: Stock) ---
+2025-05-24 17:51:57,580 - INFO - populate_asset_map.py:39 - Fetching data from https://api.twelvedata.com/stocks...
+2025-05-24 17:52:02,470 - INFO - populate_asset_map.py:89 - Fetched 155159 records (Page 1, Total Fetched: 155159)
+2025-05-24 17:52:02,470 - INFO - populate_asset_map.py:115 - Finished fetching for /stocks. Total records processed: 155159
+2025-05-24 17:52:02,473 - INFO - populate_asset_map.py:173 - Processing 155159 records for category Stock...
+2025-05-24 17:52:02,669 - INFO - populate_asset_map.py:212 - Finished processing 155159 records for Stock. Prepared 102462 for insert, identified 0 for broker update.
+2025-05-24 17:52:02,670 - INFO - populate_asset_map.py:443 - 
+--- Processing Endpoint: /forex_pairs (Default Type: Forex) ---
+2025-05-24 17:52:02,670 - INFO - populate_asset_map.py:39 - Fetching data from https://api.twelvedata.com/forex_pairs...
+2025-05-24 17:52:02,776 - INFO - populate_asset_map.py:89 - Fetched 1974 records (Page 1, Total Fetched: 1974)
+2025-05-24 17:52:02,777 - INFO - populate_asset_map.py:115 - Finished fetching for /forex_pairs. Total records processed: 1974
+2025-05-24 17:52:02,826 - INFO - populate_asset_map.py:173 - Processing 1974 records for category Forex...
+2025-05-24 17:52:02,830 - INFO - populate_asset_map.py:212 - Finished processing 1974 records for Forex. Prepared 1972 for insert, identified 0 for broker update.
+2025-05-24 17:52:02,831 - INFO - populate_asset_map.py:443 - 
+--- Processing Endpoint: /cryptocurrencies (Default Type: Cryptocurrency) ---
+2025-05-24 17:52:02,831 - INFO - populate_asset_map.py:39 - Fetching data from https://api.twelvedata.com/cryptocurrencies...
+2025-05-24 17:52:03,600 - INFO - populate_asset_map.py:89 - Fetched 3869 records (Page 1, Total Fetched: 3869)
+2025-05-24 17:52:03,600 - INFO - populate_asset_map.py:115 - Finished fetching for /cryptocurrencies. Total records processed: 3869
+2025-05-24 17:52:03,601 - INFO - populate_asset_map.py:173 - Processing 3869 records for category Cryptocurrency...
+2025-05-24 17:52:03,608 - INFO - populate_asset_map.py:212 - Finished processing 3869 records for Cryptocurrency. Prepared 3865 for insert, identified 0 for broker update.
+2025-05-24 17:52:03,608 - INFO - populate_asset_map.py:443 - 
+--- Processing Endpoint: /etfs (Default Type: ETF) ---
+2025-05-24 17:52:03,608 - INFO - populate_asset_map.py:39 - Fetching data from https://api.twelvedata.com/etfs...
+2025-05-24 17:52:05,072 - INFO - populate_asset_map.py:89 - Fetched 47533 records (Page 1, Total Fetched: 47533)
+2025-05-24 17:52:05,073 - INFO - populate_asset_map.py:115 - Finished fetching for /etfs. Total records processed: 47533
+2025-05-24 17:52:05,074 - INFO - populate_asset_map.py:173 - Processing 47533 records for category ETF...
+2025-05-24 17:52:05,127 - INFO - populate_asset_map.py:212 - Finished processing 47533 records for ETF. Prepared 21733 for insert, identified 0 for broker update.
+2025-05-24 17:52:05,127 - INFO - populate_asset_map.py:223 - Attempting to insert 130032 new assets...
+2025-05-24 17:52:07,159 - INFO - populate_asset_map.py:235 - DB insert/update operation completed for 130032 assets (affected rows: 130032).
+2025-05-24 17:52:07,160 - INFO - populate_asset_map.py:472 - No existing assets required broker ID updates across all endpoints.
+2025-05-24 17:52:07,544 - WARNING - populate_asset_map.py:342 - Identified 130032 assets for PERMANENT DELETION (and related data): ['000001', '000002', '000004', '000006', '000007', '000008', '000009', '000010', '000011', '000012', '...']
+2025-05-24 17:52:07,545 - ERROR - populate_asset_map.py:392 - Database Error during asset deletion: Transaction already in progress
+2025-05-24 17:52:07,545 - WARNING - populate_asset_map.py:394 - Deletion transaction rolled back due to error.
+2025-05-24 17:52:07,558 - INFO - populate_asset_map.py:499 - Database connection closed.
+2025-05-24 17:52:07,559 - INFO - populate_asset_map.py:501 - 
+--- Asset Population Summary ---
+2025-05-24 17:52:07,559 - INFO - populate_asset_map.py:502 - Total New Assets Inserted/Processed: 130032
+2025-05-24 17:52:07,559 - INFO - populate_asset_map.py:503 - Total Existing Assets Updated with Broker ID: 0
+2025-05-24 17:52:07,559 - INFO - populate_asset_map.py:504 - Total Assets DELETED (incl. related data): 0
+2025-05-24 17:52:07,560 - INFO - populate_asset_map.py:505 - Total Errors Encountered: 0
+2025-05-24 17:52:07,560 - INFO - populate_asset_map.py:506 - --- Script Finished ---

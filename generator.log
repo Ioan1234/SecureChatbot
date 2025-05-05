@@ -2626,3 +2626,186 @@
 2025-05-05 16:14:54,017 - INFO - Multi-threaded data generation completed in 0.10 seconds
 2025-05-05 16:14:54,017 - INFO - Generated 8 SQL files in sql_output
 2025-05-05 16:14:54,017 - INFO - To merge all files, run: sh merge_command.sh
+2025-05-24 17:52:12,554 - INFO - Fetched 260075 asset IDs
+2025-05-24 17:52:12,555 - INFO - Caching common values for better performance
+2025-05-24 17:52:12,556 - INFO - Beginning multi-threaded data generation for 8 tables: traders, markets, trades, accounts, transactions, orders, order_status, price_history
+2025-05-24 17:52:12,556 - INFO - Using 4 threads to generate 100 entries per table
+2025-05-24 17:52:12,556 - INFO - Generating traders data: 100 entries using 4 threads
+2025-05-24 17:52:12,558 - INFO - Split work into 9 chunks of ~12 entries each
+2025-05-24 17:52:12,560 - INFO - Progress: 10/100 entries (10.0%) - 4308.9 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,561 - INFO - Progress: 20/100 entries (20.0%) - 6015.5 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,562 - INFO -   Processed chunk 1/9 for traders
+2025-05-24 17:52:12,562 - INFO - Progress: 30/100 entries (30.0%) - 6936.6 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,563 - INFO - Progress: 40/100 entries (40.0%) - 7518.4 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,563 - INFO - Progress: 50/100 entries (50.0%) - 9397.9 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,563 - INFO -   Processed chunk 2/9 for traders
+2025-05-24 17:52:12,564 - INFO - Progress: 60/100 entries (60.0%) - 9492.2 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,564 - INFO -   Processed chunk 3/9 for traders
+2025-05-24 17:52:12,564 - INFO -   Processed chunk 4/9 for traders
+2025-05-24 17:52:12,564 - INFO - Progress: 70/100 entries (70.0%) - 11074.3 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,565 - INFO -   Processed chunk 5/9 for traders
+2025-05-24 17:52:12,565 - INFO - Progress: 80/100 entries (80.0%) - 10926.9 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,565 - INFO -   Processed chunk 6/9 for traders
+2025-05-24 17:52:12,566 - INFO - Progress: 90/100 entries (90.0%) - 10814.7 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,566 - INFO -   Processed chunk 7/9 for traders
+2025-05-24 17:52:12,566 - INFO - Progress: 100/100 entries (100.0%) - 12016.3 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,566 - INFO -   Processed chunk 8/9 for traders
+2025-05-24 17:52:12,566 - INFO -   Processed chunk 9/9 for traders
+2025-05-24 17:52:12,567 - INFO - Completed traders data in 0.01 seconds
+2025-05-24 17:52:12,571 - INFO - Generating markets data: 100 entries using 4 threads
+2025-05-24 17:52:12,572 - INFO - Split work into 9 chunks of ~12 entries each
+2025-05-24 17:52:12,574 - INFO - Progress: 10/100 entries (10.0%) - 7620.5 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,574 - INFO - Progress: 20/100 entries (20.0%) - 15240.9 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,575 - INFO -   Processed chunk 1/9 for markets
+2025-05-24 17:52:12,575 - INFO - Progress: 30/100 entries (30.0%) - 12981.4 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,575 - INFO - Progress: 40/100 entries (40.0%) - 17308.6 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,576 - INFO - Progress: 50/100 entries (50.0%) - 14911.5 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,576 - INFO -   Processed chunk 2/9 for markets
+2025-05-24 17:52:12,576 - INFO - Progress: 60/100 entries (60.0%) - 17893.8 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,576 - INFO -   Processed chunk 3/9 for markets
+2025-05-24 17:52:12,576 - INFO -   Processed chunk 4/9 for markets
+2025-05-24 17:52:12,577 - INFO -   Processed chunk 5/9 for markets
+2025-05-24 17:52:12,577 - INFO - Progress: 70/100 entries (70.0%) - 15993.1 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,577 - INFO - Progress: 80/100 entries (80.0%) - 18277.8 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,577 - INFO -   Processed chunk 6/9 for markets
+2025-05-24 17:52:12,577 - INFO - Progress: 90/100 entries (90.0%) - 20562.6 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,578 - INFO -   Processed chunk 7/9 for markets
+2025-05-24 17:52:12,578 - INFO - Progress: 100/100 entries (100.0%) - 17927.4 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,578 - INFO -   Processed chunk 8/9 for markets
+2025-05-24 17:52:12,578 - INFO -   Processed chunk 9/9 for markets
+2025-05-24 17:52:12,579 - INFO - Completed markets data in 0.01 seconds
+2025-05-24 17:52:12,584 - INFO - Generating trades data: 100 entries using 4 threads
+2025-05-24 17:52:12,585 - INFO - Split work into 9 chunks of ~12 entries each
+2025-05-24 17:52:12,585 - INFO - Progress: 10/100 entries (10.0%) - 0.0 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,587 - INFO - Progress: 20/100 entries (20.0%) - 10001.9 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,587 - INFO -   Processed chunk 1/9 for trades
+2025-05-24 17:52:12,587 - INFO - Progress: 30/100 entries (30.0%) - 15002.9 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,587 - INFO - Progress: 40/100 entries (40.0%) - 20003.8 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,588 - INFO - Progress: 50/100 entries (50.0%) - 15574.8 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,588 - INFO -   Processed chunk 2/9 for trades
+2025-05-24 17:52:12,589 - INFO - Progress: 60/100 entries (60.0%) - 13026.5 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,589 - INFO -   Processed chunk 3/9 for trades
+2025-05-24 17:52:12,589 - INFO -   Processed chunk 4/9 for trades
+2025-05-24 17:52:12,589 - INFO - Progress: 70/100 entries (70.0%) - 15197.5 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,589 - INFO -   Processed chunk 5/9 for trades
+2025-05-24 17:52:12,591 - INFO - Progress: 80/100 entries (80.0%) - 14244.5 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,591 - INFO -   Processed chunk 6/9 for trades
+2025-05-24 17:52:12,591 - INFO - Progress: 90/100 entries (90.0%) - 13606.1 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,591 - INFO - Progress: 100/100 entries (100.0%) - 15117.9 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,591 - INFO -   Processed chunk 7/9 for trades
+2025-05-24 17:52:12,592 - INFO -   Processed chunk 8/9 for trades
+2025-05-24 17:52:12,592 - INFO -   Processed chunk 9/9 for trades
+2025-05-24 17:52:12,592 - INFO - Completed trades data in 0.01 seconds
+2025-05-24 17:52:12,598 - INFO - Generating accounts data: 100 entries using 4 threads
+2025-05-24 17:52:12,599 - INFO - Split work into 9 chunks of ~12 entries each
+2025-05-24 17:52:12,599 - INFO - Progress: 10/100 entries (10.0%) - 0.0 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,600 - INFO - Progress: 20/100 entries (20.0%) - 13426.1 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,600 - INFO -   Processed chunk 1/9 for accounts
+2025-05-24 17:52:12,600 - INFO - Progress: 30/100 entries (30.0%) - 20139.1 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,601 - INFO - Progress: 40/100 entries (40.0%) - 16074.7 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,601 - INFO - Progress: 50/100 entries (50.0%) - 20093.4 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,602 - INFO -   Processed chunk 2/9 for accounts
+2025-05-24 17:52:12,602 - INFO - Progress: 60/100 entries (60.0%) - 16943.3 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,602 - INFO -   Processed chunk 3/9 for accounts
+2025-05-24 17:52:12,602 - INFO -   Processed chunk 4/9 for accounts
+2025-05-24 17:52:12,602 - INFO -   Processed chunk 5/9 for accounts
+2025-05-24 17:52:12,602 - INFO - Progress: 70/100 entries (70.0%) - 19767.1 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,603 - INFO - Progress: 80/100 entries (80.0%) - 17229.5 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,603 - INFO -   Processed chunk 6/9 for accounts
+2025-05-24 17:52:12,603 - INFO - Progress: 90/100 entries (90.0%) - 19383.2 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,605 - INFO - Progress: 100/100 entries (100.0%) - 16818.9 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,605 - INFO -   Processed chunk 7/9 for accounts
+2025-05-24 17:52:12,605 - INFO -   Processed chunk 8/9 for accounts
+2025-05-24 17:52:12,605 - INFO -   Processed chunk 9/9 for accounts
+2025-05-24 17:52:12,606 - INFO - Completed accounts data in 0.01 seconds
+2025-05-24 17:52:12,610 - INFO - Generating transactions data: 100 entries using 4 threads
+2025-05-24 17:52:12,611 - INFO - Split work into 9 chunks of ~12 entries each
+2025-05-24 17:52:12,611 - INFO - Progress: 10/100 entries (10.0%) - 0.0 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,612 - INFO - Progress: 20/100 entries (20.0%) - 18067.2 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,613 - INFO -   Processed chunk 1/9 for transactions
+2025-05-24 17:52:12,613 - INFO - Progress: 30/100 entries (30.0%) - 14101.7 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,614 - INFO - Progress: 40/100 entries (40.0%) - 12796.3 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,614 - INFO - Progress: 50/100 entries (50.0%) - 15995.4 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,614 - INFO -   Processed chunk 2/9 for transactions
+2025-05-24 17:52:12,615 - INFO - Progress: 60/100 entries (60.0%) - 14511.5 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,615 - INFO -   Processed chunk 3/9 for transactions
+2025-05-24 17:52:12,615 - INFO -   Processed chunk 4/9 for transactions
+2025-05-24 17:52:12,615 - INFO -   Processed chunk 5/9 for transactions
+2025-05-24 17:52:12,615 - INFO - Progress: 70/100 entries (70.0%) - 16930.1 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,616 - INFO - Progress: 80/100 entries (80.0%) - 15582.8 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,616 - INFO -   Processed chunk 6/9 for transactions
+2025-05-24 17:52:12,617 - INFO - Progress: 90/100 entries (90.0%) - 17530.6 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,617 - INFO -   Processed chunk 7/9 for transactions
+2025-05-24 17:52:12,617 - INFO - Progress: 100/100 entries (100.0%) - 16223.7 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,617 - INFO -   Processed chunk 8/9 for transactions
+2025-05-24 17:52:12,617 - INFO -   Processed chunk 9/9 for transactions
+2025-05-24 17:52:12,618 - INFO - Completed transactions data in 0.01 seconds
+2025-05-24 17:52:12,623 - INFO - Generating orders data: 100 entries using 4 threads
+2025-05-24 17:52:12,623 - INFO - Split work into 9 chunks of ~12 entries each
+2025-05-24 17:52:12,625 - INFO - Progress: 10/100 entries (10.0%) - 6846.7 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,626 - INFO - Progress: 20/100 entries (20.0%) - 8121.4 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,626 - INFO -   Processed chunk 1/9 for orders
+2025-05-24 17:52:12,626 - INFO - Progress: 30/100 entries (30.0%) - 12182.1 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,627 - INFO - Progress: 40/100 entries (40.0%) - 11554.6 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,627 - INFO - Progress: 50/100 entries (50.0%) - 14443.2 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,627 - INFO -   Processed chunk 2/9 for orders
+2025-05-24 17:52:12,627 - INFO - Progress: 60/100 entries (60.0%) - 17331.8 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,627 - INFO -   Processed chunk 3/9 for orders
+2025-05-24 17:52:12,628 - INFO -   Processed chunk 4/9 for orders
+2025-05-24 17:52:12,628 - INFO - Progress: 70/100 entries (70.0%) - 14972.0 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,628 - INFO -   Processed chunk 5/9 for orders
+2025-05-24 17:52:12,629 - INFO - Progress: 80/100 entries (80.0%) - 14067.8 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,629 - INFO -   Processed chunk 6/9 for orders
+2025-05-24 17:52:12,629 - INFO - Progress: 90/100 entries (90.0%) - 15826.2 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,630 - INFO -   Processed chunk 7/9 for orders
+2025-05-24 17:52:12,630 - INFO - Progress: 100/100 entries (100.0%) - 14956.2 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,630 - INFO -   Processed chunk 8/9 for orders
+2025-05-24 17:52:12,630 - INFO -   Processed chunk 9/9 for orders
+2025-05-24 17:52:12,631 - INFO - Completed orders data in 0.01 seconds
+2025-05-24 17:52:12,635 - INFO - Generating order_status data: 100 entries using 4 threads
+2025-05-24 17:52:12,636 - INFO - Split work into 9 chunks of ~12 entries each
+2025-05-24 17:52:12,636 - INFO - Progress: 10/100 entries (10.0%) - 0.0 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,638 - INFO - Progress: 20/100 entries (20.0%) - 16247.5 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,638 - INFO -   Processed chunk 1/9 for order_status
+2025-05-24 17:52:12,639 - INFO - Progress: 30/100 entries (30.0%) - 13268.9 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,639 - INFO - Progress: 40/100 entries (40.0%) - 17691.9 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,639 - INFO - Progress: 50/100 entries (50.0%) - 22114.9 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,640 - INFO -   Processed chunk 2/9 for order_status
+2025-05-24 17:52:12,640 - INFO -   Processed chunk 3/9 for order_status
+2025-05-24 17:52:12,640 - INFO - Progress: 60/100 entries (60.0%) - 18157.2 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,640 - INFO -   Processed chunk 4/9 for order_status
+2025-05-24 17:52:12,641 - INFO - Progress: 70/100 entries (70.0%) - 16128.4 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,641 - INFO -   Processed chunk 5/9 for order_status
+2025-05-24 17:52:12,641 - INFO - Progress: 80/100 entries (80.0%) - 18432.5 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,641 - INFO -   Processed chunk 6/9 for order_status
+2025-05-24 17:52:12,642 - INFO - Progress: 90/100 entries (90.0%) - 16852.1 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,642 - INFO -   Processed chunk 7/9 for order_status
+2025-05-24 17:52:12,642 - INFO - Progress: 100/100 entries (100.0%) - 18724.6 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,642 - INFO -   Processed chunk 8/9 for order_status
+2025-05-24 17:52:12,642 - INFO -   Processed chunk 9/9 for order_status
+2025-05-24 17:52:12,643 - INFO - Completed order_status data in 0.01 seconds
+2025-05-24 17:52:12,647 - INFO - Generating price_history data: 100 entries using 4 threads
+2025-05-24 17:52:12,648 - INFO - Split work into 9 chunks of ~12 entries each
+2025-05-24 17:52:12,648 - INFO - Progress: 10/100 entries (10.0%) - 0.0 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,649 - INFO - Progress: 20/100 entries (20.0%) - 15372.2 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,649 - INFO -   Processed chunk 1/9 for price_history
+2025-05-24 17:52:12,650 - INFO - Progress: 30/100 entries (30.0%) - 12258.1 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,650 - INFO - Progress: 40/100 entries (40.0%) - 16344.1 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,652 - INFO - Progress: 50/100 entries (50.0%) - 14374.9 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,652 - INFO -   Processed chunk 2/9 for price_history
+2025-05-24 17:52:12,652 - INFO -   Processed chunk 3/9 for price_history
+2025-05-24 17:52:12,652 - INFO - Progress: 60/100 entries (60.0%) - 17249.9 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,653 - INFO -   Processed chunk 4/9 for price_history
+2025-05-24 17:52:12,653 - INFO - Progress: 70/100 entries (70.0%) - 15354.9 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,653 - INFO -   Processed chunk 5/9 for price_history
+2025-05-24 17:52:12,654 - INFO - Progress: 80/100 entries (80.0%) - 14385.6 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,654 - INFO -   Processed chunk 6/9 for price_history
+2025-05-24 17:52:12,654 - INFO - Progress: 90/100 entries (90.0%) - 16183.8 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,655 - INFO -   Processed chunk 7/9 for price_history
+2025-05-24 17:52:12,655 - INFO - Progress: 100/100 entries (100.0%) - 14872.9 entries/sec - ETA: 0.0 sec
+2025-05-24 17:52:12,655 - INFO -   Processed chunk 8/9 for price_history
+2025-05-24 17:52:12,655 - INFO -   Processed chunk 9/9 for price_history
+2025-05-24 17:52:12,655 - INFO - Completed price_history data in 0.01 seconds
+2025-05-24 17:52:12,660 - INFO - Multi-threaded data generation completed in 0.11 seconds
+2025-05-24 17:52:12,660 - INFO - Generated 8 SQL files in sql_output
+2025-05-24 17:52:12,662 - INFO - To merge all files, run: sh merge_command.sh
