@@ -1,0 +1,4 @@
+{
+  "Show me traders with the largest account balances": "Find and rank traders based on the value of their account balances, showing the traders with the largest balances first.",
+  "Find and rank traders based on the value of their account balances, showing the traders with the largest balances first.": "Identify and rank traders in descending order based on the value of their account balances. Provide the ranking in a format that clearly displays the traders' names or IDs alongside their corresponding account balance values, with the highest balance at the top."
+}

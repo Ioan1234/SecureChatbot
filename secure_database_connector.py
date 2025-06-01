@@ -1,10 +1,14 @@
 import logging
 import mysql.connector
+import pymysql
 from mysql.connector import Error
 import decimal
 import tenseal as ts
 from typing import Dict, List, Any, Optional, Union, Tuple
 import json
+
+from pymysql.cursors import DictCursor
+
 from database_connector import DatabaseConnector
 
 
@@ -34,10 +38,7 @@ class SecureDatabaseConnector(DatabaseConnector):
         self.field_mapping = self._build_field_mapping()
 
     def is_connected(self):
-        try:
-            return self.connection and self.connection.is_connected()
-        except Error:
-            return False
+        return bool(self.connection and getattr(self.connection, "open", False))
 
     def _build_field_mapping(self):
         mapping = {}
@@ -145,50 +146,58 @@ class SecureDatabaseConnector(DatabaseConnector):
             self.logger.error(f"Error executing encrypted query: {e}")
             return None
 
-    def execute_encrypted_raw(self, sql: str) -> Optional[list]:
-        """
-        Execute an arbitrary SELECT SQL string under HE tripwire, then
-        decrypt any sensitive columns in the result rows.
-        """
-        self.logger.info(f"HE-TRIPWIRE: execute_encrypted_raw called for SQL: {sql}")
+    def execute_encrypted_raw(self, sql: str) -> list:
+        self.logger.info(f"HE-TRIPWIRE: execute_encrypted_raw called for SQL: {sql!r}")
+
         try:
+            conn = pymysql.connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                cursorclass=DictCursor,
+                autocommit=True
+            )
+        except Exception as e:
+            self.logger.error(f"Error connecting for encrypted raw execute: {e}")
+            return []
 
-            if not self.connection or not self.connection.is_connected():
-                self.connect()
-            cursor = self.connection.cursor(dictionary=True)
-            cursor.execute(sql)
-            rows = cursor.fetchall()
-            cursor.close()
-
-
-            decrypted_rows = []
-            for row in rows:
-                new_row = {}
-                for col, val in row.items():
-                    dec_val = val
-                    fq = self.field_mapping.get(col, col)
-
-                    if "." in fq and isinstance(val, (bytes, bytearray)):
-                        table, field = fq.split(".", 1)
-                        ftype = self.sensitive_fields.get(table, {}).get(field)
-                        if ftype:
-                            snippet = f"{repr(val)[:50]}{'…' if len(repr(val)) > 50 else ''}"
-                            self.logger.info(f"HE: decrypting '{col}' ({fq}) ciphertext: {snippet}")
-                            try:
-
-                                dec_val = self.encryption_manager.decrypt_value(val, fq)
-                            except Exception as e:
-                                self.logger.error(f"HE: decryption error for {fq}: {e}")
-
-                                dec_val = None
-                    new_row[col] = dec_val
-                decrypted_rows.append(new_row)
-            return decrypted_rows
-
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute(sql)
+                rows = cursor.fetchall()
         except Exception as e:
             self.logger.error(f"Error executing encrypted raw SQL: {e}")
-            return None
+            return []
+        finally:
+            try:
+                conn.close()
+            except Exception:
+                pass
 
+        decrypted_rows = []
+        for row in rows:
+            new_row = {}
+            for col, val in row.items():
+                dec_val = val
+                fq = self.field_mapping.get(col, col)
+
+                if "." in fq and isinstance(val, (bytes, bytearray)):
+                    table, field = fq.split(".", 1)
+                    ftype = self.sensitive_fields.get(table, {}).get(field)
+                    if ftype:
+                        snippet = repr(val)[:50] + ("…" if len(repr(val)) > 50 else "")
+                        self.logger.info(f"HE: decrypting '{col}' ({fq}) ciphertext: {snippet}")
+                        try:
+                            dec_val = self.encryption_manager.decrypt_value(val, fq)
+                        except Exception as e:
+                            self.logger.error(f"HE: decryption error for {fq}: {e}")
+                            dec_val = None
+
+                new_row[col] = dec_val
+            decrypted_rows.append(new_row)
+
+        return decrypted_rows
 
     def _execute_encrypted_select(self, tables, fields=None, conditions=None, order_by=None, limit=None):
         encrypted_conditions = []

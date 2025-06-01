@@ -15,8 +15,11 @@ from query_processor import QueryProcessor
 from model.chatbot_engine import ChatbotEngine
 from api.flask_api import FlaskAPI
 from load_config import load_config
+from prompt_evolver import PromptEvolver
 
 
+import faulthandler
+faulthandler.enable()
 
 try:
     spec = importlib.util.spec_from_file_location("train_model", "train_model.py")
@@ -110,89 +113,90 @@ class SecureChatbotApplication:
             self.run_train_model()
 
     def initialize_components(self) -> bool:
-        
-        try:
-            BASE_DIR = Path(__file__).parent.resolve()
-            KEY_DIR = BASE_DIR / "encryption_keys"
+            try:
+                BASE_DIR = Path(__file__).parent.resolve()
+                KEY_DIR = BASE_DIR / "encryption_keys"
 
+                enc_cfg = self.config["encryption"]
+                self.components["encryption_manager"] = HomomorphicEncryptionManager(
+                    key_size=enc_cfg["key_size"],
+                    context_params=enc_cfg["context_parameters"],
+                    keys_dir=str(KEY_DIR)
+                )
+                self.logger.info("Homomorphic encryption manager initialized")
 
-            enc_cfg = self.config["encryption"]
-            self.components["encryption_manager"] = HomomorphicEncryptionManager(
-                key_size=enc_cfg["key_size"],
-                context_params=enc_cfg["context_parameters"],
-                keys_dir=str(KEY_DIR)
-            )
-            self.logger.info("Homomorphic encryption manager initialized")
+                db_cfg = self.config["database"]
+                self.components["db_connector"] = SecureDatabaseConnector(
+                    host=db_cfg["host"],
+                    user=db_cfg["user"],
+                    password=db_cfg["password"],
+                    database=db_cfg["database"],
+                    encryption_manager=self.components["encryption_manager"]
+                )
+                if not self.components["db_connector"].connect():
+                    self.logger.error("Failed to connect to database")
+                    return False
+                self.logger.info("Secure database connector initialized and connected")
 
+                model_cfg = self.config["model"]
+                params = model_cfg.get("parameters", {})
+                self.components["intent_classifier"] = EnhancedIntentClassifier(
+                    vocab_size=params.get("vocab_size", 5000),
+                    embedding_dim=params.get("embedding_dim", 128),
+                    max_sequence_length=params.get("max_sequence_length", 50)
+                )
+                model_path = model_cfg["path"]
+                if os.path.exists(f"{model_path}/model.h5"):
+                    self.components["intent_classifier"].load_model(model_path)
+                    self.logger.info(f"Loaded intent model from {model_path}")
+                else:
+                    self.logger.warning(f"No model found at {model_path}, using uninitialized classifier")
 
-            db_cfg = self.config["database"]
-            self.components["db_connector"] = SecureDatabaseConnector(
-                host=db_cfg["host"],
-                user=db_cfg["user"],
-                password=db_cfg["password"],
-                database=db_cfg["database"],
-                encryption_manager=self.components["encryption_manager"]
-            )
-            if not self.components["db_connector"].connect():
-                self.logger.error("Failed to connect to database")
+                sec_fields = self.config["security"]["sensitive_fields"]
+                self.components["query_processor"] = QueryProcessor(
+                    db_connector=self.components["db_connector"],
+                    encryption_manager=self.components["encryption_manager"],
+                    sensitive_fields=sec_fields
+                )
+
+                genai_cfg = self.config.get("genai", {})
+                if genai_cfg.get("enabled", False):
+                    try:
+                        pe = PromptEvolver(
+                            model=genai_cfg.get("model", "gemini-2.0-flash"),
+                            max_calls_per_month=genai_cfg.get("max_calls_per_month", 1000),
+                            api_key_env=genai_cfg.get("api_key_env", "GENAI_API_KEY")
+                        )
+                        self.components["prompt_evolver"] = pe
+                        self.logger.info("Prompt evolver initialized")
+                    except Exception as e:
+                        self.logger.error(f"Prompt evolver init error: {e}")
+                        self.components["prompt_evolver"] = None
+                else:
+                    self.components["prompt_evolver"] = None
+
+                self.components["chatbot_engine"] = ChatbotEngine(
+                    intent_classifier=self.components["intent_classifier"],
+                    query_processor=self.components["query_processor"],
+                    prompt_evolver=self.components["prompt_evolver"]
+                )
+
+                api_cfg = self.config["api"]
+                flask_api = FlaskAPI(
+                    chatbot_engine=self.components["chatbot_engine"],
+                    db_connector=self.components["db_connector"],
+                )
+                self.components["flask_api"] = flask_api
+
+                if self.components.get("speech_recognition"):
+                    SpeechRoutes(flask_api.app, self.components["speech_recognition"])
+                    self.logger.info("Speech recognition routes registered on Flask API")
+
+                return True
+
+            except Exception as e:
+                self.logger.error(f"Error initializing components: {e}")
                 return False
-            self.logger.info("Secure database connector initialized and connected")
-
-
-            model_cfg = self.config["model"]
-            params = model_cfg.get("parameters", {})
-            self.components["intent_classifier"] = EnhancedIntentClassifier(
-                vocab_size=params.get("vocab_size", 5000),
-                embedding_dim=params.get("embedding_dim", 128),
-                max_sequence_length=params.get("max_sequence_length", 50)
-            )
-            model_path = model_cfg["path"]
-            if os.path.exists(f"{model_path}/model.h5"):
-                self.components["intent_classifier"].load_model(model_path)
-                self.logger.info(f"Loaded intent model from {model_path}")
-            else:
-                self.logger.warning(f"No model found at {model_path}, using uninitialized classifier")
-
-
-            sec_fields = self.config["security"]["sensitive_fields"]
-            self.components["query_processor"] = QueryProcessor(
-                db_connector=self.components["db_connector"],
-                encryption_manager=self.components["encryption_manager"],
-                sensitive_fields=sec_fields
-            )
-            self.components["chatbot_engine"] = ChatbotEngine(
-                intent_classifier=self.components["intent_classifier"],
-                query_processor=self.components["query_processor"]
-            )
-
-
-            speech_cfg = self.config.get("speech", {})
-            if speech_cfg.get("enabled", False):
-                try:
-                    self.components["speech_recognition"] = SecureSpeechRecognition(
-                        encryption_manager=self.components["encryption_manager"],
-                        model_path=speech_cfg["model_path"],
-                        use_encryption=speech_cfg.get("use_encryption", True)
-                    )
-                    self.logger.info("Speech recognition initialized")
-                except Exception as e:
-                    self.logger.error(f"Speech init error: {e}")
-                    self.components["speech_recognition"] = None
-            else:
-                self.components["speech_recognition"] = None
-
-
-            api_cfg = self.config["api"]
-            self.components["flask_api"] = FlaskAPI(
-                chatbot_engine=self.components["chatbot_engine"],
-                db_connector=self.components["db_connector"],
-            )
-
-            return True
-
-        except Exception as e:
-            self.logger.error(f"Error initializing components: {e}")
-            return False
 
     def run_train_model(self, **kwargs):
         if not TRAINING_AVAILABLE:
@@ -322,34 +326,31 @@ class SecureChatbotApplication:
                 self.logger.error("Failed to connect to database. Exiting.")
                 return False
 
-            chatbot_engine = self.components["chatbot_engine"]
+            self.components["flask_api"].chatbot_engine = self.components["chatbot_engine"]
 
-            flask_api = self.components["flask_api"]
-
-            flask_api.chatbot_engine = chatbot_engine
-
-            speech_recognition = self.components.get("speech_recognition")
-
-            if speech_recognition and SPEECH_AVAILABLE:
+            if self.components.get("speech_recognition") and SPEECH_AVAILABLE:
                 try:
                     self.logger.info("Initializing speech recognition routes")
-                    SpeechRoutes(flask_api.app, speech_recognition)
+                    SpeechRoutes(self.components["flask_api"].app,
+                                 self.components["speech_recognition"])
                 except Exception as e:
                     self.logger.error(f"Error setting up speech recognition routes: {e}")
 
             if TRAINING_AVAILABLE:
-                self._add_training_routes(flask_api.app)
+                self._add_training_routes(self.components["flask_api"].app)
 
-            api_config = self.config.get("api", {})
-            flask_api.start_server(
-                host=api_config.get("host", "0.0.0.0"),
-                port=api_config.get("port", 5000),
-                debug=api_config.get("debug", False)
-            )
+            api_cfg = self.config.get("api", {})
+            host = api_cfg.get("host", "0.0.0.0")
+            port = api_cfg.get("port", 5000)
+
+            from waitress import serve
+            self.logger.info(f"Starting Waitress server on {host}:{port}")
+            serve(self.components["flask_api"].app, host=host, port=port)
 
             return True
+
         except Exception as e:
-            self.logger.error(f"Error starting application: {e}")
+            self.logger.error(f"Error starting application: {e}", exc_info=True)
             return False
 
     def _add_training_routes(self, app):
@@ -431,21 +432,33 @@ def parse_arguments():
 
     return parser.parse_args()
 
-
 if __name__ == "__main__":
     args = parse_arguments()
 
-    if not hasattr(args, 'command') or args.command is None or args.command == 'server':
+    if args.command in (None, "server"):
         app = SecureChatbotApplication(args.config)
         try:
-            app.start()
+            app.initialize_components()
+            flask_app = app.components["flask_api"].app
+
+            api_cfg = app.config.get("api", {})
+            bind_host = api_cfg.get("host", "0.0.0.0")
+            port = api_cfg.get("port", 5000)
+            display = "localhost" if bind_host in ("0.0.0.0", "") else bind_host
+
+            print(f"→ Serving on http://{display}:{port}   (bound to {bind_host}:{port})")
+            from waitress import serve
+
+            serve(flask_app, host=bind_host, port=port)
+
         except KeyboardInterrupt:
-            print("\nShutting down...")
+            print("\nShutting down…")
             app.shutdown()
-            print("Application terminated.")
-    elif args.command == 'train' and TRAINING_AVAILABLE:
+            print("Terminated.")
+    elif args.command == "train" and TRAINING_AVAILABLE:
         sys.argv = [sys.argv[0]] + sys.argv[2:]
         train_module.main()
     else:
         print(f"Unknown command: {args.command}")
         sys.exit(1)
+

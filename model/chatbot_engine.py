@@ -7,11 +7,16 @@ import base64
 from datetime import datetime, timedelta
 
 class ChatbotEngine:
-    def __init__(self, intent_classifier, query_processor):
+    def __init__(self, intent_classifier, query_processor,prompt_evolver=None):
         self.logger = logging.getLogger(__name__)
         self.intent_classifier = intent_classifier
         self.query_processor = query_processor
         self.current_query = None
+        self.prompt_evolver = prompt_evolver
+        self.raw_query = None
+
+        self._history_path = "prompt_refinements.json"
+        self.prompt_history = self._load_history()
 
         self.table_display_names = {
             "traders": "Traders",
@@ -32,6 +37,31 @@ class ChatbotEngine:
             for p, h in self.base_patterns.items()
         ]
 
+    def _load_history(self) -> dict:
+        import json, os
+
+        if not os.path.exists(self._history_path):
+            # create empty file
+            with open(self._history_path, "w", encoding="utf8") as f:
+                json.dump({}, f)
+            return {}
+
+        try:
+            with open(self._history_path, "r", encoding="utf8") as f:
+                return json.load(f)
+        except Exception as e:
+            self.logger.error(f"Failed to load prompt history: {e}")
+            return {}
+
+    def _store_refinement(self, original: str, refined: str):
+        import json
+
+        self.prompt_history[original] = refined
+        try:
+            with open(self._history_path, "w", encoding="utf8") as f:
+                json.dump(self.prompt_history, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            self.logger.error(f"Failed to persist refinements: {e}")
 
     def _init_entity_question_handlers(self):
 
@@ -221,11 +251,20 @@ class ChatbotEngine:
         }
 
     def process_user_input(self, user_input):
-
-
+        self.prompt_history = self._load_history()
+        original = user_input
+        if original in self.prompt_history:
+            refined = self.prompt_history[original]
+            self.logger.debug(f"[PromptEvolver] replay refinement: {original!r} → {refined!r}")
+        elif self.prompt_evolver and self.prompt_evolver.should_refine(original):
+            refined = self.prompt_evolver.evolve_prompt(original)
+            self.logger.debug(f"[PromptEvolver] new refinement: {original!r} → {refined!r}")
+            self._store_refinement(original, refined)
+        else:
+            refined = original
         try:
-            self.current_query = user_input
-            self.logger.info(f"Processing input: '{user_input}'")
+            self.current_query = original
+            self.logger.info(f"Processing input: '{original}'")
 
             entity_query_result = self._check_entity_question_handlers(user_input)
             if entity_query_result is not None:
@@ -251,8 +290,13 @@ class ChatbotEngine:
                     "response": "I can help you query financial data including traders, assets, transactions, and more. Try asking about stocks, account balances, or recent trades."}
 
             result = self.query_processor.process_query(user_input, intent_data)
-
-            response = self.generate_response(intent, result, intent_data.get('sub_intent'))
+            response = self.generate_response(
+                intent=intent_data["intent"],
+                query_result=result,
+                sub_intent=intent_data.get("sub_intent"),
+                original_user=original,
+                refined_user=user_input
+            )
             return self._process_response_for_json(response)
 
         except Exception as e:
@@ -370,7 +414,7 @@ class ChatbotEngine:
         else:
             return value
 
-    def generate_response(self, intent, query_result, sub_intent=None):
+    def generate_response(self, intent, query_result, sub_intent=None, original_user=None, refined_user=None):
         if not query_result:
             return {"response": "I couldn't find any information for your query."}
         if isinstance(query_result, dict) and "error" in query_result:

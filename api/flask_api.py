@@ -2,6 +2,8 @@
 
 from flask import Flask, request, jsonify, session, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
+from api.speech_routes import SpeechRoutes
+from speech.speech_recognition import SecureSpeechRecognition
 import logging
 import os
 import secrets
@@ -18,10 +20,14 @@ class FlaskAPI:
                          template_folder='../templates',
                          static_folder='../static')
 
-
-
-
         self._he_logs = []
+
+        try:
+            speech_rec = SecureSpeechRecognition()
+            SpeechRoutes(self.app, speech_rec)
+            self.logger.info("Registered /api/speech_recognition")
+        except Exception as e:
+            self.logger.warning(f"Speech recognition not available: {e}")
 
         class TripwireHandler(logging.Handler):
             def __init__(self, target_list):
@@ -45,6 +51,7 @@ class FlaskAPI:
 
 
         self.setup_routes()
+
 
 
     def _process_value_for_json_safe(self, value):

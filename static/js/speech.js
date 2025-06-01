@@ -154,6 +154,31 @@ class SpeechRecognitionHandler {
     }
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('speech-button');
+  const userInput = document.getElementById('user-input');
+  const sendBtn = document.getElementById('send-button');
+
+  const speech = new SpeechRecognitionHandler({
+    useServerProcessing: true,
+    onStart:   () => btn.classList.add('listening'),
+    onEnd:     () => btn.classList.remove('listening'),
+    onResult:  ({ transcript, isFinal }) => {
+      userInput.value = transcript;
+      if (isFinal && transcript.trim()) {
+        sendBtn.click();
+      }
+    },
+    onError:   err => {
+      console.error('Speech error:', err);
+    }
+  });
+
+  btn.addEventListener('mousedown', () => speech.startListening());
+  btn.addEventListener('mouseup',   () => speech.stopListening());
+});
+
+
 
 document.addEventListener('DOMContentLoaded', function() {
     const chatInput = document.querySelector('.chat-input');

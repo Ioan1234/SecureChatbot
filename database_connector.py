@@ -1,7 +1,6 @@
-import mysql.connector
-from mysql.connector import Error
+import pymysql
+from pymysql.err import MySQLError
 import logging
-
 
 class DatabaseConnector:
     def __init__(self, host, user, password, database):
@@ -14,66 +13,58 @@ class DatabaseConnector:
 
     def connect(self):
         try:
-            self.connection = mysql.connector.connect(
+            self.connection = pymysql.connect(
                 host=self.host,
                 user=self.user,
                 password=self.password,
-                database=self.database
+                database=self.database,
+                cursorclass=pymysql.cursors.DictCursor
             )
-            if self.connection.is_connected():
+            if self.connection.open:
                 self.logger.info(f"Connected to MySQL database: {self.database}")
                 return True
-        except Error as e:
+        except MySQLError as e:
             self.logger.error(f"Error connecting to MySQL database: {e}")
             return False
 
     def is_connected(self):
-        try:
-            return self.connection and self.connection.is_connected()
-        except Error:
-            return False
+        return self.connection and self.connection.open
 
     def disconnect(self):
         try:
-            if self.connection:
-                try:
-                    if hasattr(self.connection, 'is_connected') and self.connection.is_connected():
-                        cursor = self.connection.cursor()
-                        cursor.fetchall()
-                        cursor.close()
-                except Error:
-                    pass
-
+            if self.connection and self.connection.open:
                 self.connection.close()
                 self.logger.info("Database connection closed")
         except Exception as e:
             self.logger.error(f"Error disconnecting from database: {e}")
 
     def execute_query(self, query, params=None):
-        cursor = None
         try:
-            if not self.connection or not self.connection.is_connected():
-                self.connect()
+            conn = pymysql.connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                cursorclass=pymysql.cursors.DictCursor,
+                autocommit=False
+            )
+            with conn.cursor() as cursor:
+                cursor.execute(query, params or ())
 
-            cursor = self.connection.cursor(dictionary=True)
-            if params:
-                cursor.execute(query, params)
-            else:
-                cursor.execute(query)
+                if query.strip().upper().startswith(('SELECT', 'SHOW', 'DESCRIBE')):
+                    return cursor.fetchall()
+                else:
+                    conn.commit()
+                    return {"affected_rows": cursor.rowcount}
 
-            if query.strip().upper().startswith(('SELECT', 'SHOW', 'DESCRIBE')):
-                result = cursor.fetchall()
-                return result
-            else:
-                self.connection.commit()
-                return {"affected_rows": cursor.rowcount}
-
-        except Error as e:
+        except MySQLError as e:
             self.logger.error(f"Error executing query: {e}")
             return None
         finally:
-            if cursor:
-                cursor.close()
+            try:
+                conn.close()
+            except Exception:
+                pass
 
     def get_table_schema(self, table_name):
         query = f"DESCRIBE {table_name}"
@@ -82,13 +73,3 @@ class DatabaseConnector:
     def get_all_tables(self):
         query = "SHOW TABLES"
         return self.execute_query(query)
-
-    def handle_unread_results(self):
-        try:
-            if self.connection and self.connection.is_connected():
-                cursor = self.connection.cursor()
-                while self.connection.unread_result:
-                    cursor.fetchall()
-                cursor.close()
-        except Error as e:
-            self.logger.error(f"Error handling unread results: {e}")

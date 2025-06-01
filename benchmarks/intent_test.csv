@@ -1,0 +1,17 @@
+text,intent_label
+Show me traders with the largest account balances,database_query_aggregation
+Who has the most money in their account?,database_query_aggregation
+List traders with highest balances,database_query_aggregation
+List top 5 traders by account balance,database_query_aggregation
+Show me the market with highest trading volume,database_query_comparative
+Identify the busiest market by trade volume,database_query_comparative
+Rank markets by trade count,database_query_comparative
+List cryptocurrency assets,database_query_list
+What stocks do we have?,database_query_list
+Show all ETF assets,database_query_list
+What are the latest trades?,database_query_recent
+Display the newest trading activity,database_query_recent
+List the most recent trades,database_query_recent
+Who is the most active trader?,database_query_specific_id
+Show the trader with highest number of trades,database_query_specific_id
+Which user trades the most frequently?,database_query_specific_id

@@ -56,5 +56,11 @@
     "reduce_complexity": true,
     "auto_train": false,
     "enrich_existing": false
+  },
+   "genai": {
+    "enabled": true,
+    "model": "gemini-2.0-flash",
+    "max_calls_per_month": 1000,
+    "api_key_env": "GENAI_API_KEY"
   }
 }
