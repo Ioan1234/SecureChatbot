@@ -345,5 +345,5 @@ class FlaskAPI:
         self.logger.info(f"Starting Flask server on http://{host}:{port}")
 
         use_reloader = debug
-        self.app.run(host=host, port=port, debug=debug, use_reloader=False)
+        self.app.run(host=host, port=port, debug=debug)
 

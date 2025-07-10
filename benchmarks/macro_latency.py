@@ -51,7 +51,7 @@ def time_query(limit, repetitions=20):
     print(f"LIMIT={limit:3d} → {mean*1000:.1f}±{stdev*1000:.1f} ms")
 
 if __name__ == "__main__":
-    for lim in [1, 5, 10, 50, 100]:
+    for lim in [1, 5, 10, 50, 100, 1000, 10000]:
         time_query(limit=lim)
 
 

@@ -76,6 +76,8 @@ class ChatbotEngine:
             r".*(?:who\shas\s(?:the\s)?most\smoney\sin\s(?:their|the)\saccount).*": self._handle_highest_balance_query,
             r".*(?:largest\saccount\sbalances?).*": self._handle_highest_balance_query,
             r".*(?:trader\swith\smost\smoney).*": self._handle_highest_balance_query,
+            r".*largest\s+balance.*": self._handle_highest_balance_query,
+            r".*highest\s+balance.*": self._handle_highest_balance_query,
             r"(?:what are|show|list|get|find|display).*(?:recent|latest|newest|current) trades": self._handle_recent_trades_query,
             r"(?:show|list|get|find|display).*(?:recent|latest|newest|current) transactions(?: in the market)?": self._handle_recent_transactions_query,
             r"(?:show|list|rank|compare).*(?:markets?).*(?:trade (?:volume|count)|trading activity|most activity)": self._handle_market_trade_activity,

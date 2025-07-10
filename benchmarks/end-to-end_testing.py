@@ -26,12 +26,15 @@ for name, query in QUERIES.items():
     t1 = time.perf_counter()
     latency_ms = (t1 - t0) * 1000
 
-    ok = r.status_code == 200
+    assert r.status_code == 200, f"{name} returned HTTP {r.status_code}"
     try:
         payload = r.json()
-    except ValueError:
-        payload = {}
-        ok = False
+    except ValueError as e:
+        raise AssertionError(f"{name} did not return valid JSON") from e
+
+    assert isinstance(payload.get("response"), str), f"{name} missing response string"
+
+    ok = r.status_code == 200
 
     has_resp = isinstance(payload.get("response"), str)
     data = payload.get("data")

@@ -4,18 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4b6cf9e0-ce6e-4996-8246-8aa85486ce61" name="Changes" comment="Merge branch 'master' of https://github.com/Ioan1234/SecureChatbot&#10;&#10;# Conflicts:&#10;#&#9;.idea/dataSources.local.xml&#10;#&#9;.idea/workspace.xml&#10;#&#9;api/flask_api.py&#10;#&#9;asset_population.log&#10;#&#9;broker_generator.py&#10;#&#9;encryption_keys/private_key.dat&#10;#&#9;encryption_keys/public_context.dat&#10;#&#9;market_data_fetcher.py&#10;#&#9;model/chatbot_engine.py&#10;#&#9;populate_asset_map.py&#10;#&#9;sql_output/all_inserts_100.sql&#10;#&#9;training.log">
-      <change beforePath="$PROJECT_DIR$/.idea/ChatBot.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ChatBot.iml" afterDir="false" />
+    <list default="true" id="4b6cf9e0-ce6e-4996-8246-8aa85486ce61" name="Changes" comment="Added benchmark classes">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/flask_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/flask_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database_connector.py" beforeDir="false" afterPath="$PROJECT_DIR$/database_connector.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/benchmarks/end-to-end_testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/benchmarks/end-to-end_testing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/benchmarks/macro_latency.py" beforeDir="false" afterPath="$PROJECT_DIR$/benchmarks/macro_latency.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/benchmarks/throughput_load.py" beforeDir="false" afterPath="$PROJECT_DIR$/benchmarks/throughput_load.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/model/chatbot_engine.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/chatbot_engine.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/secure_database_connector.py" beforeDir="false" afterPath="$PROJECT_DIR$/secure_database_connector.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/speech.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/speech.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training.log" beforeDir="false" afterPath="$PROJECT_DIR$/training.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/prompt_refinements.json" beforeDir="false" afterPath="$PROJECT_DIR$/prompt_refinements.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/query_processor.py" beforeDir="false" afterPath="$PROJECT_DIR$/query_processor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/script.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/script.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training.log" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,6 +93,7 @@
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/ioanc/PycharmProjects/ChatBot&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -146,8 +147,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-PY-251.25410.159" />
-        <option value="bundled-python-sdk-e0ed3721d81e-36ea0e71a18c-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.25410.159" />
+        <option value="bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-PY-251.26927.74" />
+        <option value="bundled-python-sdk-657d8234b839-64d779b69b7a-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26927.74" />
       </set>
     </attachedChunks>
   </component>
@@ -252,6 +253,27 @@
       <workItem from="1748335066228" duration="9953000" />
       <workItem from="1748357894561" duration="3285000" />
       <workItem from="1748717786682" duration="39000" />
+      <workItem from="1748765077646" duration="1003000" />
+      <workItem from="1748783620614" duration="164000" />
+      <workItem from="1748857751079" duration="698000" />
+      <workItem from="1748860911936" duration="3394000" />
+      <workItem from="1749209646808" duration="1464000" />
+      <workItem from="1749214403387" duration="803000" />
+      <workItem from="1749220580255" duration="1228000" />
+      <workItem from="1749289863895" duration="5380000" />
+      <workItem from="1749371409171" duration="2516000" />
+      <workItem from="1749375307337" duration="113000" />
+      <workItem from="1749983083000" duration="54000" />
+      <workItem from="1749983292801" duration="4563000" />
+      <workItem from="1750007762411" duration="595000" />
+      <workItem from="1751710982119" duration="3016000" />
+      <workItem from="1751715665986" duration="4608000" />
+      <workItem from="1751737018522" duration="487000" />
+      <workItem from="1751737587892" duration="1163000" />
+      <workItem from="1751825050645" duration="678000" />
+      <workItem from="1752069507056" duration="1082000" />
+      <workItem from="1752070664777" duration="393000" />
+      <workItem from="1752145340356" duration="1631000" />
     </task>
     <task id="LOCAL-00001" summary="final version - test only">
       <option name="closed" value="true" />
@@ -637,7 +659,15 @@
       <option name="project" value="LOCAL" />
       <updated>1748110333735</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="Added benchmark classes">
+      <option name="closed" value="true" />
+      <created>1748765138069</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1748765138069</updated>
+    </task>
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -655,7 +685,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fixed query_processor.py display bug and added min,max,median,asc/desc option when querying the result" />
     <MESSAGE value="Updated training algorithm to simplify query_processor.py class" />
     <MESSAGE value="Merge branch 'master' of https://github.com/Ioan1234/SecureChatbot&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml" />
     <MESSAGE value="simplified query_processor.py class" />
@@ -680,13 +709,14 @@
     <MESSAGE value="Final version" />
     <MESSAGE value="Merge branch 'master' of https://github.com/Ioan1234/SecureChatbot&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml&#10;#&#9;api/flask_api.py&#10;#&#9;encryption_keys/private_key.dat&#10;#&#9;encryption_keys/serialized_context.dat&#10;#&#9;model/chatbot_engine.py&#10;#&#9;training.log" />
     <MESSAGE value="Merge branch 'master' of https://github.com/Ioan1234/SecureChatbot&#10;&#10;# Conflicts:&#10;#&#9;.idea/dataSources.local.xml&#10;#&#9;.idea/workspace.xml&#10;#&#9;api/flask_api.py&#10;#&#9;asset_population.log&#10;#&#9;broker_generator.py&#10;#&#9;encryption_keys/private_key.dat&#10;#&#9;encryption_keys/public_context.dat&#10;#&#9;market_data_fetcher.py&#10;#&#9;model/chatbot_engine.py&#10;#&#9;populate_asset_map.py&#10;#&#9;sql_output/all_inserts_100.sql&#10;#&#9;training.log" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'master' of https://github.com/Ioan1234/SecureChatbot&#10;&#10;# Conflicts:&#10;#&#9;.idea/dataSources.local.xml&#10;#&#9;.idea/workspace.xml&#10;#&#9;api/flask_api.py&#10;#&#9;asset_population.log&#10;#&#9;broker_generator.py&#10;#&#9;encryption_keys/private_key.dat&#10;#&#9;encryption_keys/public_context.dat&#10;#&#9;market_data_fetcher.py&#10;#&#9;model/chatbot_engine.py&#10;#&#9;populate_asset_map.py&#10;#&#9;sql_output/all_inserts_100.sql&#10;#&#9;training.log" />
+    <MESSAGE value="Added benchmark classes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added benchmark classes" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ChatBot$main.coverage" NAME="main Coverage Results" MODIFIED="1742728767820" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ChatBot$tests.coverage" NAME="tests Coverage Results" MODIFIED="1741446356105" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ChatBot$train_model.coverage" NAME="train_model Coverage Results" MODIFIED="1741601029931" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/ChatBot$app.coverage" NAME="app Coverage Results" MODIFIED="1748359870892" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ChatBot$app.coverage" NAME="app Coverage Results" MODIFIED="1752148790021" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ChatBot$query_generator.coverage" NAME="query_generator Coverage Results" MODIFIED="1742635681162" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training" />
     <SUITE FILE_PATH="coverage/ChatBot$encryption_manager.coverage" NAME="encryption_manager Coverage Results" MODIFIED="1746286874485" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ChatBot$chatbot_engine.coverage" NAME="chatbot_engine Coverage Results" MODIFIED="1747756803044" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />

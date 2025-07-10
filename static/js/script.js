@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const dataTableTemplate = document.getElementById('data-table-template');
     const typingIndicatorTemplate = document.getElementById('typing-indicator-template');
 
+     let lastResultsForExport = null;
+
     userInput.focus();
 
     function sendMessage() {
@@ -90,8 +92,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const exportButton = document.createElement('button');
             exportButton.className = 'export-data-btn';
             exportButton.innerHTML = '<i class="fas fa-download"></i> Export as CSV';
+             const exportData = data.data || getDataFromEntityData(data.entity_data);
+            lastResultsForExport = Array.isArray(exportData) ? [...exportData] : exportData;
             exportButton.addEventListener('click', () => {
-                exportDataToCSV(data.data || getDataFromEntityData(data.entity_data));
+                exportDataToCSV(lastResultsForExport);
             });
             messageContent.appendChild(exportButton);
         }
@@ -380,8 +384,9 @@ function executeSqlQueryWithPagination(sql) {
                 const exportButton = document.createElement('button');
                 exportButton.className = 'export-data-btn';
                 exportButton.innerHTML = '<i class="fas fa-download"></i> Export Results';
+                lastResultsForExport = [...data.results];
                 exportButton.addEventListener('click', () => {
-                    exportDataToCSV(data.results, 'sql_results');
+                    exportDataToCSV(lastResultsForExport, 'sql_results');
                 });
                 content.appendChild(exportButton);
             } else {
@@ -504,8 +509,9 @@ function executeSqlQueryWithPagination(sql) {
                     const exportButton = document.createElement('button');
                     exportButton.className = 'export-data-btn';
                     exportButton.innerHTML = '<i class="fas fa-download"></i> Export Results';
+                    lastResultsForExport = [...data.results];
                     exportButton.addEventListener('click', () => {
-                        exportDataToCSV(data.results, 'sql_results');
+                         exportDataToCSV(lastResultsForExport, 'sql_results');
                     });
                     content.appendChild(exportButton);
                 } else {

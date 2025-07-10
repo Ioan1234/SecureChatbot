@@ -425,6 +425,8 @@ class QueryProcessor:
                     r'highest balances?',
                     r'trader with most money',
                     r'has the most money',
+                    r'largest balance',
+                    r'highest balance'
                     r'largest account balances?',
                     r'top\s+\d+\s+traders\s+by\s+(?:account )?balance',
                     r'traders ranked by highest (?:account )?balance',
@@ -1491,18 +1493,18 @@ class QueryProcessor:
         return self._execute_and_process_query(sql)
 
 
-        def get_actively_traded_assets(self):
-            sql = """
-            SELECT
-                a.asset_id, a.name, a.asset_type, a.broker_id,
-                COUNT(t.trade_id) as trade_count
-            FROM assets a
-            JOIN trades t ON a.asset_id = t.asset_id
-            WHERE t.trade_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-            GROUP BY a.asset_id, a.name, a.asset_type, a.broker_id, a.api_symbol
-            ORDER BY trade_count DESC
-            """
-            return self._execute_and_process_query(sql)
+    def get_actively_traded_assets(self):
+        sql = """
+        SELECT
+            a.asset_id, a.name, a.asset_type, a.broker_id,
+            COUNT(t.trade_id) as trade_count
+        FROM assets a
+        JOIN trades t ON a.asset_id = t.asset_id
+        WHERE t.trade_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+        GROUP BY a.asset_id, a.name, a.asset_type, a.broker_id, a.api_symbol
+        ORDER BY trade_count DESC
+        """
+        return self._execute_and_process_query(sql)
 
     def get_average_trades_per_asset(self):
         sql = """
